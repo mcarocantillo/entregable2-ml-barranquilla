@@ -1,0 +1,12 @@
+# Despliegue en Render (plan gratuito). Render lee este archivo si creas el
+# servicio como "Blueprint"; si lo creas a mano, copia buildCommand y startCommand.
+services:
+  - type: web
+    name: estrato-barranquilla
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:server --workers 1 --threads 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.15

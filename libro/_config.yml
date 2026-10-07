@@ -1,0 +1,37 @@
+title: "Estrato y catastro en Barranquilla — Entregable 2"
+author: "María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)"
+copyright: "2026"
+logo: ""
+language: es
+
+# Los cuadernos se ejecutan antes de construir el libro (python construir_libro.py),
+# así las figuras interactivas quedan guardadas en ellos.
+bibtex_bibfiles:
+  - references.bib
+
+execute:
+  execute_notebooks: "off"
+
+exclude_patterns:
+  - "_build/*"
+  - "**.ipynb_checkpoints"
+  - "notebooks/*.py"
+
+parse:
+  myst_enable_extensions:
+    - dollarmath
+    - amsmath
+    - colon_fence
+    - deflist
+
+sphinx:
+  config:
+    bibtex_reference_style: author_year
+    nb_code_prompt_show: "Mostrar el código"
+    nb_code_prompt_hide: "Ocultar el código"
+    html_show_copyright: false
+    language: es
+
+html:
+  use_repository_button: false
+  home_page_in_navbar: true

@@ -1,0 +1,979 @@
+{
+ "tabla_cv": {
+  "f1_macro (media)": {
+   "Dummy (mayoritaria)": 0.0569,
+   "Dummy (estratificada)": 0.1429,
+   "Dummy (uniforme)": 0.1379,
+   "Moda por zona": 0.1931,
+   "Logística A_fisicas": 0.2832,
+   "Logística B_fisicas+ubicacion": 0.2988,
+   "XGBoost": 0.2960351968779947,
+   "XGBoost geográfico": 0.2860668256171147,
+   "Rotation Forest": 0.2681765557970781,
+   "SVM RBF (Nyström) + TPE": 0.3223184563763775
+  },
+  "accuracy (media)": {
+   "Dummy (mayoritaria)": 0.2153,
+   "Dummy (estratificada)": 0.2159,
+   "Dummy (uniforme)": 0.1662,
+   "Moda por zona": 0.334,
+   "Logística A_fisicas": 0.3874,
+   "Logística B_fisicas+ubicacion": 0.4635
+  },
+  "balanced_accuracy (media)": {
+   "Dummy (mayoritaria)": 0.1667,
+   "Dummy (estratificada)": 0.1593,
+   "Dummy (uniforme)": 0.1771,
+   "Moda por zona": 0.2606,
+   "Logística A_fisicas": 0.3608,
+   "Logística B_fisicas+ubicacion": 0.3687
+  },
+  "F1 macro (desv. entre folds)": {
+   "Dummy (mayoritaria)": 0.0253,
+   "Dummy (estratificada)": 0.0131,
+   "Dummy (uniforme)": 0.0129,
+   "Moda por zona": 0.0757,
+   "Logística A_fisicas": 0.0862,
+   "Logística B_fisicas+ubicacion": 0.0856,
+   "XGBoost": 0.07148486525589781,
+   "XGBoost geográfico": 0.0819150573477912,
+   "Rotation Forest": 0.09637626779317275,
+   "SVM RBF (Nyström) + TPE": 0.12636568051816333
+  }
+ },
+ "resultados_test": {
+  "accuracy": {
+   "Dummy (mayoritaria)": 0.2892,
+   "Dummy (estratificada)": 0.2251,
+   "Dummy (uniforme)": 0.165,
+   "Moda por zona": 0.4807,
+   "Logística A_fisicas": 0.4203,
+   "Logística B_fisicas+ubicacion": 0.598,
+   "XGBoost": 0.477933082029556,
+   "XGBoost geográfico": 0.4831537512092604,
+   "Rotation Forest": 0.5513727190846316,
+   "SVM RBF (Nyström) + TPE": 0.5408479834539814
+  },
+  "balanced_accuracy": {
+   "Dummy (mayoritaria)": 0.1667,
+   "Dummy (estratificada)": 0.1703,
+   "Dummy (uniforme)": 0.1648,
+   "Moda por zona": 0.3748,
+   "Logística A_fisicas": 0.4112,
+   "Logística B_fisicas+ubicacion": 0.4691,
+   "XGBoost": 0.3197218906412866,
+   "XGBoost geográfico": 0.32367707064599144,
+   "Rotation Forest": 0.45956517590002083,
+   "SVM RBF (Nyström) + TPE": 0.474991535359782
+  },
+  "precision_macro": {
+   "Dummy (mayoritaria)": 0.0482,
+   "Dummy (estratificada)": 0.1691,
+   "Dummy (uniforme)": 0.1655,
+   "Moda por zona": 0.3295,
+   "Logística A_fisicas": 0.3808,
+   "Logística B_fisicas+ubicacion": 0.5402,
+   "XGBoost": 0.36991029721041474,
+   "XGBoost geográfico": 0.35902057613077937,
+   "Rotation Forest": 0.4429846185522917,
+   "SVM RBF (Nyström) + TPE": 0.523045841406978
+  },
+  "recall_macro": {
+   "Dummy (mayoritaria)": 0.1667,
+   "Dummy (estratificada)": 0.1703,
+   "Dummy (uniforme)": 0.1648,
+   "Moda por zona": 0.3748,
+   "Logística A_fisicas": 0.4112,
+   "Logística B_fisicas+ubicacion": 0.4691,
+   "XGBoost": 0.3197218906412866,
+   "XGBoost geográfico": 0.32367707064599144,
+   "Rotation Forest": 0.45956517590002083,
+   "SVM RBF (Nyström) + TPE": 0.474991535359782
+  },
+  "f1_macro": {
+   "Dummy (mayoritaria)": 0.0748,
+   "Dummy (estratificada)": 0.1667,
+   "Dummy (uniforme)": 0.1458,
+   "Moda por zona": 0.328,
+   "Logística A_fisicas": 0.349,
+   "Logística B_fisicas+ubicacion": 0.45,
+   "XGBoost": 0.3039981151462504,
+   "XGBoost geográfico": 0.3067953841199324,
+   "Rotation Forest": 0.4077032486849921,
+   "SVM RBF (Nyström) + TPE": 0.4279464247697789
+  },
+  "f1_weighted": {
+   "Dummy (mayoritaria)": 0.1298,
+   "Dummy (estratificada)": 0.2244,
+   "Dummy (uniforme)": 0.1844,
+   "Moda por zona": 0.396,
+   "Logística A_fisicas": 0.426,
+   "Logística B_fisicas+ubicacion": 0.5536,
+   "XGBoost": 0.45375376064799267,
+   "XGBoost geográfico": 0.4573280596988065,
+   "Rotation Forest": 0.504707701602281,
+   "SVM RBF (Nyström) + TPE": 0.5007378943608077
+  },
+  "MAE_ordinal": {
+   "Dummy (mayoritaria)": 1.5654,
+   "Dummy (estratificada)": 1.5007,
+   "Dummy (uniforme)": 1.8977,
+   "Moda por zona": 0.9363,
+   "Logística A_fisicas": 0.8182,
+   "Logística B_fisicas+ubicacion": 0.4637,
+   "XGBoost": 0.6562531273976715,
+   "XGBoost geográfico": 0.6503986389565334,
+   "Rotation Forest": 0.5083564065783768,
+   "SVM RBF (Nyström) + TPE": 0.5400974080128098
+  },
+  "accuracy_±1": {
+   "Dummy (mayoritaria)": 0.5018,
+   "Dummy (estratificada)": 0.5543,
+   "Dummy (uniforme)": 0.4479,
+   "Moda por zona": 0.7471,
+   "Logística A_fisicas": 0.8027,
+   "Logística B_fisicas+ubicacion": 0.9411,
+   "XGBoost": 0.8928845448176935,
+   "XGBoost geográfico": 0.8934182873536378,
+   "Rotation Forest": 0.9427394335657338,
+   "SVM RBF (Nyström) + TPE": 0.9240751242619342
+  },
+  "kappa_cuadrático": {
+   "Dummy (mayoritaria)": 0.0,
+   "Dummy (estratificada)": 0.0066,
+   "Dummy (uniforme)": -0.0014,
+   "Moda por zona": 0.4296,
+   "Logística A_fisicas": 0.6546,
+   "Logística B_fisicas+ubicacion": 0.8137,
+   "XGBoost": 0.6583516677532388,
+   "XGBoost geográfico": 0.6611140059230152,
+   "Rotation Forest": 0.8168107788492397,
+   "SVM RBF (Nyström) + TPE": 0.7983306679418373
+  },
+  "AUC_OvR_macro": {
+   "Dummy (mayoritaria)": 0.5,
+   "Dummy (estratificada)": 0.5021,
+   "Dummy (uniforme)": 0.5,
+   "Moda por zona": 0.6636,
+   "Logística A_fisicas": 0.7965,
+   "Logística B_fisicas+ubicacion": 0.886,
+   "XGBoost": 0.7440012594021596,
+   "XGBoost geográfico": 0.7854497747035319,
+   "Rotation Forest": 0.8613730793165623,
+   "SVM RBF (Nyström) + TPE": 0.8369868542161121
+  },
+  "log_loss": {
+   "Dummy (mayoritaria)": 19.6391,
+   "Dummy (estratificada)": 21.4107,
+   "Dummy (uniforme)": 1.7918,
+   "Moda por zona": 2.5752,
+   "Logística A_fisicas": 1.351,
+   "Logística B_fisicas+ubicacion": 1.0345,
+   "XGBoost": 1.7495595305075224,
+   "XGBoost geográfico": 1.4995274527587674,
+   "Rotation Forest": 1.0977315302049084,
+   "SVM RBF (Nyström) + TPE": 1.1286632530900942
+  },
+  "brier_multiclase": {
+   "Dummy (mayoritaria)": 1.4215,
+   "Dummy (estratificada)": 1.5498,
+   "Dummy (uniforme)": 0.8333,
+   "Moda por zona": 0.7389,
+   "Logística A_fisicas": 0.6863,
+   "Logística B_fisicas+ubicacion": 0.5479,
+   "XGBoost": 0.7682179762766743,
+   "XGBoost geográfico": 0.7265708573525083,
+   "Rotation Forest": 0.5802404574646057,
+   "SVM RBF (Nyström) + TPE": 0.5520732578684806
+  }
+ },
+ "ic_modelo_principal": {
+  "valor en test": {
+   "accuracy": 0.598,
+   "f1_macro": 0.45,
+   "MAE_ordinal": 0.4637,
+   "kappa_cuadrático": 0.8137
+  },
+  "IC95_inf": {
+   "accuracy": 0.3559,
+   "f1_macro": 0.1631,
+   "MAE_ordinal": 0.2083,
+   "kappa_cuadrático": 0.1428
+  },
+  "IC95_sup": {
+   "accuracy": 0.8098,
+   "f1_macro": 0.4627,
+   "MAE_ordinal": 0.7361,
+   "kappa_cuadrático": 0.9119
+  },
+  "desv_boot": {
+   "accuracy": 0.1182,
+   "f1_macro": 0.0884,
+   "MAE_ordinal": 0.1386,
+   "kappa_cuadrático": 0.2094
+  }
+ },
+ "comparaciones_f1": {
+  "diferencia": {
+   "Logística B_fisicas+ubicacion − Dummy (mayoritaria)": "0.3753",
+   "Logística B_fisicas+ubicacion − Dummy (estratificada)": "0.2834",
+   "Logística B_fisicas+ubicacion − Moda por zona": "0.1221",
+   "Logística B_fisicas+ubicacion − Logística A_fisicas": "0.101"
+  },
+  "IC95_inf": {
+   "Logística B_fisicas+ubicacion − Dummy (mayoritaria)": "0.1144",
+   "Logística B_fisicas+ubicacion − Dummy (estratificada)": "0.0264",
+   "Logística B_fisicas+ubicacion − Moda por zona": "-0.0134",
+   "Logística B_fisicas+ubicacion − Logística A_fisicas": "-0.0538"
+  },
+  "IC95_sup": {
+   "Logística B_fisicas+ubicacion − Dummy (mayoritaria)": "0.3921",
+   "Logística B_fisicas+ubicacion − Dummy (estratificada)": "0.3076",
+   "Logística B_fisicas+ubicacion − Moda por zona": "0.188",
+   "Logística B_fisicas+ubicacion − Logística A_fisicas": "0.1406"
+  },
+  "p_bootstrap": {
+   "Logística B_fisicas+ubicacion − Dummy (mayoritaria)": "0.002",
+   "Logística B_fisicas+ubicacion − Dummy (estratificada)": "0.028",
+   "Logística B_fisicas+ubicacion − Moda por zona": "0.124",
+   "Logística B_fisicas+ubicacion − Logística A_fisicas": "0.312"
+  },
+  "¿IC excluye 0?": {
+   "Logística B_fisicas+ubicacion − Dummy (mayoritaria)": "True",
+   "Logística B_fisicas+ubicacion − Dummy (estratificada)": "True",
+   "Logística B_fisicas+ubicacion − Moda por zona": "False",
+   "Logística B_fisicas+ubicacion − Logística A_fisicas": "False"
+  }
+ },
+ "optimismo_validacion_aleatoria": {
+  "F1 macro CV": {
+   "aleatoria (StratifiedKFold)": 0.6022,
+   "espacial (bloques + buffer)": 0.2988
+  },
+  "desv.": {
+   "aleatoria (StratifiedKFold)": 0.0039,
+   "espacial (bloques + buffer)": 0.0856
+  },
+  "diferencia vs espacial": {
+   "aleatoria (StratifiedKFold)": 0.3034,
+   "espacial (bloques + buffer)": 0.0
+  }
+ },
+ "mejores_hiperparametros": {
+  "A_fisicas": {
+   "clf__C": "0.01",
+   "clf__class_weight": "balanced"
+  },
+  "B_fisicas+ubicacion": {
+   "clf__C": "0.01",
+   "clf__class_weight": "None"
+  }
+ },
+ "n_train_final": 138239,
+ "n_test": 59954,
+ "buffer_km": 1.0,
+ "n_train": 138239,
+ "n_train_antes_buffer": 218870,
+ "bloques_test": 7,
+ "variables_modelo": {
+  "numericas": [
+   "area_construida",
+   "area_catastral_terreno",
+   "total_habitaciones",
+   "total_banios",
+   "total_plantas",
+   "antiguedad",
+   "planta_ubicacion",
+   "altura"
+  ],
+  "categoricas": [
+   "tipo_vivienda",
+   "uso",
+   "condicion_predio"
+  ],
+  "espaciales": [
+   "x_km",
+   "y_km",
+   "dist_centro_km"
+  ]
+ },
+ "decisiones": {
+  "tam_bloque_km": 2.0,
+  "semilla": 42,
+  "imputacion_numericas": "mediana + indicador de faltante (SimpleImputer(add_indicator=True)), dentro del Pipeline",
+  "imputacion_categoricas": "categoría explícita 'faltante'",
+  "winsorizacion_cuantiles": [
+   0.001,
+   0.999
+  ],
+  "metrica_principal": "f1_macro",
+  "metricas_ordinales": [
+   "MAE_ordinal",
+   "accuracy_±1",
+   "kappa_cuadrático"
+  ],
+  "num_log": [
+   "area_construida",
+   "area_catastral_terreno",
+   "total_habitaciones",
+   "total_banios",
+   "total_plantas",
+   "antiguedad",
+   "planta_ubicacion"
+  ],
+  "num_lineal": [
+   "altura"
+  ],
+  "onehot_min_frecuencia": 0.01,
+  "excluir_multicolinealidad": [],
+  "categoricas_preliminares": [
+   "tipo_vivienda",
+   "uso",
+   "condicion_predio"
+  ],
+  "numericas_preliminares": [
+   "area_construida",
+   "area_catastral_terreno",
+   "total_habitaciones",
+   "total_banios",
+   "total_plantas",
+   "antiguedad",
+   "planta_ubicacion",
+   "altura"
+  ],
+  "outliers_multivariados": "conservar (sin eliminar filas)",
+  "buffer_km": 1.0,
+  "alcance_correlograma_km": 2.875,
+  "k_vecinos": 8,
+  "espaciales": [
+   "x_km",
+   "y_km",
+   "dist_centro_km"
+  ],
+  "variables_modelo": {
+   "numericas": [
+    "area_construida",
+    "area_catastral_terreno",
+    "total_habitaciones",
+    "total_banios",
+    "total_plantas",
+    "antiguedad",
+    "planta_ubicacion",
+    "altura"
+   ],
+   "categoricas": [
+    "tipo_vivienda",
+    "uso",
+    "condicion_predio"
+   ],
+   "espaciales": [
+    "x_km",
+    "y_km",
+    "dist_centro_km"
+   ]
+  },
+  "variables_excluidas": [
+   "destinacion_economica",
+   "tipo_planta",
+   "numero_predial_nacional",
+   "npn_edificio",
+   "id_fila",
+   "centroide_fuente"
+  ]
+ },
+ "avanzados": {
+  "hiperparametros": {
+   "XGBoost": {
+    "max_depth": 4,
+    "balanceado": false
+   },
+   "XGBoost geográfico": {
+    "frac_vecinos": 0.15,
+    "alpha": 0.75
+   },
+   "Rotation Forest": {
+    "n_estimators": 30,
+    "max_depth": 8,
+    "balanceado": true
+   },
+   "SVM RBF (Nyström) + TPE": {
+    "gamma": 0.0055085993197504625,
+    "n_componentes": 200,
+    "alpha": 6.751194683017586e-06,
+    "balanceado": true
+   }
+  },
+  "busqueda": {
+   "xgb": {
+    "grilla": {
+     "max_depth=4|balanceado=False": [
+      0.2821280016261691,
+      0.16915615174062346,
+      0.31539348094971004,
+      0.3842410845612166,
+      0.32925726551225437
+     ],
+     "max_depth=4|balanceado=True": [
+      0.2187743863201955,
+      0.15164338027331567,
+      0.32835409947119415,
+      0.40593627026853957,
+      0.19881940421144872
+     ],
+     "max_depth=6|balanceado=False": [
+      0.2867854648821595,
+      0.20129474601802402,
+      0.3453724397065417,
+      0.38614174633861414,
+      0.267112058037932
+     ],
+     "max_depth=6|balanceado=True": [
+      0.2939610234756074,
+      0.16251383819114967,
+      0.35704383284418867,
+      0.36214019167096634,
+      0.25841552685866814
+     ],
+     "max_depth=8|balanceado=False": [
+      0.24176692564820992,
+      0.13861465704609724,
+      0.34690796859369816,
+      0.4074700142463883,
+      0.28353725864626905
+     ],
+     "max_depth=8|balanceado=True": [
+      0.3053598568044717,
+      0.14458604367495412,
+      0.32927902392502134,
+      0.24631198106490318,
+      0.22549876109556558
+     ]
+    },
+    "elegido": "max_depth=4|balanceado=False",
+    "segundos": 184.13906955718994
+   },
+   "geoxgb": {
+    "grilla": {
+     "frac=0.05|alpha=0.0": [
+      0.29543150279202685,
+      0.1609859166746925,
+      0.3015409065604951,
+      0.38614957436897396,
+      0.23951448739378664
+     ],
+     "frac=0.05|alpha=0.25": [
+      0.301113624625486,
+      0.16147093858197917,
+      0.3082875104182273,
+      0.3865518318014405,
+      0.23984817962269114
+     ],
+     "frac=0.05|alpha=0.5": [
+      0.2845261909949352,
+      0.1616183828598808,
+      0.35585294022516073,
+      0.38746184392738375,
+      0.24065690150052285
+     ],
+     "frac=0.05|alpha=0.75": [
+      0.31782191596046916,
+      0.16101198846155726,
+      0.3296600149793168,
+      0.38679671586925,
+      0.2444289256280663
+     ],
+     "frac=0.15|alpha=0.0": [
+      0.2731042650191468,
+      0.17849388807748412,
+      0.3000182265685291,
+      0.3811264093161269,
+      0.22291268123731342
+     ],
+     "frac=0.15|alpha=0.25": [
+      0.23813457099466076,
+      0.1742900956249028,
+      0.2930716365482342,
+      0.38271844005763295,
+      0.22569903764310337
+     ],
+     "frac=0.15|alpha=0.5": [
+      0.2883031030470582,
+      0.16335023873505225,
+      0.3234064187951377,
+      0.43312935382979906,
+      0.2324559975832571
+     ],
+     "frac=0.15|alpha=0.75": [
+      0.2954313349813376,
+      0.16027857803320716,
+      0.3298350550052101,
+      0.4032801054686727,
+      0.2415090545971458
+     ]
+    },
+    "elegido": "frac=0.15|alpha=0.75",
+    "info": {
+     "0.05": {
+      "cobertura_validacion": [
+       0.7291448768348541,
+       0.6978553001424666,
+       0.8614785227867994,
+       0.20943099654196792,
+       0.508766394735656
+      ],
+      "anclas": [
+       13,
+       20,
+       16,
+       18,
+       17
+      ]
+     },
+     "0.15": {
+      "cobertura_validacion": [
+       0.921989396617016,
+       0.8103654075699819,
+       0.9939104243059194,
+       0.5381326626846904,
+       0.9691711362509577
+      ],
+      "anclas": [
+       13,
+       20,
+       16,
+       18,
+       17
+      ]
+     }
+    },
+    "segundos": 99.13511967658997
+   },
+   "rotf": {
+    "grilla": {
+     "max_depth=8|balanceado=False": [
+      0.19310839325540427,
+      0.1494229002223805,
+      0.32668425031556153,
+      0.32505547228697235,
+      0.1982958373241929
+     ],
+     "max_depth=8|balanceado=True": [
+      0.19096114948613807,
+      0.20991787624373023,
+      0.32410693644116567,
+      0.4320327028496498,
+      0.1838641139647069
+     ],
+     "max_depth=14|balanceado=False": [
+      0.24986686942062872,
+      0.14226650704777918,
+      0.3164795584722025,
+      0.3259433470019697,
+      0.19970054018198613
+     ],
+     "max_depth=14|balanceado=True": [
+      0.23920312184534778,
+      0.1925494014543696,
+      0.3341334477033701,
+      0.36560013071670583,
+      0.15766649530553642
+     ]
+    },
+    "elegido": "max_depth=8|balanceado=True",
+    "segundos": 540.8362202644348
+   },
+   "svm": {
+    "ensayos": [
+     {
+      "params": {
+       "gamma": 0.028057582076672527,
+       "n_componentes": 200,
+       "alpha": 6.251373574521755e-05,
+       "balanceado": false
+      },
+      "f1_submuestra": 0.2786610946787892
+     },
+     {
+      "params": {
+       "gamma": 0.00653336961902664,
+       "n_componentes": 200,
+       "alpha": 0.000133112160807369,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.31760621191254246
+     },
+     {
+      "params": {
+       "gamma": 0.2311294500510414,
+       "n_componentes": 200,
+       "alpha": 3.549878832196506e-06,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.2826687562688902
+     },
+     {
+      "params": {
+       "gamma": 0.03654769917956455,
+       "n_componentes": 400,
+       "alpha": 2.62108787826544e-06,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.29363655319206633
+     },
+     {
+      "params": {
+       "gamma": 0.005666833710865464,
+       "n_componentes": 400,
+       "alpha": 0.00023217816306867964,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.2964828657927653
+     },
+     {
+      "params": {
+       "gamma": 0.0055085993197504625,
+       "n_componentes": 200,
+       "alpha": 6.751194683017586e-06,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.33836340460875985
+     },
+     {
+      "params": {
+       "gamma": 0.00598103975969083,
+       "n_componentes": 200,
+       "alpha": 5.838277727728583e-06,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.3371247634922382
+     },
+     {
+      "params": {
+       "gamma": 0.412539592004547,
+       "n_componentes": 200,
+       "alpha": 0.00012516893007242375,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.28137858491001627
+     },
+     {
+      "params": {
+       "gamma": 0.09031576639569948,
+       "n_componentes": 400,
+       "alpha": 0.0001234433488463974,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.31835880244478537
+     },
+     {
+      "params": {
+       "gamma": 0.035275847073597696,
+       "n_componentes": 200,
+       "alpha": 0.0008391805606402925,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.332521447069399
+     },
+     {
+      "params": {
+       "gamma": 0.14418624773349467,
+       "n_componentes": 400,
+       "alpha": 1.9113354590616596e-05,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.30823140939411153
+     },
+     {
+      "params": {
+       "gamma": 0.006552398593438742,
+       "n_componentes": 200,
+       "alpha": 2.343357305284069e-06,
+       "balanceado": true
+      },
+      "f1_submuestra": 0.3249098984261968
+     }
+    ],
+    "elegido": {
+     "gamma": 0.0055085993197504625,
+     "n_componentes": 200,
+     "alpha": 6.751194683017586e-06,
+     "balanceado": true
+    },
+    "cv_completo": [
+     0.4110418469784618,
+     0.10728491380924275,
+     0.40443415201611893,
+     0.43931194141949964,
+     0.2495194276585644
+    ],
+    "segundos": 198.74365282058716
+   }
+  },
+  "ic": {
+   "XGBoost": {
+    "valor en test": {
+     "accuracy": 0.477933082029556,
+     "f1_macro": 0.3039981151462504,
+     "MAE_ordinal": 0.6562531273976715,
+     "kappa_cuadrático": 0.6583516677532388
+    },
+    "IC95_inf": {
+     "accuracy": 0.24073147326197125,
+     "f1_macro": 0.1239039290031434,
+     "MAE_ordinal": 0.2746032947130267,
+     "kappa_cuadrático": -0.08985318497391645
+    },
+    "IC95_sup": {
+     "accuracy": 0.7590383808172336,
+     "f1_macro": 0.34118921145083186,
+     "MAE_ordinal": 0.9782821106846743,
+     "kappa_cuadrático": 0.8139919114826573
+    },
+    "desv_boot": {
+     "accuracy": 0.1433438941476862,
+     "f1_macro": 0.0710658154992571,
+     "MAE_ordinal": 0.19497254805493996,
+     "kappa_cuadrático": 0.2583406128140031
+    }
+   },
+   "XGBoost geográfico": {
+    "valor en test": {
+     "accuracy": 0.4831537512092604,
+     "f1_macro": 0.3067953841199324,
+     "MAE_ordinal": 0.6503986389565334,
+     "kappa_cuadrático": 0.6611140059230152
+    },
+    "IC95_inf": {
+     "accuracy": 0.24534595329121223,
+     "f1_macro": 0.12627425575105536,
+     "MAE_ordinal": 0.26920757447835003,
+     "kappa_cuadrático": -0.08633864835861033
+    },
+    "IC95_sup": {
+     "accuracy": 0.7610913730304368,
+     "f1_macro": 0.34507643414479633,
+     "MAE_ordinal": 0.9742768368648668,
+     "kappa_cuadrático": 0.8164621223751864
+    },
+    "desv_boot": {
+     "accuracy": 0.14252526093166873,
+     "f1_macro": 0.07133361127209807,
+     "MAE_ordinal": 0.19411402427336755,
+     "kappa_cuadrático": 0.2578582484404084
+    }
+   },
+   "Rotation Forest": {
+    "valor en test": {
+     "accuracy": 0.5513727190846316,
+     "f1_macro": 0.4077032486849921,
+     "MAE_ordinal": 0.5083564065783768,
+     "kappa_cuadrático": 0.8168107788492397
+    },
+    "IC95_inf": {
+     "accuracy": 0.2986194023576101,
+     "f1_macro": 0.11681232761896461,
+     "MAE_ordinal": 0.22211175126288588,
+     "kappa_cuadrático": 0.0539041326515645
+    },
+    "IC95_sup": {
+     "accuracy": 0.79607202399768,
+     "f1_macro": 0.45271970978846704,
+     "MAE_ordinal": 0.8121727597240161,
+     "kappa_cuadrático": 0.9142063682109919
+    },
+    "desv_boot": {
+     "accuracy": 0.13356908525116845,
+     "f1_macro": 0.08964754179732681,
+     "MAE_ordinal": 0.15791040410649737,
+     "kappa_cuadrático": 0.22097721522682806
+    }
+   },
+   "SVM RBF (Nyström) + TPE": {
+    "valor en test": {
+     "accuracy": 0.5408479834539814,
+     "f1_macro": 0.4279464247697789,
+     "MAE_ordinal": 0.5400974080128098,
+     "kappa_cuadrático": 0.7983306679418373
+    },
+    "IC95_inf": {
+     "accuracy": 0.3112708160333314,
+     "f1_macro": 0.1437157348126653,
+     "MAE_ordinal": 0.3171326953005091,
+     "kappa_cuadrático": 0.13247132747035573
+    },
+    "IC95_sup": {
+     "accuracy": 0.7494123480742791,
+     "f1_macro": 0.45059832976774955,
+     "MAE_ordinal": 0.7964791216694994,
+     "kappa_cuadrático": 0.8904067781795352
+    },
+    "desv_boot": {
+     "accuracy": 0.11383778270583748,
+     "f1_macro": 0.08923679413295353,
+     "MAE_ordinal": 0.12242228666060999,
+     "kappa_cuadrático": 0.19946736463403103
+    }
+   }
+  },
+  "comparaciones_f1": {
+   "XGBoost − Logística B": {
+    "diferencia": -0.14604671216592607,
+    "IC95_inf": -0.16027719164564172,
+    "IC95_sup": 0.005811783227311318,
+    "p_bootstrap": 0.06
+   },
+   "XGBoost geográfico − Logística B": {
+    "diferencia": -0.14324944319224409,
+    "IC95_inf": -0.1574336228908732,
+    "IC95_sup": 0.008074168477551933,
+    "p_bootstrap": 0.084
+   },
+   "Rotation Forest − Logística B": {
+    "diferencia": -0.042341578627184406,
+    "IC95_inf": -0.05787982923765588,
+    "IC95_sup": -0.0019990505974671496,
+    "p_bootstrap": 0.032
+   },
+   "SVM RBF (Nyström) + TPE − Logística B": {
+    "diferencia": -0.02209840254239759,
+    "IC95_inf": -0.03320267576880753,
+    "IC95_sup": 0.0025384020739391954,
+    "p_bootstrap": 0.1
+   },
+   "XGBoost geográfico − XGBoost": {
+    "diferencia": 0.002797268973681988,
+    "IC95_inf": 0.0005256047744397434,
+    "IC95_sup": 0.006016754049111659,
+    "p_bootstrap": 0.028
+   }
+  },
+  "comparaciones_mae": {
+   "XGBoost − Logística B": {
+    "diferencia": 0.19254761984187874,
+    "IC95_inf": 0.035392430821982415,
+    "IC95_sup": 0.3816969862792716,
+    "p_bootstrap": 0.002
+   },
+   "XGBoost geográfico − Logística B": {
+    "diferencia": 0.18669313140074062,
+    "IC95_inf": 0.03366764656222524,
+    "IC95_sup": 0.36510287335991465,
+    "p_bootstrap": 0.002
+   },
+   "Rotation Forest − Logística B": {
+    "diferencia": 0.04465089902258401,
+    "IC95_inf": -0.005983846016067132,
+    "IC95_sup": 0.10044398124467227,
+    "p_bootstrap": 0.112
+   },
+   "SVM RBF (Nyström) + TPE − Logística B": {
+    "diferencia": 0.07639190045701705,
+    "IC95_inf": 0.020834458204392416,
+    "IC95_sup": 0.12066113193801509,
+    "p_bootstrap": 0.008
+   },
+   "XGBoost geográfico − XGBoost": {
+    "diferencia": -0.005854488441138117,
+    "IC95_inf": -0.01312245234216627,
+    "IC95_sup": -0.0013892981019889758,
+    "p_bootstrap": 0.028
+   }
+  },
+  "cobertura_test": 0.5638823097708243,
+  "anclas_final": 25,
+  "importancia_xgb": {
+   "num_log__area_construida": 0.021064961329102516,
+   "num_log__area_catastral_terreno": 0.015400316566228867,
+   "num_log__total_habitaciones": 0.006347536575049162,
+   "num_log__total_banios": 0.03245566785335541,
+   "num_log__total_plantas": 0.00504169799387455,
+   "num_log__antiguedad": 0.01312638632953167,
+   "num_log__planta_ubicacion": 0.013743631541728973,
+   "num_log__missingindicator_total_habitaciones": 0.0051191626116633415,
+   "num_log__missingindicator_total_banios": 0.0,
+   "num_log__missingindicator_total_plantas": 0.0,
+   "num_log__missingindicator_antiguedad": 0.0,
+   "num_log__missingindicator_planta_ubicacion": 0.08216346055269241,
+   "num_lin__altura": 0.0,
+   "num_lin__x_km": 0.05281107500195503,
+   "num_lin__y_km": 0.09083332866430283,
+   "num_lin__dist_centro_km": 0.04539996013045311,
+   "cat__tipo_vivienda_tv_1": 0.08564987033605576,
+   "cat__tipo_vivienda_tv_2": 0.009230054914951324,
+   "cat__tipo_vivienda_tv_3": 0.011000348255038261,
+   "cat__tipo_vivienda_tv_4": 0.006660776678472757,
+   "cat__uso_Residencial_Apartamentos_4_y_mas_pisos_en_PH": 0.12174182385206223,
+   "cat__uso_Residencial_Vivienda_Hasta_3_Pisos": 0.11764215677976608,
+   "cat__uso_Residencial_Vivienda_Hasta_3_Pisos_En_PH": 0.012237625196576118,
+   "cat__uso_infrequent_sklearn": 0.0013417541049420834,
+   "cat__condicion_predio_Informal": 0.07286281138658524,
+   "cat__condicion_predio_NPH": 0.029973817989230156,
+   "cat__condicion_predio_PH_Unidad_Predial": 0.08105653524398804,
+   "cat__condicion_predio_infrequent_sklearn": 0.06709524989128113
+  },
+  "cv_pareado": {
+   "XGBoost": {
+    "diferencias_por_fold": [
+     -0.13827261518849454,
+     -0.02832066731891572,
+     -0.06340229895163307,
+     0.14340608865551888,
+     0.07271723686102627
+    ],
+    "media": -0.002774451188499638,
+    "se": 0.04987777196507315,
+    "reemplaza_a_la_logistica": false
+   },
+   "XGBoost geográfico": {
+    "diferencias_por_fold": [
+     -0.124969281833326,
+     -0.03719824102633201,
+     -0.04896072489613301,
+     0.162445109562975,
+     -0.015030974054082297
+    ],
+    "media": -0.012742822449379665,
+    "se": 0.0475397882314407,
+    "reemplaza_a_la_logistica": false
+   },
+   "Rotation Forest": {
+    "diferencias_por_fold": [
+     -0.22943946732852555,
+     0.012441057184191057,
+     -0.05468884346017744,
+     0.19119770694395208,
+     -0.07267591468652121
+    ],
+    "media": -0.03063309226941622,
+    "se": 0.06816690497487937,
+    "reemplaza_a_la_logistica": false
+   },
+   "SVM RBF (Nyström) + TPE": {
+    "diferencias_por_fold": [
+     -0.009358769836201819,
+     -0.09019190525029643,
+     0.02563837211477582,
+     0.19847694551380193,
+     -0.007020600992663689
+    ],
+    "media": 0.023508808309883163,
+    "se": 0.04772764338842527,
+    "reemplaza_a_la_logistica": false
+   }
+  },
+  "logistica_cv_por_fold": [
+   0.4204006168146636,
+   0.19747681905953918,
+   0.3787957799013431,
+   0.2408349959056977,
+   0.2565400286512281
+  ],
+  "k_usado_final": 20735
+ },
+ "modelos_avanzados": [
+  "XGBoost",
+  "XGBoost geográfico",
+  "Rotation Forest",
+  "SVM RBF (Nyström) + TPE"
+ ]
+}

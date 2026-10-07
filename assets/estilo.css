@@ -1,0 +1,29 @@
+/* Estilo del dashboard — letra grande para facilitar la lectura */
+html, body { font-size: 17px; background: #f7f7f5; color: #0b0b0b; }
+body { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+.cabecera { background: #0d366b; color: #fff; padding: 22px 0 18px; }
+.cabecera .titulo { font-size: 1.9rem; font-weight: 700; margin: 0; }
+.cabecera .subtitulo { font-size: 1.05rem; opacity: .92; margin-top: 4px; }
+.cabecera .autores { font-size: .98rem; opacity: .85; margin-top: 6px; }
+.nav-tabs .nav-link { font-size: 1.08rem; font-weight: 600; color: #256abf; }
+.nav-tabs .nav-link.active { color: #0d366b; }
+.tab-content { background: #fff; border: 1px solid #dee2e6; border-top: 0; padding: 4px 8px 20px; }
+h3 { font-size: 1.45rem; font-weight: 700; color: #0d366b; }
+p, li { line-height: 1.55; }
+.interpretacion { border-left: 5px solid #2a78d6; background: #f4f8fd; font-size: 1rem; }
+.interpretacion h6 { color: #0d366b; font-size: 1.02rem; }
+.kpi { border: 0; border-top: 4px solid #2a78d6; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.kpi-valor { font-size: 2.1rem; font-weight: 700; color: #0d366b; line-height: 1.1; }
+.kpi-etiqueta { font-size: 1rem; color: #52514e; }
+.kpi-nota { font-size: .88rem; color: #7a7974; margin-top: 2px; }
+.flujo { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
+.paso { flex: 1 1 130px; background: #f4f8fd; border: 1px solid #cde2fb; border-radius: 8px; padding: 10px 12px; position: relative; }
+.paso-num { width: 26px; height: 26px; border-radius: 50%; background: #2a78d6; color: #fff; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; font-size: .9rem; margin-bottom: 6px; }
+.paso-titulo { font-weight: 700; color: #0d366b; }
+.paso-desc { font-size: .9rem; color: #52514e; }
+.filtros { font-size: 1rem; }
+.tabla { font-size: .92rem; }
+.tabla-scroll { overflow-x: auto; }
+.pie { padding: 18px 0 28px; color: #52514e; }
+@media (max-width: 768px) { .cabecera .titulo { font-size: 1.4rem; } .kpi-valor { font-size: 1.6rem; } }

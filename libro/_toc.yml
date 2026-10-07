@@ -1,0 +1,14 @@
+format: jb-book
+root: intro
+parts:
+  - caption: Informe del dashboard
+    chapters:
+      - file: notebooks/01_contexto
+      - file: notebooks/02_eda
+      - file: notebooks/03_modelos
+      - file: notebooks/04_modelos_avanzados
+      - file: notebooks/05_conclusiones
+  - caption: Apéndices
+    chapters:
+      - file: notebooks/A_dashboard_y_despliegue
+      - file: notebooks/B_referencias
