@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -220,7 +220,8 @@
 <li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -400,13 +401,13 @@
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preparación: el módulo figuras.py (en la carpeta del dashboard) genera las mismas</span>
-<span class="c1"># figuras que se ven en la app. El renderizador &quot;notebook&quot; incrusta plotly.js en la</span>
+<span class="c1"># figuras que se ven en la app. El renderizador "notebook" incrusta plotly.js en la</span>
 <span class="c1"># página, así las figuras funcionan sin conexión.</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">&quot;figuras.py&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">"figuras.py"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">RAIZ</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RAIZ</span><span class="p">))</span>
 
@@ -415,8 +416,8 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">figuras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;notebook&quot;</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">"notebook"</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.precision"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">K</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">kpis</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -467,13 +468,13 @@ prioridad de la revisión, son:</p>
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">candidatos</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
-    <span class="p">[</span><span class="s2">&quot;Geographical XGBoost (G-XGBoost)&quot;</span><span class="p">,</span> <span class="s2">&quot;Pesos espaciales locales sobre XGBoost; mejora R² y MAE ≈ 17 </span><span class="si">% f</span><span class="s2">rente a XGBoost, GWR y RF geográfico&quot;</span><span class="p">,</span> <span class="s2">&quot;El estrato cambia de forma local por barrios (residuos con Moran 0.70)&quot;</span><span class="p">,</span> <span class="s2">&quot;grekousis2025&quot;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;GWO-XGBoost / TPE-SVM&quot;</span><span class="p">,</span> <span class="s2">&quot;Optimización metaheurística o bayesiana de hiperparámetros&quot;</span><span class="p">,</span> <span class="s2">&quot;Espacio de hiperparámetros amplio en XGBoost y SVM&quot;</span><span class="p">,</span> <span class="s2">&quot;ojekemi2026,rizkallah2025&quot;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;Ensemble RF + SVM&quot;</span><span class="p">,</span> <span class="s2">&quot;RF selecciona variables y SVM clasifica&quot;</span><span class="p">,</span> <span class="s2">&quot;Variables catastrales correlacionadas (área, baños, habitaciones)&quot;</span><span class="p">,</span> <span class="s2">&quot;zhai2026&quot;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;Bagged TAO Trees&quot;</span><span class="p">,</span> <span class="s2">&quot;Árboles oblicuos optimizados; superan a RF, AdaBoost y GB&quot;</span><span class="p">,</span> <span class="s2">&quot;Datos tabulares heterogéneos&quot;</span><span class="p">,</span> <span class="s2">&quot;carreira2020&quot;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;Rotation Forest&quot;</span><span class="p">,</span> <span class="s2">&quot;Rotación PCA antes de cada árbol&quot;</span><span class="p">,</span> <span class="s2">&quot;Colinealidad entre variables de tamaño&quot;</span><span class="p">,</span> <span class="s2">&quot;sartono2018&quot;</span><span class="p">],</span>
-<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Modelo&quot;</span><span class="p">,</span> <span class="s2">&quot;Idea&quot;</span><span class="p">,</span> <span class="s2">&quot;Por qué encaja con este problema&quot;</span><span class="p">,</span> <span class="s2">&quot;Ref.&quot;</span><span class="p">])</span>
-<span class="n">candidatos</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;Ref.&quot;</span><span class="p">)</span>
+    <span class="p">[</span><span class="s2">"Geographical XGBoost (G-XGBoost)"</span><span class="p">,</span> <span class="s2">"Pesos espaciales locales sobre XGBoost; mejora R² y MAE ≈ 17 </span><span class="si">% f</span><span class="s2">rente a XGBoost, GWR y RF geográfico"</span><span class="p">,</span> <span class="s2">"El estrato cambia de forma local por barrios (residuos con Moran 0.70)"</span><span class="p">,</span> <span class="s2">"grekousis2025"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"GWO-XGBoost / TPE-SVM"</span><span class="p">,</span> <span class="s2">"Optimización metaheurística o bayesiana de hiperparámetros"</span><span class="p">,</span> <span class="s2">"Espacio de hiperparámetros amplio en XGBoost y SVM"</span><span class="p">,</span> <span class="s2">"ojekemi2026,rizkallah2025"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Ensemble RF + SVM"</span><span class="p">,</span> <span class="s2">"RF selecciona variables y SVM clasifica"</span><span class="p">,</span> <span class="s2">"Variables catastrales correlacionadas (área, baños, habitaciones)"</span><span class="p">,</span> <span class="s2">"zhai2026"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Bagged TAO Trees"</span><span class="p">,</span> <span class="s2">"Árboles oblicuos optimizados; superan a RF, AdaBoost y GB"</span><span class="p">,</span> <span class="s2">"Datos tabulares heterogéneos"</span><span class="p">,</span> <span class="s2">"carreira2020"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Rotation Forest"</span><span class="p">,</span> <span class="s2">"Rotación PCA antes de cada árbol"</span><span class="p">,</span> <span class="s2">"Colinealidad entre variables de tamaño"</span><span class="p">,</span> <span class="s2">"sartono2018"</span><span class="p">],</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Modelo"</span><span class="p">,</span> <span class="s2">"Idea"</span><span class="p">,</span> <span class="s2">"Por qué encaja con este problema"</span><span class="p">,</span> <span class="s2">"Ref."</span><span class="p">])</span>
+<span class="n">candidatos</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"Ref."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4265,7 +4266,7 @@ faltantes, con una bandera, sin eliminar la fila. El resultado son <strong>332 7
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_distribucion_estrato</span><span class="p">(</span><span class="s2">&quot;todas&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_distribucion_estrato</span><span class="p">(</span><span class="s2">"todas"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4315,10 +4316,10 @@ el <strong>F1 macro</strong>, que promedia el F1 de las seis clases con el mismo
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s2">&quot;Indicador&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Viviendas analizadas&quot;</span><span class="p">,</span> <span class="s2">&quot;Edificios distintos&quot;</span><span class="p">,</span> <span class="s2">&quot;Viviendas sin coordenadas&quot;</span><span class="p">,</span> <span class="s2">&quot;I de Moran del estrato&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;F1 macro del modelo principal en test&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;Valor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">&#39;viviendas&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">&#39;edificios&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span>
-              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">&#39;sin_coord&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">&#39;moran&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">&#39;f1_test&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+    <span class="s2">"Indicador"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Viviendas analizadas"</span><span class="p">,</span> <span class="s2">"Edificios distintos"</span><span class="p">,</span> <span class="s2">"Viviendas sin coordenadas"</span><span class="p">,</span> <span class="s2">"I de Moran del estrato"</span><span class="p">,</span>
+                  <span class="s2">"F1 macro del modelo principal en test"</span><span class="p">],</span>
+    <span class="s2">"Valor"</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">'viviendas'</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">'edificios'</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">),</span>
+              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">'sin_coord'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">'moran'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="s1">'f1_test'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span>
 <span class="p">})</span>
 </pre></div>
 </div>

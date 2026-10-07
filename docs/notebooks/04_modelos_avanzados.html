@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
-    <link rel="next" title="5. Conclusiones y próximos pasos" href="05_conclusiones.html" />
+    <link rel="next" title="5. Variables de vecindad física y los dos escenarios de predicción" href="05_vecindad.html" />
     <link rel="prev" title="3. Modelos base" href="03_modelos.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
@@ -222,7 +222,8 @@
 <li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -409,7 +410,7 @@ modelos base; este capítulo va un paso más allá y pone a prueba los candidato
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">&quot;figuras.py&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">"figuras.py"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">RAIZ</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RAIZ</span><span class="p">))</span>
 
@@ -419,11 +420,11 @@ modelos base; este capítulo va un paso más allá y pone a prueba los candidato
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">figuras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;notebook&quot;</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">"notebook"</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.precision"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">R</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">resultados</span><span class="p">(),</span> <span class="n">F</span><span class="o">.</span><span class="n">diagnosticos</span><span class="p">()</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="s2">&quot;avanzados&quot;</span><span class="p">]</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="s2">&quot;busqueda&quot;</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="s2">"avanzados"</span><span class="p">]</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="s2">"busqueda"</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -4162,10 +4163,10 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cob</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;ventana </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;cobertura_validacion&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="s2">&quot;geoxgb&quot;</span><span class="p">][</span><span class="s2">&quot;info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;fold </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
-<span class="n">cob</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;media&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cob</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fracción de viviendas de validación cubiertas por al menos un modelo local:&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cob</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="sa">f</span><span class="s2">"ventana </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">"cobertura_validacion"</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="s2">"geoxgb"</span><span class="p">][</span><span class="s2">"info"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"fold </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">cob</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"media"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cob</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Fracción de viviendas de validación cubiertas por al menos un modelo local:"</span><span class="p">)</span>
 <span class="n">cob</span>
 </pre></div>
 </div>
@@ -4276,10 +4277,10 @@ calibración).</p>
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">clave</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;XGBoost&quot;</span><span class="p">,</span> <span class="s2">&quot;xgb&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Rotation Forest&quot;</span><span class="p">,</span> <span class="s2">&quot;rotf&quot;</span><span class="p">)]:</span>
-    <span class="k">for</span> <span class="n">comb</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="n">clave</span><span class="p">][</span><span class="s2">&quot;grilla&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;Modelo&quot;</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">&quot;Combinación&quot;</span><span class="p">:</span> <span class="n">comb</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">),</span> <span class="s2">&quot;F1 CV&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-                      <span class="s2">&quot;Desv.&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="s2">&quot;Elegido&quot;</span><span class="p">:</span> <span class="s2">&quot;✓&quot;</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">==</span> <span class="n">B</span><span class="p">[</span><span class="n">clave</span><span class="p">][</span><span class="s2">&quot;elegido&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">clave</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"XGBoost"</span><span class="p">,</span> <span class="s2">"xgb"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Rotation Forest"</span><span class="p">,</span> <span class="s2">"rotf"</span><span class="p">)]:</span>
+    <span class="k">for</span> <span class="n">comb</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="n">clave</span><span class="p">][</span><span class="s2">"grilla"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"Modelo"</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">"Combinación"</span><span class="p">:</span> <span class="n">comb</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"|"</span><span class="p">,</span> <span class="s2">", "</span><span class="p">),</span> <span class="s2">"F1 CV"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+                      <span class="s2">"Desv."</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="s2">"Elegido"</span><span class="p">:</span> <span class="s2">"✓"</span> <span class="k">if</span> <span class="n">comb</span> <span class="o">==</span> <span class="n">B</span><span class="p">[</span><span class="n">clave</span><span class="p">][</span><span class="s2">"elegido"</span><span class="p">]</span> <span class="k">else</span> <span class="s2">""</span><span class="p">})</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -4403,8 +4404,8 @@ calibración).</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ens</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="o">**</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">],</span> <span class="s2">&quot;F1 CV (submuestra)&quot;</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;f1_submuestra&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="s2">&quot;svm&quot;</span><span class="p">][</span><span class="s2">&quot;ensayos&quot;</span><span class="p">]])</span>
-<span class="n">ens</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;F1 CV (submuestra)&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ens</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="o">**</span><span class="n">e</span><span class="p">[</span><span class="s2">"params"</span><span class="p">],</span> <span class="s2">"F1 CV (submuestra)"</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s2">"f1_submuestra"</span><span class="p">]}</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">B</span><span class="p">[</span><span class="s2">"svm"</span><span class="p">][</span><span class="s2">"ensayos"</span><span class="p">]])</span>
+<span class="n">ens</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"F1 CV (submuestra)"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4500,7 +4501,7 @@ kernel suave. Con el entrenamiento completo de cada fold, la SVM elegida obtuvo 
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_comparacion_avanzados</span><span class="p">(</span><span class="s2">&quot;f1_macro&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_comparacion_avanzados</span><span class="p">(</span><span class="s2">"f1_macro"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4665,9 +4666,9 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cvp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="s2">&quot;cv_pareado&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">&quot;media&quot;</span><span class="p">,</span> <span class="s2">&quot;se&quot;</span><span class="p">,</span> <span class="s2">&quot;reemplaza_a_la_logistica&quot;</span><span class="p">]]</span>
-<span class="n">cvp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Diferencia media de F1 en CV (vs logística B)&quot;</span><span class="p">,</span> <span class="s2">&quot;Error estándar pareado&quot;</span><span class="p">,</span> <span class="s2">&quot;¿Reemplaza a la logística?&quot;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Criterio de selección (solo validación cruzada):&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cvp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="s2">"cv_pareado"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">"media"</span><span class="p">,</span> <span class="s2">"se"</span><span class="p">,</span> <span class="s2">"reemplaza_a_la_logistica"</span><span class="p">]]</span>
+<span class="n">cvp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Diferencia media de F1 en CV (vs logística B)"</span><span class="p">,</span> <span class="s2">"Error estándar pareado"</span><span class="p">,</span> <span class="s2">"¿Reemplaza a la logística?"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Criterio de selección (solo validación cruzada):"</span><span class="p">)</span>
 <span class="n">cvp</span>
 </pre></div>
 </div>
@@ -4779,15 +4780,15 @@ if (outputEl) {{
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tabla_comp</span><span class="p">(</span><span class="n">clave</span><span class="p">):</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">clave</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">&quot;diferencia&quot;</span><span class="p">,</span> <span class="s2">&quot;IC95_inf&quot;</span><span class="p">,</span> <span class="s2">&quot;IC95_sup&quot;</span><span class="p">,</span> <span class="s2">&quot;p_bootstrap&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Diferencia&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% i</span><span class="s2">nf.&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% s</span><span class="s2">up.&quot;</span><span class="p">,</span> <span class="s2">&quot;p (bootstrap)&quot;</span><span class="p">]</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">clave</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">"diferencia"</span><span class="p">,</span> <span class="s2">"IC95_inf"</span><span class="p">,</span> <span class="s2">"IC95_sup"</span><span class="p">,</span> <span class="s2">"p_bootstrap"</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Diferencia"</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% i</span><span class="s2">nf."</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% s</span><span class="s2">up."</span><span class="p">,</span> <span class="s2">"p (bootstrap)"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">t</span>
 
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diferencia de F1 macro (positivo = mejor que la referencia):&quot;</span><span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">tabla_comp</span><span class="p">(</span><span class="s2">&quot;comparaciones_f1&quot;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diferencia de MAE ordinal (negativo = mejor que la referencia):&quot;</span><span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">tabla_comp</span><span class="p">(</span><span class="s2">&quot;comparaciones_mae&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Diferencia de F1 macro (positivo = mejor que la referencia):"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">tabla_comp</span><span class="p">(</span><span class="s2">"comparaciones_f1"</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Diferencia de MAE ordinal (negativo = mejor que la referencia):"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">tabla_comp</span><span class="p">(</span><span class="s2">"comparaciones_mae"</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -4946,7 +4947,7 @@ por debajo en F1 (−0.042, IC [−0.058, −0.002]).</p></li>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">&quot;XGBoost&quot;</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">"XGBoost"</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5038,7 +5039,7 @@ coherente con el EDA, donde el eje de tipología del PCA era el más asociado al
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">&quot;SVM RBF (Nyström) + TPE&quot;</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">"SVM RBF (Nyström) + TPE"</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5085,9 +5086,9 @@ estratos 4 a 6. El estrato 2 parece requerir otra cosa: un modelo ordinal o un a
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">&quot;moran_residuos&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;residuo_medio&quot;</span><span class="p">]]</span>
-<span class="n">mr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;A_fisicas&quot;</span><span class="p">:</span> <span class="s2">&quot;Logística A&quot;</span><span class="p">,</span> <span class="s2">&quot;B_fisicas+ubicacion&quot;</span><span class="p">:</span> <span class="s2">&quot;Logística B&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mr</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
-<span class="n">mr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;I de Moran de los residuos&quot;</span><span class="p">,</span> <span class="s2">&quot;Residuo medio&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">"moran_residuos"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">[[</span><span class="s2">"I"</span><span class="p">,</span> <span class="s2">"residuo_medio"</span><span class="p">]]</span>
+<span class="n">mr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"A_fisicas"</span><span class="p">:</span> <span class="s2">"Logística A"</span><span class="p">,</span> <span class="s2">"B_fisicas+ubicacion"</span><span class="p">:</span> <span class="s2">"Logística B"</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mr</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+<span class="n">mr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"I de Moran de los residuos"</span><span class="p">,</span> <span class="s2">"Residuo medio"</span><span class="p">]</span>
 <span class="n">mr</span>
 </pre></div>
 </div>
@@ -5158,7 +5159,7 @@ estratos 4 a 6. El estrato 2 parece requerir otra cosa: un modelo ordinal o un a
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_mapa_residuos_modelo</span><span class="p">(</span><span class="s2">&quot;XGBoost geográfico&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_mapa_residuos_modelo</span><span class="p">(</span><span class="s2">"XGBoost geográfico"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5257,11 +5258,11 @@ modelos con más búsqueda (en especial la SVM).</p>
       </div>
     </a>
     <a class="right-next"
-       href="05_conclusiones.html"
+       href="05_vecindad.html"
        title="siguiente página">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">siguiente</p>
-        <p class="prev-next-title">5. Conclusiones y próximos pasos</p>
+        <p class="prev-next-title">5. Variables de vecindad física y los dos escenarios de predicción</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

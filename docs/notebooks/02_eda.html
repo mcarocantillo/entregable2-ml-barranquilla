@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -222,7 +222,8 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Análisis exploratorio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -408,7 +409,7 @@ cosa.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">&quot;figuras.py&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">"figuras.py"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">RAIZ</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RAIZ</span><span class="p">))</span>
 
@@ -418,10 +419,10 @@ cosa.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">figuras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;notebook&quot;</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">base_eda</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Viviendas de entrenamiento: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">"notebook"</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.precision"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">base_eda</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Viviendas de entrenamiento: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -441,7 +442,7 @@ cosa.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_distribucion_estrato</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_distribucion_estrato</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4109,7 +4110,7 @@ como hiperparámetro.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_gradiente_norte_sur</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_gradiente_norte_sur</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4163,7 +4164,7 @@ estrato, con el tamaño del efecto de Kruskal-Wallis. Aquí se resumen todas las
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">tabla_resumen_numericas</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">tabla_resumen_numericas</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4328,10 +4329,10 @@ estratos se hacen con pruebas no paramétricas.</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">NUMERICAS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">ef</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">efecto_numerica</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">)</span>
-    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;Variable&quot;</span><span class="p">:</span> <span class="n">et</span><span class="p">,</span> <span class="s2">&quot;H de Kruskal-Wallis&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">ef</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">]),</span> <span class="s2">&quot;η² (rangos)&quot;</span><span class="p">:</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;eta2_H&quot;</span><span class="p">],</span>
-                  <span class="s2">&quot;Fuerza&quot;</span><span class="p">:</span> <span class="s2">&quot;fuerte&quot;</span> <span class="k">if</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;eta2_H&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.14</span> <span class="k">else</span> <span class="s2">&quot;moderada&quot;</span> <span class="k">if</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;eta2_H&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.06</span> <span class="k">else</span> <span class="s2">&quot;débil&quot;</span><span class="p">})</span>
-<span class="n">tabla_eta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;η² (rangos)&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ef</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">efecto_numerica</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">"train"</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"Variable"</span><span class="p">:</span> <span class="n">et</span><span class="p">,</span> <span class="s2">"H de Kruskal-Wallis"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">ef</span><span class="p">[</span><span class="s2">"H"</span><span class="p">]),</span> <span class="s2">"η² (rangos)"</span><span class="p">:</span> <span class="n">ef</span><span class="p">[</span><span class="s2">"eta2_H"</span><span class="p">],</span>
+                  <span class="s2">"Fuerza"</span><span class="p">:</span> <span class="s2">"fuerte"</span> <span class="k">if</span> <span class="n">ef</span><span class="p">[</span><span class="s2">"eta2_H"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.14</span> <span class="k">else</span> <span class="s2">"moderada"</span> <span class="k">if</span> <span class="n">ef</span><span class="p">[</span><span class="s2">"eta2_H"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.06</span> <span class="k">else</span> <span class="s2">"débil"</span><span class="p">})</span>
+<span class="n">tabla_eta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"η² (rangos)"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">tabla_eta</span>
 </pre></div>
 </div>
@@ -4443,7 +4444,7 @@ estratos medios y altos) y el <strong>área construida</strong>. Antigüedad, pi
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_numerica</span><span class="p">(</span><span class="s2">&quot;total_banios&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_numerica</span><span class="p">(</span><span class="s2">"total_banios"</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4485,7 +4486,7 @@ basado en estas variables tendrá más dificultades.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_numerica</span><span class="p">(</span><span class="s2">&quot;area_construida&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_numerica</span><span class="p">(</span><span class="s2">"area_construida"</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4534,8 +4535,8 @@ transformación adecuada. El área crece con el estrato, pero la relación no es
 <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">CATEGORICAS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> <span class="n">train</span><span class="o">.</span><span class="n">estrato_num</span><span class="p">)</span>
     <span class="n">V</span><span class="p">,</span> <span class="n">chi2</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cramer_v</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;Variable&quot;</span><span class="p">:</span> <span class="n">et</span><span class="p">,</span> <span class="s2">&quot;Categorías&quot;</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;χ²&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">chi2</span><span class="p">),</span> <span class="s2">&quot;V de Cramér&quot;</span><span class="p">:</span> <span class="n">V</span><span class="p">})</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;V de Cramér&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"Variable"</span><span class="p">:</span> <span class="n">et</span><span class="p">,</span> <span class="s2">"Categorías"</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"χ²"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">chi2</span><span class="p">),</span> <span class="s2">"V de Cramér"</span><span class="p">:</span> <span class="n">V</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"V de Cramér"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4598,7 +4599,7 @@ transformación adecuada. El área crece con el estrato, pero la relación no es
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_categorica</span><span class="p">(</span><span class="s2">&quot;condicion_predio&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_categorica</span><span class="p">(</span><span class="s2">"condicion_predio"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4640,7 +4641,7 @@ predios no sometidos a propiedad horizontal (NPH, casas) se concentran en los es
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_categorica</span><span class="p">(</span><span class="s2">&quot;uso&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_categorica</span><span class="p">(</span><span class="s2">"uso"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4690,7 +4691,7 @@ social se concentra en los estratos 3 a 6.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_correlacion</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_correlacion</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4741,7 +4742,7 @@ norte, relativamente cerca del centro histórico, y la periferia sur es de estra
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_faltantes</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_faltantes</span><span class="p">(</span><span class="s2">"train"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4792,7 +4793,7 @@ con entrenamiento.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_mapa</span><span class="p">(</span><span class="s2">&quot;estrato_num&quot;</span><span class="p">,</span> <span class="s2">&quot;todas&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_mapa</span><span class="p">(</span><span class="s2">"estrato_num"</span><span class="p">,</span> <span class="s2">"todas"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4944,14 +4945,14 @@ concentran más de una cuarta parte de las viviendas. Hay torres de hasta 3 045 
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">viviendas</span><span class="p">()</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;edificio_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"edificio_id"</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
 <span class="n">m_tilde</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">m</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">m</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 <span class="n">icc</span> <span class="o">=</span> <span class="mf">0.991</span>  <span class="c1"># ICC(1) calculado en el capítulo 1 del Entregable 1 (ANOVA de una vía por edificio)</span>
 <span class="n">deff</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">m_tilde</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">icc</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Viviendas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">   Edificios: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">   Mediana de unidades por edificio: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">median</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tamaño medio visto desde una vivienda (m~): </span><span class="si">{</span><span class="n">m_tilde</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Efecto de diseño ≈ 1 + (</span><span class="si">{</span><span class="n">m_tilde</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> − 1) × </span><span class="si">{</span><span class="n">icc</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">deff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tamaño efectivo ≈ </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> ÷ </span><span class="si">{</span><span class="n">deff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ≈ </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">deff</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Viviendas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">   Edificios: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">   Mediana de unidades por edificio: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">median</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Tamaño medio visto desde una vivienda (m~): </span><span class="si">{</span><span class="n">m_tilde</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Efecto de diseño ≈ 1 + (</span><span class="si">{</span><span class="n">m_tilde</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> − 1) × </span><span class="si">{</span><span class="n">icc</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">deff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Tamaño efectivo ≈ </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> ÷ </span><span class="si">{</span><span class="n">deff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ≈ </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">deff</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>

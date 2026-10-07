@@ -14,7 +14,8 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 | `figuras.py` | Todas las figuras (las usan el dashboard y el libro) |
 | `preparar_datos.py` | Genera `datos/` a partir del Entregable 1 (ya está ejecutado) |
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos de la revisión bibliográfica (XGBoost geográfico adaptado a clasificación, XGBoost, Rotation Forest, SVM RBF + TPE); ya están ejecutados. Para volver a correrlos se necesita además `requirements-entrenamiento.txt` |
-| `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial) |
+| `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial); en `datos/vecindad/`, los resultados del capítulo 5 |
+| `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas (ver su `README.md`) |
 | `src/` | Módulos del Entregable 1 (necesarios para cargar el modelo) |
 | `assets/` | Estilos del dashboard |
 | `requirements.txt`, `render.yaml`, `.python-version` | Configuración para Render |
@@ -42,9 +43,9 @@ Luego abre http://localhost:8050 en el navegador.
 - Start Command: `gunicorn app:server --workers 1 --threads 2 --timeout 120`
 - Instance type: Free
 
-Pulsa **Create Web Service** y espera a que el registro diga "Your service is live". La dirección será `https://estrato-barranquilla.onrender.com`. Si Render te asigna otra, cámbiala en `libro/intro.md` y en `docs/intro.html`.
+Pulsa **Create Web Service** y espera a que el registro diga "Your service is live". La dirección será `https://entregable2-ml-barranquilla.onrender.com`. Si Render te asigna otra, cámbiala en `libro/intro.md` y en `docs/intro.html`.
 
-**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://<tu-usuario>.github.io/entregable2-estrato/`.
+**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/`.
 
 ## Reconstruir el libro (solo si cambias algo)
 

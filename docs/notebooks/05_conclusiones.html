@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>5. Conclusiones y próximos pasos &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+    <title>6. Conclusiones y próximos pasos &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
   
   
   
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -66,7 +66,7 @@
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
     <link rel="next" title="A. El dashboard y su despliegue" href="A_dashboard_y_despliegue.html" />
-    <link rel="prev" title="4. Más allá del modelo base: modelos de la revisión bibliográfica" href="04_modelos_avanzados.html" />
+    <link rel="prev" title="5. Variables de vecindad física y los dos escenarios de predicción" href="05_vecindad.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
   <meta name="docsearch:version" content="" />
@@ -220,7 +220,8 @@
 <li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -361,7 +362,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>5. Conclusiones y próximos pasos</h1>
+    <h1>6. Conclusiones y próximos pasos</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -371,9 +372,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">5.1 Qué se aprendió</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">5.2 Limitaciones</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">5.3 Próximos pasos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">6.1 Qué se aprendió</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">6.2 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">6.3 Próximos pasos</a></li>
 </ul>
             </nav>
         </div>
@@ -386,17 +387,24 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="conclusiones-y-proximos-pasos">
-<h1>5. Conclusiones y próximos pasos<a class="headerlink" href="#conclusiones-y-proximos-pasos" title="Link to this heading">#</a></h1>
+<h1>6. Conclusiones y próximos pasos<a class="headerlink" href="#conclusiones-y-proximos-pasos" title="Link to this heading">#</a></h1>
 <p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
 <section id="que-se-aprendio">
-<h2>5.1 Qué se aprendió<a class="headerlink" href="#que-se-aprendio" title="Link to this heading">#</a></h2>
+<h2>6.1 Qué se aprendió<a class="headerlink" href="#que-se-aprendio" title="Link to this heading">#</a></h2>
 <p><strong>El estrato se puede predecir con el catastro, pero solo en parte.</strong> Una regresión logística con las características físicas de la vivienda y su ubicación alcanza un F1 macro de 0.30 en validación cruzada espacial y de 0.45 en siete bloques de test, con errores casi siempre de un estrato (accuracy ±1 = 0.94; kappa cuadrático = 0.81). Supera con claridad a las líneas base Dummy y, en todas las métricas de test, a la regla geográfica «clase más frecuente en la zona», aunque esta última diferencia de F1 no es estadísticamente significativa.</p>
 <p><strong>La ubicación es la información dominante.</strong> La posición norte-sur es la variable más asociada al estrato y la de mayor peso en el modelo. Barranquilla está segregada: el estrato medio pasa de 1.5 en el sur a cerca de 5 en el norte, aunque la franja más al norte vuelve a mezclar estratos. Entre las variables físicas, el número de baños, el piso de ubicación y el área construida son las más informativas; el régimen de propiedad separa bien los predios informales.</p>
 <p><strong>La estructura de los datos manda sobre la cantidad de filas.</strong> El estrato casi no varía dentro de un edificio (ICC = 0.991) y tiene una autocorrelación espacial muy fuerte (Moran = 0.91). Las 332 718 viviendas equivalen, en precisión, a unas 1 870 observaciones independientes. Validar con filas mezcladas habría duplicado el F1 (0.60 frente a 0.30), así que el protocolo de bloques con buffer es lo que hace creíbles las cifras de este informe.</p>
 <p><strong>El modelo lineal llegó a su techo, pero los modelos más complejos no lo superan en zonas nuevas.</strong> La curva de aprendizaje es casi plana hasta 54 000 viviendas y los residuos siguen autocorrelacionados (Moran = 0.70): el modelo capta la tendencia de la ciudad, pero no los barrios. Sin embargo, al probar los candidatos de la revisión bibliográfica con el mismo protocolo (capítulo 4), ninguno mejoró a la logística. La SVM con kernel RBF queda cerca (F1 de test 0.43 frente a 0.45) y reconoce mejor los estratos altos; XGBoost y Rotation Forest quedan por debajo en test; y la adaptación del <strong>XGBoost geográfico a clasificación</strong>, la propuesta novedosa del proyecto, no aporta frente a su control porque los modelos locales no tienen datos en las zonas nuevas que evalúa la validación espacial.</p>
+<p><strong>El mejor modelo depende del escenario de predicción (capítulo 5).</strong> Se midieron dos escenarios por separado. En
+<strong>zonas nuevas</strong>, agregar variables de vecindad física (cómo son las viviendas de alrededor, sin usar su estrato)
+mejora el test (F1 de 0.45 a 0.59), pero la validación cruzada no lo confirma: su efecto depende de la zona, ayuda en
+barrios homogéneos y perjudica en los muy mezclados. En <strong>zonas conocidas</strong> (edificios ocultos dentro de zonas con
+datos), los árboles superan a la logística por +0.20 de F1, y el XGBoost geográfico supera a su control en los cinco
+folds (+0.010, IC [+0.007, +0.024]). En su escenario natural, la propuesta novedosa sí aporta, aunque poco, pero
+empata con la regla más simple: votar con el estrato de las viviendas conocidas más cercanas (F1 0.79).</p>
 </section>
 <section id="limitaciones">
-<h2>5.2 Limitaciones<a class="headerlink" href="#limitaciones" title="Link to this heading">#</a></h2>
+<h2>6.2 Limitaciones<a class="headerlink" href="#limitaciones" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>Cobertura.</strong> El 16 % de las viviendas (predios informales, casi todos de estratos 1 y 2) no tiene coordenadas y no entra al modelo. Las conclusiones aplican a la ciudad formal.</p></li>
 <li><p><strong>Pocos bloques de test.</strong> Con siete bloques, los intervalos son muy anchos y el resultado de test es favorable (pocos estratos 6 y un modelo final con más datos que cada fold). La cifra más representativa es la de la CV espacial.</p></li>
@@ -407,15 +415,15 @@
 </ul>
 </section>
 <section id="proximos-pasos">
-<h2>5.3 Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
-<p>Los resultados del capítulo 4 cambian la agenda: el cuello de botella no es la flexibilidad del modelo, sino la información disponible en zonas sin datos y la forma de evaluar.</p>
+<h2>6.3 Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
+<p>Los resultados de los capítulos 4 y 5 cambian la agenda: el cuello de botella no es la flexibilidad del modelo, sino la información disponible en zonas sin datos y la forma de evaluar. Los dos escenarios de predicción ya se midieron por separado (capítulo 5); quedan estos pasos:</p>
 <ol class="arabic simple">
-<li><p><strong>Dos escenarios de predicción.</strong> Evaluar por separado la predicción en <strong>zonas nuevas</strong> (validación por bloques, como aquí) y <strong>dentro de zonas conocidas</strong> (viviendas ocultas al azar dentro de los bloques de entrenamiento). El XGBoost geográfico <span class="bibtex-citation" id="id1">[<a class="reference internal" href="B_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span> está pensado para el segundo escenario; ahí es donde su adaptación a clasificación debería medirse.</p></li>
+<li><p><strong>Medir la variedad física del entorno</strong> (por ejemplo, la dispersión del área o de los baños a 300 m). Las variables de vecindad ayudan en barrios homogéneos y perjudican en los muy mezclados; estas medidas, que tampoco usan el estrato, le permitirían al modelo saber cuándo confiar en la vecindad.</p></li>
 <li><p><strong>Combinar la logística y la SVM RBF</strong> (<em>stacking</em>), porque aciertan estratos distintos en la parte alta de la escala: la SVM reconoce mejor el 5 y la logística el 4.</p></li>
 <li><p><strong>Regresión logística ordinal</strong> como segunda referencia lineal, porque respeta el orden de los estratos.</p></li>
-<li><p><strong>Variables de vecindad física</strong> (área, baños o antigüedad promedio de los vecinos, a cualquier distancia), que no usan el estrato y por tanto no son fuga, y que sí están disponibles en zonas nuevas.</p></li>
+<li><p><strong>Más bloques de evaluación.</strong> Con 7 bloques de test y 30 de entrenamiento, varias diferencias del capítulo 5 no se pueden distinguir del ruido. Bloques más pequeños o una validación con más folds darían comparaciones por pares con más poder.</p></li>
 <li><p><strong>Recalibración</strong> de probabilidades y umbrales por clase, dentro de la CV espacial.</p></li>
-<li><p><strong>Búsquedas de hiperparámetros más amplias</strong> (más ensayos TPE, Bagged TAO Trees <span class="bibtex-citation" id="id2">[<a class="reference internal" href="B_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>]</span>) cuando se disponga de más cómputo.</p></li>
+<li><p><strong>Búsquedas de hiperparámetros más amplias</strong> (más ensayos TPE, Bagged TAO Trees <span class="bibtex-citation" id="id1">[<a class="reference internal" href="B_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>]</span>) cuando se disponga de más cómputo.</p></li>
 </ol>
 </section>
 </section>
@@ -451,12 +459,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="04_modelos_avanzados.html"
+       href="05_vecindad.html"
        title="página anterior">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">anterior</p>
-        <p class="prev-next-title">4. Más allá del modelo base: modelos de la revisión bibliográfica</p>
+        <p class="prev-next-title">5. Variables de vecindad física y los dos escenarios de predicción</p>
       </div>
     </a>
     <a class="right-next"
@@ -486,9 +494,9 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">5.1 Qué se aprendió</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">5.2 Limitaciones</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">5.3 Próximos pasos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">6.1 Qué se aprendió</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">6.2 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">6.3 Próximos pasos</a></li>
 </ul>
   </nav></div>
 

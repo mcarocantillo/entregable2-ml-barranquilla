@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -223,7 +223,8 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/02_eda.html">2. Análisis exploratorio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/03_modelos.html">3. Modelos base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/05_conclusiones.html">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -397,7 +398,7 @@
 <section id="que-contiene-este-informe">
 <h2>Qué contiene este informe<a class="headerlink" href="#que-contiene-este-informe" title="Link to this heading">#</a></h2>
 <p>Este libro acompaña al <strong>dashboard en Dash Plotly</strong> del Entregable 2. El dashboard tiene tres pestañas: (1) contexto del problema, (2) análisis exploratorio (EDA) y (3) modelos base, con una sección adicional sobre los modelos de la revisión bibliográfica. Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.</p>
-<p>El dashboard está desplegado en Render: <strong>https://estrato-barranquilla.onrender.com</strong>. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.</p>
+<p>El dashboard está desplegado en Render: <strong>https://entregable2-ml-barranquilla.onrender.com</strong>. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.</p>
 </section>
 <section id="el-problema-en-una-frase">
 <h2>El problema en una frase<a class="headerlink" href="#el-problema-en-una-frase" title="Link to this heading">#</a></h2>
@@ -407,14 +408,14 @@
 <h2>Resumen de resultados<a class="headerlink" href="#resumen-de-resultados" title="Link to this heading">#</a></h2>
 <p>Se trabajó con <strong>332 718 viviendas</strong> del catastro abierto (168 044 edificios). El estrato está moderadamente desbalanceado, es ordinal y tiene una autocorrelación espacial muy fuerte (I de Moran = 0.91): la ciudad está segregada de sur a norte. Por eso la partición entrenamiento/prueba y la validación cruzada se hicieron por <strong>bloques espaciales de 2 km con un buffer de 1 km</strong>, y la incertidumbre se midió remuestreando bloques.</p>
 <p>El modelo base, una <strong>regresión logística multinomial</strong> con variables físicas y de ubicación, obtiene un <strong>F1 macro de 0.30 ± 0.09 en validación cruzada espacial y de 0.45 en test</strong> (IC 95 % [0.16, 0.46]). Supera con claridad a las líneas base Dummy. También supera en todas las métricas a la línea base geográfica, la clase más frecuente por zona de 2 km, aunque esa diferencia de F1 no es significativa. Los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.94). Los residuos siguen autocorrelacionados en el espacio (Moran = 0.70).</p>
-<p>Además de lo que pide el enunciado, se evaluaron con el mismo protocolo los candidatos de la revisión bibliográfica: una <strong>adaptación propia del XGBoost geográfico a clasificación</strong> (la propuesta novedosa), XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con TPE. Ninguno supera a la logística en zonas nuevas. La SVM queda cerca (F1 de test 0.43 frente a 0.45) y reconoce mejor los estratos altos; el XGBoost geográfico no aporta porque sus modelos locales no tienen datos en las zonas que evalúa la validación espacial. Este hallazgo orienta el siguiente paso: medir por separado la predicción en zonas nuevas y dentro de zonas conocidas.</p>
+<p>Además de lo que pide el enunciado, se evaluaron con el mismo protocolo los candidatos de la revisión bibliográfica: una <strong>adaptación propia del XGBoost geográfico a clasificación</strong> (la propuesta novedosa), XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con TPE. Ninguno supera a la logística en zonas nuevas. La SVM queda cerca (F1 de test 0.43 frente a 0.45) y reconoce mejor los estratos altos; el XGBoost geográfico no aporta porque sus modelos locales no tienen datos en las zonas que evalúa la validación espacial. El capítulo 5 mide por separado los dos escenarios de predicción. En <strong>zonas conocidas</strong> el orden se invierte: los árboles superan a la logística y el XGBoost geográfico mejora de forma consistente a su control, aunque empata con votar con el estrato de las viviendas vecinas. En <strong>zonas nuevas</strong>, agregar variables de vecindad física da un resultado mixto: mejora el test, pero la validación cruzada no lo confirma.</p>
 </section>
 <section id="relacion-con-el-entregable-1">
 <h2>Relación con el Entregable 1<a class="headerlink" href="#relacion-con-el-entregable-1" title="Link to this heading">#</a></h2>
 <p>El EDA completo, la limpieza y el diseño de la validación se documentaron en el Entregable 1. Para el modelo base, el dashboard <strong>no reentrena ni rehace decisiones</strong>: usa la misma partición, los mismos hiperparámetros y las mismas semillas. Los modelos avanzados del capítulo 4 sí se ajustan en este entregable, con la misma partición y los mismos folds. El script <code class="docutils literal notranslate"><span class="pre">preparar_datos.py</span></code> reproduce las métricas del Entregable 1 al tercer decimal (F1 de test 0.450 para el modelo principal) antes de guardar los resultados que muestra el tablero.</p>
 <div class="admonition note">
 <p class="admonition-title">Nota</p>
-<p><strong>Cómo leer este libro.</strong> Cada capítulo sigue el orden de una pestaña del dashboard. Las figuras son las mismas, generadas por el mismo módulo (<code class="docutils literal notranslate"><span class="pre">figuras.py</span></code>), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.</p>
+<p><strong>Cómo leer este libro.</strong> Los capítulos 1 a 4 siguen el orden de las pestañas del dashboard; el capítulo 5 es un análisis adicional que no está en el tablero. Las figuras son las mismas, generadas por el mismo módulo (<code class="docutils literal notranslate"><span class="pre">figuras.py</span></code>), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.</p>
 </div>
 </section>
 <div class="toctree-wrapper compound">

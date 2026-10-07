@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -222,7 +222,8 @@
 <li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">3. Modelos base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">5. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -416,7 +417,7 @@ triviales.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">&quot;figuras.py&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RAIZ</span> <span class="o">/</span> <span class="s2">"figuras.py"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="n">RAIZ</span> <span class="o">=</span> <span class="n">RAIZ</span><span class="o">.</span><span class="n">parent</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RAIZ</span><span class="p">))</span>
 
@@ -426,11 +427,11 @@ triviales.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">figuras</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;notebook&quot;</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">"notebook"</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.precision"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">R</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">resultados</span><span class="p">(),</span> <span class="n">F</span><span class="o">.</span><span class="n">diagnosticos</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entrenamiento tras el buffer: </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">&#39;n_train&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> viviendas (de </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">&#39;n_train_antes_buffer&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">) | &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;Test: </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">&#39;n_test&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> viviendas en </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">&#39;bloques_test&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> bloques de 2 km&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Entrenamiento tras el buffer: </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">'n_train'</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> viviendas (de </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">'n_train_antes_buffer'</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">) | "</span>
+      <span class="sa">f</span><span class="s2">"Test: </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">'n_test'</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> viviendas en </span><span class="si">{</span><span class="n">R</span><span class="p">[</span><span class="s1">'bloques_test'</span><span class="p">]</span><span class="si">}</span><span class="s2"> bloques de 2 km"</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -500,8 +501,8 @@ combinaciones (milésimas) son menores que la variabilidad entre folds.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">&quot;mejores_hiperparametros&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;clf__C&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;clf__class_weight&quot;</span><span class="p">:</span> <span class="s2">&quot;Pesos de clase&quot;</span><span class="p">})</span>
-<span class="n">hp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Logística A (físicas)&quot;</span><span class="p">,</span> <span class="s2">&quot;Logística B (físicas + ubicación)&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">"mejores_hiperparametros"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"clf__C"</span><span class="p">:</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"clf__class_weight"</span><span class="p">:</span> <span class="s2">"Pesos de clase"</span><span class="p">})</span>
+<span class="n">hp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Logística A (físicas)"</span><span class="p">,</span> <span class="s2">"Logística B (físicas + ubicación)"</span><span class="p">]</span>
 <span class="n">hp</span>
 </pre></div>
 </div>
@@ -555,7 +556,7 @@ combinaciones (milésimas) son menores que la variabilidad entre folds.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_comparacion</span><span class="p">(</span><span class="s2">&quot;f1_macro&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_comparacion</span><span class="p">(</span><span class="s2">"f1_macro"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4363,9 +4364,9 @@ aparecen; la Dummy uniforme (1/6 a todo) tiene el log loss de referencia, 1.79. 
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">&quot;ic_modelo_principal&quot;</span><span class="p">])</span>
-<span class="n">ic</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Valor en test&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% i</span><span class="s2">nferior&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% s</span><span class="s2">uperior&quot;</span><span class="p">,</span> <span class="s2">&quot;Desv. bootstrap&quot;</span><span class="p">]</span>
-<span class="n">ic</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;F1 macro&quot;</span><span class="p">,</span> <span class="s2">&quot;MAE ordinal&quot;</span><span class="p">,</span> <span class="s2">&quot;Kappa cuadrático&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">"ic_modelo_principal"</span><span class="p">])</span>
+<span class="n">ic</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Valor en test"</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% i</span><span class="s2">nferior"</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% s</span><span class="s2">uperior"</span><span class="p">,</span> <span class="s2">"Desv. bootstrap"</span><span class="p">]</span>
+<span class="n">ic</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Accuracy"</span><span class="p">,</span> <span class="s2">"F1 macro"</span><span class="p">,</span> <span class="s2">"MAE ordinal"</span><span class="p">,</span> <span class="s2">"Kappa cuadrático"</span><span class="p">]</span>
 <span class="n">ic</span>
 </pre></div>
 </div>
@@ -4443,9 +4444,9 @@ del desempeño en zonas nuevas es la de la <strong>CV espacial (F1 0.30 ± 0.09)
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">&quot;comparaciones_f1&quot;</span><span class="p">])</span>
-<span class="n">comp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Diferencia de F1&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% i</span><span class="s2">nf.&quot;</span><span class="p">,</span> <span class="s2">&quot;IC 95 </span><span class="si">% s</span><span class="s2">up.&quot;</span><span class="p">,</span> <span class="s2">&quot;p (bootstrap)&quot;</span><span class="p">,</span> <span class="s2">&quot;¿El IC excluye 0?&quot;</span><span class="p">]</span>
-<span class="n">comp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Logística A_fisicas&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="s2">"comparaciones_f1"</span><span class="p">])</span>
+<span class="n">comp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Diferencia de F1"</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% i</span><span class="s2">nf."</span><span class="p">,</span> <span class="s2">"IC 95 </span><span class="si">% s</span><span class="s2">up."</span><span class="p">,</span> <span class="s2">"p (bootstrap)"</span><span class="p">,</span> <span class="s2">"¿El IC excluye 0?"</span><span class="p">]</span>
+<span class="n">comp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Logística A_fisicas"</span><span class="p">,</span> <span class="s2">"A"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 <span class="n">comp</span>
 </pre></div>
 </div>
@@ -4570,8 +4571,8 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sens</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">&quot;sensibilidad_buffer&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;buffer_km&quot;</span><span class="p">:</span> <span class="s2">&quot;Buffer (km)&quot;</span><span class="p">,</span> <span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="s2">&quot;F1 macro CV&quot;</span><span class="p">,</span>
-                                                              <span class="s2">&quot;desv&quot;</span><span class="p">:</span> <span class="s2">&quot;Desv. entre folds&quot;</span><span class="p">})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sens</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">"sensibilidad_buffer"</span><span class="p">])</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"buffer_km"</span><span class="p">:</span> <span class="s2">"Buffer (km)"</span><span class="p">,</span> <span class="s2">"f1"</span><span class="p">:</span> <span class="s2">"F1 macro CV"</span><span class="p">,</span>
+                                                              <span class="s2">"desv"</span><span class="p">:</span> <span class="s2">"Desv. entre folds"</span><span class="p">})</span>
 <span class="n">sens</span>
 </pre></div>
 </div>
@@ -4648,7 +4649,7 @@ y menos datos de entrenamiento, porque el buffer elimina viviendas. El buffer de
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4687,7 +4688,7 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">tabla_por_clase</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">tabla_por_clase</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4786,7 +4787,7 @@ accuracy ±1 de 0.94.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_roc</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_roc</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4829,7 +4830,7 @@ de señal, sino de calibración y de umbral de decisión.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_calibracion</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_calibracion</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4868,15 +4869,15 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">proba</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">_pred</span><span class="p">(</span><span class="s2">&quot;Logística B_fisicas+ubicacion&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">proba</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">_pred</span><span class="p">(</span><span class="s2">"Logística B_fisicas+ubicacion"</span><span class="p">)</span>
 <span class="n">conf</span> <span class="o">=</span> <span class="n">proba</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">acierto</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
 <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
 <span class="n">ece</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">acierto</span><span class="p">[</span><span class="n">idx</span> <span class="o">==</span> <span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">conf</span><span class="p">[</span><span class="n">idx</span> <span class="o">==</span> <span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-<span class="n">cal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Estrato&quot;</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">,</span> <span class="s2">&quot;Probabilidad media predicha&quot;</span><span class="p">:</span> <span class="n">proba</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-                    <span class="s2">&quot;Frecuencia observada en test&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">y</span> <span class="o">==</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">]})</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error de calibración esperado (ECE, 10 bins por cuantiles de la confianza): </span><span class="si">{</span><span class="n">ece</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">cal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"Estrato"</span><span class="p">:</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">,</span> <span class="s2">"Probabilidad media predicha"</span><span class="p">:</span> <span class="n">proba</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                    <span class="s2">"Frecuencia observada en test"</span><span class="p">:</span> <span class="p">[(</span><span class="n">y</span> <span class="o">==</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">]})</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error de calibración esperado (ECE, 10 bins por cuantiles de la confianza): </span><span class="si">{</span><span class="n">ece</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="n">cal</span>
 </pre></div>
 </div>
@@ -4966,7 +4967,7 @@ tras el buffer.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">&quot;Moda por zona&quot;</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_confusion</span><span class="p">(</span><span class="s2">"Moda por zona"</span><span class="p">,</span> <span class="n">normalizar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5014,7 +5015,7 @@ continua con las características de la vivienda, evita la mayoría de esos salt
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_coeficientes</span><span class="p">(</span><span class="s2">&quot;B_fisicas+ubicacion&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_coeficientes</span><span class="p">(</span><span class="s2">"B_fisicas+ubicacion"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5071,7 +5072,7 @@ logística ordinal sería más parsimoniosa.</p>
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_coeficientes</span><span class="p">(</span><span class="s2">&quot;A_fisicas&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">fig_coeficientes</span><span class="p">(</span><span class="s2">"A_fisicas"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5156,10 +5157,10 @@ if (outputEl) {{
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ca</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s2">&quot;curva_aprendizaje&quot;</span><span class="p">]</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Viviendas de entrenamiento&quot;</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="s2">&quot;F1 entrenamiento&quot;</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">&quot;train_media&quot;</span><span class="p">],</span>
-              <span class="s2">&quot;F1 validación espacial&quot;</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">&quot;val_media&quot;</span><span class="p">],</span>
-              <span class="s2">&quot;Brecha&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ca</span><span class="p">[</span><span class="s2">&quot;train_media&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ca</span><span class="p">[</span><span class="s2">&quot;val_media&quot;</span><span class="p">])})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ca</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="s2">"curva_aprendizaje"</span><span class="p">]</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"Viviendas de entrenamiento"</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">"n"</span><span class="p">],</span> <span class="s2">"F1 entrenamiento"</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">"train_media"</span><span class="p">],</span>
+              <span class="s2">"F1 validación espacial"</span><span class="p">:</span> <span class="n">ca</span><span class="p">[</span><span class="s2">"val_media"</span><span class="p">],</span>
+              <span class="s2">"Brecha"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ca</span><span class="p">[</span><span class="s2">"train_media"</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ca</span><span class="p">[</span><span class="s2">"val_media"</span><span class="p">])})</span>
 </pre></div>
 </div>
 </div>
@@ -5252,9 +5253,9 @@ limitado por su forma (lineal, sin interacciones) y por la información disponib
 <p class="expanded admonition-title">Ocultar el código</p>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">&quot;moran_residuos&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;A_fisicas&quot;</span><span class="p">,</span> <span class="s2">&quot;B_fisicas+ubicacion&quot;</span><span class="p">]]</span>
-<span class="n">mr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;I de Moran de los residuos&quot;</span><span class="p">,</span> <span class="s2">&quot;p (permutación)&quot;</span><span class="p">,</span> <span class="s2">&quot;Residuo medio&quot;</span><span class="p">]</span>
-<span class="n">mr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Logística A (físicas)&quot;</span><span class="p">,</span> <span class="s2">&quot;Logística B (físicas + ubicación)&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="s2">"moran_residuos"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"A_fisicas"</span><span class="p">,</span> <span class="s2">"B_fisicas+ubicacion"</span><span class="p">]]</span>
+<span class="n">mr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"I de Moran de los residuos"</span><span class="p">,</span> <span class="s2">"p (permutación)"</span><span class="p">,</span> <span class="s2">"Residuo medio"</span><span class="p">]</span>
+<span class="n">mr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Logística A (físicas)"</span><span class="p">,</span> <span class="s2">"Logística B (físicas + ubicación)"</span><span class="p">]</span>
 <span class="n">mr</span>
 </pre></div>
 </div>
@@ -5367,19 +5368,19 @@ ubicaciones:</p>
 </summary>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rg</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">rangos_simulador</span><span class="p">()</span>
-<span class="n">base</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">rg</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">R</span><span class="p">[</span><span class="s2">&quot;variables_modelo&quot;</span><span class="p">][</span><span class="s2">&quot;numericas&quot;</span><span class="p">]}</span>
-<span class="n">base</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rg</span><span class="p">[</span><span class="s2">&quot;moda_categorias&quot;</span><span class="p">])</span>
+<span class="n">base</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">rg</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">R</span><span class="p">[</span><span class="s2">"variables_modelo"</span><span class="p">][</span><span class="s2">"numericas"</span><span class="p">]}</span>
+<span class="n">base</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rg</span><span class="p">[</span><span class="s2">"moda_categorias"</span><span class="p">])</span>
 <span class="c1"># Tres celdas reales del mapa (con al menos 300 viviendas) sobre la misma longitud: la de estrato medio más bajo, una</span>
 <span class="c1"># intermedia y la de estrato medio más alto.</span>
-<span class="n">celdas</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">_grilla</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">viviendas</span><span class="p">(),</span> <span class="s2">&quot;estrato_num&quot;</span><span class="p">,</span> <span class="n">min_n</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;valor&quot;</span><span class="p">)</span>
+<span class="n">celdas</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">_grilla</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">viviendas</span><span class="p">(),</span> <span class="s2">"estrato_num"</span><span class="p">,</span> <span class="n">min_n</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"valor"</span><span class="p">)</span>
 <span class="n">puntos</span> <span class="o">=</span> <span class="n">celdas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">celdas</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
 <span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;Celda de estrato medio más bajo&quot;</span><span class="p">,</span> <span class="s2">&quot;Celda intermedia&quot;</span><span class="p">,</span> <span class="s2">&quot;Celda de estrato medio más alto&quot;</span><span class="p">],</span>
+<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">"Celda de estrato medio más bajo"</span><span class="p">,</span> <span class="s2">"Celda intermedia"</span><span class="p">,</span> <span class="s2">"Celda de estrato medio más alto"</span><span class="p">],</span>
                           <span class="n">puntos</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">predecir</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glat</span><span class="p">),</span> <span class="n">lon</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glon</span><span class="p">)))</span>
-    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;Ubicación&quot;</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glat</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glon</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-                  <span class="s2">&quot;Estrato medio real de la celda&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-                  <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;P(E</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">},</span> <span class="s2">&quot;Estrato predicho&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">)})</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"Ubicación"</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glat</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"lon"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">glon</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                  <span class="s2">"Estrato medio real de la celda"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                  <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">"P(E</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">)"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">CLASES</span><span class="p">},</span> <span class="s2">"Estrato predicho"</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">)})</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
 </pre></div>
 </div>
