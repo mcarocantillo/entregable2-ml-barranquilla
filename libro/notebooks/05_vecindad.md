@@ -2,6 +2,8 @@
 
 *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 
+Este capítulo corresponde a la **sub-pestaña «Vecindad y escenarios»** de la pestaña **ML models** del dashboard.
+
 Los capítulos 3 y 4 dejaron dos pistas. Los residuos de la logística siguen agrupados en el espacio (Moran = 0.70),
 así que al modelo le falta información de **barrio**. Y los modelos más flexibles no ayudan en **zonas nuevas**, lo
 que sugiere que el límite está en la información disponible y no en el algoritmo. Este capítulo pone a prueba esas
@@ -88,9 +90,9 @@ las viviendas no tiene vecinas a 300 m.
 | Logística B (referencia) | 0.299 | — | — | 0.450 | — |
 | **B + vecindad (300 m y 1 km)** | 0.324 | +0.025 (0.041) | No | **0.590** | **+0.140 [+0.040, +0.244]** |
 | B + vecindad, solo 300 m | 0.310 | +0.011 (0.032) | No | 0.570 | +0.120 [+0.007, +0.157] |
-| B + vecindad, solo 1 km | 0.336 | +0.037 (0.040) | No | 0.584 | +0.134 [+0.032, +0.171] |
+| B + vecindad, solo 1 km | 0.336 | +0.037 (0.040) | No | 0.583 | +0.134 [+0.032, +0.171] |
 | A: solo variables físicas | 0.283 | −0.016 (0.065) | No | 0.349 | −0.101 [−0.140, +0.054] |
-| A + vecindad (sin coordenadas) | 0.356 | +0.057 (0.028) | Sí | 0.546 | +0.096 [−0.022, +0.218] |
+| A + vecindad (sin coordenadas) | 0.356 | +0.056 (0.028) | Sí | 0.546 | +0.096 [−0.021, +0.218] |
 
 En **test**, el modelo principal mejora todas las métricas: accuracy de 0.598 a 0.738, MAE ordinal de 0.463 a 0.281
 (IC de la diferencia [−0.446, −0.026]) y kappa cuadrático de 0.814 a 0.906. El cambio más visible está en el estrato
@@ -101,7 +103,7 @@ residuos solo baja de 0.70 a 0.64.
 En **validación cruzada**, el modelo principal mejora en 4 de los 5 folds, pero empeora 0.13 en el fold 1, y la
 diferencia media (+0.025) no supera un error estándar. **Por el criterio fijado de antemano, no reemplaza a B.**
 
-La única variante que cumple el criterio en CV es **A + vecindad, sin coordenadas** (+0.057, error estándar 0.028),
+La única variante que cumple el criterio en CV es **A + vecindad, sin coordenadas** (+0.056, error estándar 0.028),
 pero su intervalo de test incluye el cero. Es una variante exploratoria y se compararon cinco candidatos contra la
 misma referencia, sin corrección por comparaciones múltiples. Aun así es un indicio interesante: la vecindad física
 podría sustituir a la posición absoluta.
@@ -244,4 +246,3 @@ cuándo confiar en la vecindad, y evaluar con más bloques para poder distinguir
 - **Análisis por zonas posterior.** La sección 5.5 es exploratoria y sus explicaciones son hipótesis.
 - **Hiperparámetros del escenario 2.** En zonas conocidas no se volvieron a buscar: se usaron los elegidos por la
   validación espacial.
-- **El dashboard no incluye este capítulo.** Sus figuras siguen siendo las de los capítulos 1 a 4.

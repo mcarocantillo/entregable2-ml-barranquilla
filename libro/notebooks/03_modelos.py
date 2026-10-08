@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **pestaña 3 del dashboard**. El enunciado pide un modelo base lineal (regresión
+# Este capítulo corresponde a la **pestaña ML models del dashboard** (sub-pestañas Protocolo, Modelo base, Diagnóstico y Simulador). El enunciado pide un modelo base lineal (regresión
 # logística o SVR lineal); como el estrato es una clase, se usa **regresión logística**, comparada contra líneas base
 # triviales.
 

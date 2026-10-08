@@ -11,18 +11,20 @@ El proyecto separa el cálculo pesado de la visualización, para que el tablero 
 | `preparar_datos.py` | Se ejecuta una vez, en local. Lee las salidas del Entregable 1, reajusta los seis modelos con los hiperparámetros ya elegidos, verifica que las métricas de test coinciden con las del Entregable 1 y guarda en `datos/` las predicciones, coeficientes, diagnósticos (curva de aprendizaje, sensibilidad al buffer, correlograma, Moran) y el modelo principal. |
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos del capítulo 4 (XGBoost, XGBoost geográfico, Rotation Forest, SVM RBF + TPE) con el mismo protocolo, y agregan sus resultados a `datos/`. Necesitan además `requirements-entrenamiento.txt` (xgboost y optuna); el dashboard no. |
 | `figuras.py` | Única fuente de las figuras (Plotly). La usan el dashboard y este libro. |
-| `app.py` | La aplicación Dash: tres pestañas, filtros y callbacks. No entrena nada. |
+| `app.py` | La aplicación Dash: tres pestañas (Contexto, EDA y ML models, esta última con siete sub-pestañas), filtros y callbacks. No entrena nada. |
+| `generar_portada.py` | Genera, a partir de los datos, las imágenes de `assets/`: la portada «Barranquilla de noche» y la infografía de la escala de estratos. |
+| `vecindad/` | Código del capítulo 5 (variables de vecindad y escenario de zonas conocidas); sus resultados están en `datos/vecindad/` y el dashboard solo los grafica. |
 | `src/` | Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado. |
-| `assets/` | Hoja de estilos (tema Bootstrap Flatly y estilo propio, con letra grande). |
+| `assets/` | Hoja de estilos (tema Bootstrap Flatly y estilo propio, con letra grande) e imágenes generadas con los datos. |
 | `requirements.txt`, `render.yaml`, `.python-version` | Dependencias con versiones fijadas y configuración de Render. |
 
 ## A.2 Interactividad
 
 | Pestaña | Controles |
 |---|---|
-| 1. Contexto | Estática: ficha del problema, indicadores, flujo de trabajo, embudo de limpieza y distribución del estrato. |
-| 2. EDA | Partición (solo entrenamiento o todas); variable numérica y escala log; variable categórica; variable del mapa. |
-| 3. Modelos | Métrica de la comparación (modelo base y modelos avanzados); mapa de residuos por modelo; modelo para la matriz de confusión, ROC y calibración; matriz en conteos o en porcentaje; coeficientes de A o B; simulador. |
+| Contexto | Estática: portada generada con los datos, el problema y su importancia (escala de estratos y tarifas), ficha técnica, brecha de la literatura, flujo de trabajo y hoja de ruta. |
+| EDA | Hallazgos clave; partición (solo entrenamiento o todas); sub-pestañas de variable objetivo, numéricas (variable y escala log), categóricas, correlaciones y faltantes, y componente espacial (variable del mapa). |
+| ML models | Sub-pestañas: Protocolo; Modelo base (métrica de la comparación, coeficientes de A o B); Diagnóstico (modelo y matriz en conteos o porcentaje); Modelos de la revisión (métrica, mapa de residuos por modelo); Vecindad y escenarios; Simulador; Conclusiones. |
 
 ## A.3 Datos que se publican
 

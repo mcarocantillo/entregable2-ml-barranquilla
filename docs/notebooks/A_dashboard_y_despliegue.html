@@ -411,13 +411,19 @@
 <td><p>Única fuente de las figuras (Plotly). La usan el dashboard y este libro.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code></p></td>
-<td><p>La aplicación Dash: tres pestañas, filtros y callbacks. No entrena nada.</p></td>
+<td><p>La aplicación Dash: tres pestañas (Contexto, EDA y ML models, esta última con siete sub-pestañas), filtros y callbacks. No entrena nada.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">generar_portada.py</span></code></p></td>
+<td><p>Genera, a partir de los datos, las imágenes de <code class="docutils literal notranslate"><span class="pre">assets/</span></code>: la portada «Barranquilla de noche» y la infografía de la escala de estratos.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vecindad/</span></code></p></td>
+<td><p>Código del capítulo 5 (variables de vecindad y escenario de zonas conocidas); sus resultados están en <code class="docutils literal notranslate"><span class="pre">datos/vecindad/</span></code> y el dashboard solo los grafica.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/</span></code></p></td>
 <td><p>Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">assets/</span></code></p></td>
-<td><p>Hoja de estilos (tema Bootstrap Flatly y estilo propio, con letra grande).</p></td>
+<td><p>Hoja de estilos (tema Bootstrap Flatly y estilo propio, con letra grande) e imágenes generadas con los datos.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.python-version</span></code></p></td>
 <td><p>Dependencias con versiones fijadas y configuración de Render.</p></td>
@@ -435,14 +441,14 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>1. Contexto</p></td>
-<td><p>Estática: ficha del problema, indicadores, flujo de trabajo, embudo de limpieza y distribución del estrato.</p></td>
+<tr class="row-even"><td><p>Contexto</p></td>
+<td><p>Estática: portada generada con los datos, el problema y su importancia (escala de estratos y tarifas), ficha técnica, brecha de la literatura, flujo de trabajo y hoja de ruta.</p></td>
 </tr>
-<tr class="row-odd"><td><p>2. EDA</p></td>
-<td><p>Partición (solo entrenamiento o todas); variable numérica y escala log; variable categórica; variable del mapa.</p></td>
+<tr class="row-odd"><td><p>EDA</p></td>
+<td><p>Hallazgos clave; partición (solo entrenamiento o todas); sub-pestañas de variable objetivo, numéricas (variable y escala log), categóricas, correlaciones y faltantes, y componente espacial (variable del mapa).</p></td>
 </tr>
-<tr class="row-even"><td><p>3. Modelos</p></td>
-<td><p>Métrica de la comparación (modelo base y modelos avanzados); mapa de residuos por modelo; modelo para la matriz de confusión, ROC y calibración; matriz en conteos o en porcentaje; coeficientes de A o B; simulador.</p></td>
+<tr class="row-even"><td><p>ML models</p></td>
+<td><p>Sub-pestañas: Protocolo; Modelo base (métrica de la comparación, coeficientes de A o B); Diagnóstico (modelo y matriz en conteos o porcentaje); Modelos de la revisión (métrica, mapa de residuos por modelo); Vecindad y escenarios; Simulador; Conclusiones.</p></td>
 </tr>
 </tbody>
 </table>

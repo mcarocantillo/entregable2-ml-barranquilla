@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **sección 7 de la pestaña 3 del dashboard**. El enunciado del Entregable 2 pide
+# Este capítulo corresponde a la **sub-pestaña «Modelos de la revisión» de la pestaña ML models del dashboard**. El enunciado del Entregable 2 pide
 # modelos base; este capítulo va un paso más allá y pone a prueba los candidatos de la revisión bibliográfica
 # (capítulo 1.2) contra la referencia del capítulo 3, con exactamente el mismo protocolo.
 

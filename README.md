@@ -10,14 +10,15 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 
 | Ruta | Contenido |
 |---|---|
-| `app.py` | Dashboard en Dash Plotly con 3 pestañas: contexto, EDA y modelos base (con una sección sobre los modelos de la revisión bibliográfica) |
+| `app.py` | Dashboard en Dash Plotly con 3 pestañas: Contexto, EDA y ML models (protocolo, modelo base, diagnóstico, modelos de la revisión, vecindad y escenarios, simulador y conclusiones) |
+| `generar_portada.py` | Genera las imágenes de `assets/` a partir de los datos (portada y escala de estratos) |
 | `figuras.py` | Todas las figuras (las usan el dashboard y el libro) |
 | `preparar_datos.py` | Genera `datos/` a partir del Entregable 1 (ya está ejecutado) |
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos de la revisión bibliográfica (XGBoost geográfico adaptado a clasificación, XGBoost, Rotation Forest, SVM RBF + TPE); ya están ejecutados. Para volver a correrlos se necesita además `requirements-entrenamiento.txt` |
 | `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial); en `datos/vecindad/`, los resultados del capítulo 5 |
 | `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas (ver su `README.md`) |
 | `src/` | Módulos del Entregable 1 (necesarios para cargar el modelo) |
-| `assets/` | Estilos del dashboard |
+| `assets/` | Estilos e imágenes del dashboard |
 | `requirements.txt`, `render.yaml`, `.python-version` | Configuración para Render |
 | `libro/` | Fuentes del Jupyter Book (cuadernos, referencias, configuración) |
 | `docs/` | El Jupyter Book ya construido (HTML), listo para GitHub Pages |

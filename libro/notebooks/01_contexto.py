@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **pestaña 1 del dashboard**.
+# Este capítulo corresponde a la **pestaña Contexto del dashboard**.
 
 # %% tags=["hide-input"]
 # Preparación: el módulo figuras.py (en la carpeta del dashboard) genera las mismas

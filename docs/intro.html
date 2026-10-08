@@ -397,7 +397,7 @@
 <p>Octubre de 2026</p>
 <section id="que-contiene-este-informe">
 <h2>Qué contiene este informe<a class="headerlink" href="#que-contiene-este-informe" title="Link to this heading">#</a></h2>
-<p>Este libro acompaña al <strong>dashboard en Dash Plotly</strong> del Entregable 2. El dashboard tiene tres pestañas: (1) contexto del problema, (2) análisis exploratorio (EDA) y (3) modelos base, con una sección adicional sobre los modelos de la revisión bibliográfica. Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.</p>
+<p>Este libro acompaña al <strong>dashboard en Dash Plotly</strong> del Entregable 2. El dashboard tiene tres pestañas: <strong>Contexto</strong> (el problema, por qué importa y cómo se trabajó), <strong>EDA</strong> (el análisis exploratorio) y <strong>ML models</strong> (protocolo, modelo base, diagnóstico, modelos de la revisión bibliográfica, variables de vecindad y escenarios, simulador y conclusiones). Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.</p>
 <p>El dashboard está desplegado en Render: <strong>https://entregable2-ml-barranquilla.onrender.com</strong>. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.</p>
 </section>
 <section id="el-problema-en-una-frase">
@@ -415,7 +415,7 @@
 <p>El EDA completo, la limpieza y el diseño de la validación se documentaron en el Entregable 1. Para el modelo base, el dashboard <strong>no reentrena ni rehace decisiones</strong>: usa la misma partición, los mismos hiperparámetros y las mismas semillas. Los modelos avanzados del capítulo 4 sí se ajustan en este entregable, con la misma partición y los mismos folds. El script <code class="docutils literal notranslate"><span class="pre">preparar_datos.py</span></code> reproduce las métricas del Entregable 1 al tercer decimal (F1 de test 0.450 para el modelo principal) antes de guardar los resultados que muestra el tablero.</p>
 <div class="admonition note">
 <p class="admonition-title">Nota</p>
-<p><strong>Cómo leer este libro.</strong> Los capítulos 1 a 4 siguen el orden de las pestañas del dashboard; el capítulo 5 es un análisis adicional que no está en el tablero. Las figuras son las mismas, generadas por el mismo módulo (<code class="docutils literal notranslate"><span class="pre">figuras.py</span></code>), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.</p>
+<p><strong>Cómo leer este libro.</strong> El capítulo 1 corresponde a la pestaña Contexto, el 2 a la pestaña EDA y los capítulos 3 a 5 a la pestaña ML models. Las figuras son las mismas, generadas por el mismo módulo (<code class="docutils literal notranslate"><span class="pre">figuras.py</span></code>), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.</p>
 </div>
 </section>
 <div class="toctree-wrapper compound">

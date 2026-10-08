@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **pestaña 2 del dashboard**. Como en el Entregable 1, el EDA se hace **solo con el
+# Este capítulo corresponde a la **pestaña EDA del dashboard**. Como en el Entregable 1, el EDA se hace **solo con el
 # conjunto de entrenamiento** (218 870 viviendas con coordenadas en los bloques de entrenamiento). El dashboard permite
 # cambiar a "todas las viviendas" para describir la ciudad completa; aquí se usa entrenamiento salvo que se diga otra
 # cosa.

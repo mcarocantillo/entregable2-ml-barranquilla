@@ -8,7 +8,7 @@ Octubre de 2026
 
 ## Qué contiene este informe
 
-Este libro acompaña al **dashboard en Dash Plotly** del Entregable 2. El dashboard tiene tres pestañas: (1) contexto del problema, (2) análisis exploratorio (EDA) y (3) modelos base, con una sección adicional sobre los modelos de la revisión bibliográfica. Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.
+Este libro acompaña al **dashboard en Dash Plotly** del Entregable 2. El dashboard tiene tres pestañas: **Contexto** (el problema, por qué importa y cómo se trabajó), **EDA** (el análisis exploratorio) y **ML models** (protocolo, modelo base, diagnóstico, modelos de la revisión bibliográfica, variables de vecindad y escenarios, simulador y conclusiones). Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.
 
 El dashboard está desplegado en Render: **https://entregable2-ml-barranquilla.onrender.com**. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.
 
@@ -29,5 +29,5 @@ Además de lo que pide el enunciado, se evaluaron con el mismo protocolo los can
 El EDA completo, la limpieza y el diseño de la validación se documentaron en el Entregable 1. Para el modelo base, el dashboard **no reentrena ni rehace decisiones**: usa la misma partición, los mismos hiperparámetros y las mismas semillas. Los modelos avanzados del capítulo 4 sí se ajustan en este entregable, con la misma partición y los mismos folds. El script `preparar_datos.py` reproduce las métricas del Entregable 1 al tercer decimal (F1 de test 0.450 para el modelo principal) antes de guardar los resultados que muestra el tablero.
 
 ```{note}
-**Cómo leer este libro.** Los capítulos 1 a 4 siguen el orden de las pestañas del dashboard; el capítulo 5 es un análisis adicional que no está en el tablero. Las figuras son las mismas, generadas por el mismo módulo (`figuras.py`), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.
+**Cómo leer este libro.** El capítulo 1 corresponde a la pestaña Contexto, el 2 a la pestaña EDA y los capítulos 3 a 5 a la pestaña ML models. Las figuras son las mismas, generadas por el mismo módulo (`figuras.py`), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.
 ```

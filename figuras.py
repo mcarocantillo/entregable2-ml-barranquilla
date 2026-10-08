@@ -300,8 +300,8 @@ def fig_gradiente_norte_sur(particion="todas"):
                              hovertemplate="%{x}: %{y:.1%}<extra>Estrato " + str(k) + "</extra>"))
     media = v.groupby("franja", observed=True).estrato_num.mean()
     fig.update_layout(barmode="stack",
-                      title=f"Composición por franjas de latitud (sur → norte): estrato medio de {media.iloc[0]:.1f} "
-                            f"a {media.max():.1f} (franja {media.idxmax()}), {media.iloc[-1]:.1f} en la más al norte")
+                      title=f"Composición por franjas de latitud (sur → norte)<br><sup>estrato medio de {media.iloc[0]:.1f} "
+                            f"a {media.max():.1f} (franja {media.idxmax()}), {media.iloc[-1]:.1f} en la más al norte</sup>")
     fig.update_yaxes(tickformat=".0%", title="proporción")
     fig.update_xaxes(title="franja (F1 = más al sur, F10 = más al norte; 10 % de viviendas cada una)")
     return _estilo(fig, alto=430)
@@ -712,3 +712,193 @@ def fig_mapa_residuos_modelo(modelo="XGBoost geográfico"):
                       height=560, margin=dict(l=0, r=0, t=50, b=0),
                       font=dict(family="Inter, Segoe UI, Arial, sans-serif", size=15))
     return fig
+
+
+# ---------------------------------------------------------------------------
+# Capítulo 5: variables de vecindad física y los dos escenarios de predicción
+# (resultados de vecindad/, guardados en datos/vecindad/; aquí solo se grafican)
+# ---------------------------------------------------------------------------
+DATOS_VEC = DATOS / "vecindad"
+PRINCIPAL_VEC = "B + vecindad (300 m y 1 km)"
+COLOR_VEC = {"B": "#2a78d6", PRINCIPAL_VEC: "#0f8a7a", "B + vecindad (solo 300 m)": "#5fb3a8",
+             "B + vecindad (solo 1 km)": "#5fb3a8", "A": "#1baf7a", "A + vecindad (sin coordenadas)": "#8fcfc6"}
+NOMBRE_VEC = {"B": "Logística B", PRINCIPAL_VEC: "B + vecindad (principal)",
+              "B + vecindad (solo 300 m)": "B + vecindad, solo 300 m", "B + vecindad (solo 1 km)": "B + vecindad, solo 1 km",
+              "A": "A: solo variables físicas", "A + vecindad (sin coordenadas)": "A + vecindad (sin coordenadas)"}
+COLOR_CONOCIDAS = {"Vecinos más cercanos (k = 15)": "#eb6834", "XGBoost geográfico": "#4a3aa7", "XGBoost": "#e87ba4",
+                   "Logística B + vecindad + estrato de vecinos": "#0b6e61", "Logística B + vecindad": "#0f8a7a",
+                   "Logística B": "#2a78d6", "Moda por zona (2 km)": "#f3a37a"}
+
+
+@lru_cache(maxsize=None)
+def vecindad(nombre):
+    """Resultados del capítulo 5: comparacion_zonas_nuevas, cv_15_folds, variante_estricta, zonas, zonas_conocidas."""
+    return json.loads((DATOS_VEC / f"{nombre}.json").read_text(encoding="utf-8"))
+
+
+def hay_vecindad():
+    return all((DATOS_VEC / f"{n}.json").exists()
+               for n in ["comparacion_zonas_nuevas", "cv_15_folds", "zonas", "zonas_conocidas"])
+
+
+def tabla_vecindad():
+    c = vecindad("comparacion_zonas_nuevas")
+    filas = []
+    for k, m in c["modelos"].items():
+        cmp_ = c["comparaciones_vs_B"].get(k)
+        filas.append({
+            "Modelo": NOMBRE_VEC[k], "F1 CV": m["cv_f1_media"],
+            "Δ CV (error est.)": "—" if cmp_ is None else f"{cmp_['cv_dif_media']:+.3f} ({cmp_['cv_se_pareado']:.3f})",
+            "¿Reemplaza a B?": "—" if cmp_ is None else ("Sí" if cmp_["reemplaza_a_B"] else "No"),
+            "F1 test": m["test"]["f1_macro"],
+            "Δ F1 test [IC 95 %]": "—" if cmp_ is None else
+            f"{cmp_['test_f1']['diferencia']:+.3f} [{cmp_['test_f1']['IC95_inf']:+.3f}, {cmp_['test_f1']['IC95_sup']:+.3f}]",
+            "MAE test": m["test"]["MAE_ordinal"], "Moran residuos": m["moran_residuos"]})
+    return pd.DataFrame(filas)
+
+
+def fig_vecindad_diferencias():
+    """Diferencia frente a la logística B: en la CV espacial (media ± error estándar) y en test (IC 95 % por bloques)."""
+    c = vecindad("comparacion_zonas_nuevas")["comparaciones_vs_B"]
+    nombres = list(c)
+    etq = [NOMBRE_VEC[n] for n in nombres]
+    fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.04,
+                        subplot_titles=("Validación cruzada (5 folds): media ± error estándar",
+                                        "Test (7 bloques): IC 95 % por bloques"))
+    paneles = [([c[n]["cv_dif_media"] for n in nombres],
+                [c[n]["cv_dif_media"] - c[n]["cv_se_pareado"] for n in nombres],
+                [c[n]["cv_dif_media"] + c[n]["cv_se_pareado"] for n in nombres]),
+               ([c[n]["test_f1"]["diferencia"] for n in nombres], [c[n]["test_f1"]["IC95_inf"] for n in nombres],
+                [c[n]["test_f1"]["IC95_sup"] for n in nombres])]
+    for col, (val, lo, hi) in enumerate(paneles, start=1):
+        fig.add_vline(x=0, line_color="#8a8984", line_dash="dot", row=1, col=col)
+        fig.add_trace(go.Scatter(
+            x=val, y=etq, mode="markers",
+            marker=dict(size=[17 if n == PRINCIPAL_VEC else 12 for n in nombres], color=[COLOR_VEC[n] for n in nombres],
+                        line=dict(color="white", width=1.5)),
+            error_x=dict(type="data", symmetric=False, array=np.array(hi) - np.array(val),
+                         arrayminus=np.array(val) - np.array(lo), color="#52514e", thickness=2),
+            customdata=np.c_[lo, hi],
+            hovertemplate="%{y}<br>diferencia %{x:+.3f}<br>[%{customdata[0]:+.3f}, %{customdata[1]:+.3f}]<extra></extra>"),
+            1, col)
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    fig.update_xaxes(title_text="diferencia de F1 macro frente a la logística B", zeroline=False)
+    fig.update_layout(title="Zonas nuevas: ¿mejora la logística al ver el barrio?")
+    return _estilo(fig, alto=430, leyenda=False)
+
+
+def fig_vecindad_folds15():
+    """Diferencia de F1 por fold en la CV de 15 folds: la vecindad gana en unos y pierde en otros."""
+    q = vecindad("cv_15_folds")["comparaciones_vs_B"]
+    fig = go.Figure()
+    fig.add_hline(y=0, line_color="#8a8984")
+    for k, nombre, color in [(PRINCIPAL_VEC, "B + vecindad (principal)", "#0f8a7a"),
+                             ("A + vecindad (sin coordenadas)", "A + vecindad (sin coordenadas)", "#8fcfc6")]:
+        d = q[k]["dif_F1_por_fold"]
+        fig.add_trace(go.Bar(x=[f"F{i + 1}" for i in range(len(d))], y=d,
+                             name=f"{nombre}: mejora en {q[k]['folds_mejores']} de {len(d)} folds",
+                             marker_color=color, hovertemplate="%{x}: %{y:+.3f}<extra></extra>"))
+    fig.update_layout(barmode="group", title="15 folds espaciales: diferencia de F1 frente a la logística B")
+    fig.update_yaxes(title="Δ F1 macro", zeroline=False)
+    return _estilo(fig, alto=400)
+
+
+def fig_vecindad_entorno():
+    """Cambio de accuracy al agregar la vecindad, según qué tan mezclado está el estrato del entorno."""
+    z = vecindad("zonas")
+    fig = go.Figure()
+    fig.add_hline(y=0, line_color="#8a8984")
+    for clave, nombre, color in [("heterogeneidad|train (CV 15 folds)", "Validación cruzada (15 folds)", "#86b6ef"),
+                                 ("heterogeneidad|test", "Test (7 bloques)", "#0f8a7a")]:
+        t = z[clave]
+        fig.add_trace(go.Bar(x=t["grupo_het"], y=t["d_acc"], name=nombre, marker_color=color,
+                             customdata=np.c_[t["% viviendas"], t["acc_B"], t["acc_Bvec"]],
+                             text=[f"{v:+.2f}" for v in t["d_acc"]], textposition="outside",
+                             hovertemplate="%{x}<br>%{customdata[0]:.1f} % de las viviendas<br>accuracy "
+                                           "%{customdata[1]:.2f} → %{customdata[2]:.2f}<extra></extra>"))
+    fig.update_layout(barmode="group", title="¿Dónde ayuda la vecindad? Según qué tan mezclado es el entorno (300 m)")
+    fig.update_xaxes(title="desviación del estrato a 300 m (solo diagnóstico)")
+    fig.update_yaxes(title="cambio en accuracy", zeroline=False, range=[-0.25, 0.27])
+    return _estilo(fig, alto=430)
+
+
+def fig_escenarios():
+    """Pendientes: F1 macro de cada modelo en zonas nuevas y en zonas conocidas. Lo que importa es el ORDEN
+    dentro de cada escenario (los conjuntos de evaluación son distintos)."""
+    r = resultados()["resultados_test"]["f1_macro"]
+    vn = vecindad("comparacion_zonas_nuevas")["modelos"][PRINCIPAL_VEC]["test"]["f1_macro"]
+    kc = vecindad("zonas_conocidas")["modelos"]
+    lineas = [("Logística B", r["Logística B_fisicas+ubicacion"], kc["Logística B"]["F1_macro"]),
+              ("Logística B + vecindad", vn, kc["Logística B + vecindad"]["F1_macro"]),
+              ("XGBoost", r["XGBoost"], kc["XGBoost"]["F1_macro"]),
+              ("XGBoost geográfico", r["XGBoost geográfico"], kc["XGBoost geográfico"]["F1_macro"]),
+              ("Moda por zona (2 km)", r["Moda por zona"], kc["Moda por zona (2 km)"]["F1_macro"])]
+    xs = ["Zonas nuevas<br>(bloques no vistos)", "Zonas conocidas<br>(edificios ocultos)"]
+    k = kc["Vecinos más cercanos (k = 15)"]["F1_macro"]
+    fig = go.Figure()
+    for nombre, a, b in lineas:
+        color = COLOR_CONOCIDAS[nombre]
+        grueso = 4.5 if nombre in ("XGBoost geográfico", "Logística B") else 2.5
+        fig.add_trace(go.Scatter(x=xs, y=[a, b], mode="lines+markers", name=nombre,
+                                 line=dict(color=color, width=grueso), marker=dict(size=12, color=color),
+                                 hovertemplate=nombre + "<br>%{x}: F1 %{y:.3f}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=[xs[1]], y=[k], mode="markers", name="Votar con los 15 vecinos",
+                             marker=dict(size=20, color=COLOR_CONOCIDAS["Vecinos más cercanos (k = 15)"], symbol="star",
+                                         line=dict(color="white", width=1)),
+                             hovertemplate="Votar con el estrato de las 15 viviendas conocidas más cercanas: "
+                                           "%{y:.3f}<extra></extra>"))
+
+    def repartir(valores, gap=0.032):
+        """Posiciones de etiqueta en el mismo orden que los valores, separadas al menos `gap`."""
+        orden = np.argsort(valores)
+        pos = np.array(valores, float)
+        for i in range(1, len(orden)):
+            pos[orden[i]] = max(pos[orden[i]], pos[orden[i - 1]] + gap)
+        return pos
+
+    izq = [(n, a) for n, a, _ in lineas]
+    der = [(n, b) for n, _, b in lineas] + [("Votar con los 15 vecinos", k)]
+    for lado, datos, x, anclaje, desplaz in [("izq", izq, xs[0], "right", -14), ("der", der, xs[1], "left", 14)]:
+        ys = repartir([v for _, v in datos])
+        for (nombre, v), y in zip(datos, ys):
+            color = COLOR_CONOCIDAS["Vecinos más cercanos (k = 15)" if nombre.startswith("Votar") else nombre]
+            texto = f"<b>{v:.2f}</b>" if lado == "izq" else f"<b>{v:.2f}</b>  {nombre}"
+            fig.add_annotation(x=x, y=y, text=texto, showarrow=False, xanchor=anclaje, xshift=desplaz,
+                               font=dict(color=color, size=14))
+    fig.update_yaxes(title="F1 macro", range=[0.25, 0.86])
+    fig.update_xaxes(range=[-0.45, 1.05])
+    fig.update_layout(title="El mejor modelo depende del escenario: el orden se invierte")
+    fig = _estilo(fig, alto=540, leyenda=False)
+    fig.update_layout(margin=dict(l=60, r=300, t=60, b=50))
+    return fig
+
+
+def fig_zonas_conocidas():
+    kc = vecindad("zonas_conocidas")["modelos"]
+    orden = sorted(kc, key=lambda m: kc[m]["F1_macro"])
+    f1 = [kc[m]["F1_macro"] for m in orden]
+    lo = [min(kc[m]["F1_por_fold"]) for m in orden]
+    hi = [max(kc[m]["F1_por_fold"]) for m in orden]
+    fig = go.Figure(go.Bar(
+        x=f1, y=orden, orientation="h", marker_color=[COLOR_CONOCIDAS[m] for m in orden],
+        error_x=dict(type="data", symmetric=False, array=np.array(hi) - np.array(f1),
+                     arrayminus=np.array(f1) - np.array(lo), color="#52514e", thickness=1.5),
+        text=[f"{v:.3f}" for v in f1], textposition="inside", insidetextanchor="end", textfont=dict(color="white"),
+        hovertemplate="%{y}<br>F1 macro %{x:.3f}<extra></extra>"))
+    fig.update_xaxes(title="F1 macro (error: rango en 5 folds)",
+                     range=[0, 0.9])
+    fig.update_yaxes(showgrid=False)
+    fig.update_layout(title="Zonas conocidas: F1 macro por modelo")
+    return _estilo(fig, alto=440, leyenda=False)
+
+
+def tabla_comparaciones_conocidas():
+    c = vecindad("zonas_conocidas")["comparaciones"]
+    filas = []
+    for k, v in c.items():
+        f, m = v["F1"], v["MAE"]
+        filas.append({"Comparación": k,
+                      "Δ F1 macro [IC 95 %]": f"{f['diferencia']:+.3f} [{f['IC95_inf']:+.3f}, {f['IC95_sup']:+.3f}]",
+                      "Δ MAE ordinal [IC 95 %]": f"{m['diferencia']:+.3f} [{m['IC95_inf']:+.3f}, {m['IC95_sup']:+.3f}]",
+                      "¿Distinguible de cero?": "Sí" if f["IC95_inf"] > 0 or f["IC95_sup"] < 0 else "No"})
+    return pd.DataFrame(filas)

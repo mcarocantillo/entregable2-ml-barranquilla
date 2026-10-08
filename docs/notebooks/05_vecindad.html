@@ -398,6 +398,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="variables-de-vecindad-fisica-y-los-dos-escenarios-de-prediccion">
 <h1>5. Variables de vecindad física y los dos escenarios de predicción<a class="headerlink" href="#variables-de-vecindad-fisica-y-los-dos-escenarios-de-prediccion" title="Link to this heading">#</a></h1>
 <p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
+<p>Este capítulo corresponde a la <strong>sub-pestaña «Vecindad y escenarios»</strong> de la pestaña <strong>ML models</strong> del dashboard.</p>
 <p>Los capítulos 3 y 4 dejaron dos pistas. Los residuos de la logística siguen agrupados en el espacio (Moran = 0.70),
 así que al modelo le falta información de <strong>barrio</strong>. Y los modelos más flexibles no ayudan en <strong>zonas nuevas</strong>, lo
 que sugiere que el límite está en la información disponible y no en el algoritmo. Este capítulo pone a prueba esas
@@ -563,7 +564,7 @@ error estándar de la diferencia pareada por fold.</p></li>
 <td><p>0.336</p></td>
 <td><p>+0.037 (0.040)</p></td>
 <td><p>No</p></td>
-<td><p>0.584</p></td>
+<td><p>0.583</p></td>
 <td><p>+0.134 [+0.032, +0.171]</p></td>
 </tr>
 <tr class="row-even"><td><p>A: solo variables físicas</p></td>
@@ -575,10 +576,10 @@ error estándar de la diferencia pareada por fold.</p></li>
 </tr>
 <tr class="row-odd"><td><p>A + vecindad (sin coordenadas)</p></td>
 <td><p>0.356</p></td>
-<td><p>+0.057 (0.028)</p></td>
+<td><p>+0.056 (0.028)</p></td>
 <td><p>Sí</p></td>
 <td><p>0.546</p></td>
-<td><p>+0.096 [−0.022, +0.218]</p></td>
+<td><p>+0.096 [−0.021, +0.218]</p></td>
 </tr>
 </tbody>
 </table>
@@ -590,7 +591,7 @@ el estrato 5 empeora (de 0.19 a 0.04: el 77 % se predice como 4) y el 3 baja de 
 residuos solo baja de 0.70 a 0.64.</p>
 <p>En <strong>validación cruzada</strong>, el modelo principal mejora en 4 de los 5 folds, pero empeora 0.13 en el fold 1, y la
 diferencia media (+0.025) no supera un error estándar. <strong>Por el criterio fijado de antemano, no reemplaza a B.</strong></p>
-<p>La única variante que cumple el criterio en CV es <strong>A + vecindad, sin coordenadas</strong> (+0.057, error estándar 0.028),
+<p>La única variante que cumple el criterio en CV es <strong>A + vecindad, sin coordenadas</strong> (+0.056, error estándar 0.028),
 pero su intervalo de test incluye el cero. Es una variante exploratoria y se compararon cinco candidatos contra la
 misma referencia, sin corrección por comparaciones múltiples. Aun así es un indicio interesante: la vecindad física
 podría sustituir a la posición absoluta.</p>
@@ -850,7 +851,6 @@ el modelo principal, fijado de antemano, se interpreta como prueba.</p></li>
 <li><p><strong>Análisis por zonas posterior.</strong> La sección 5.5 es exploratoria y sus explicaciones son hipótesis.</p></li>
 <li><p><strong>Hiperparámetros del escenario 2.</strong> En zonas conocidas no se volvieron a buscar: se usaron los elegidos por la
 validación espacial.</p></li>
-<li><p><strong>El dashboard no incluye este capítulo.</strong> Sus figuras siguen siendo las de los capítulos 1 a 4.</p></li>
 </ul>
 </section>
 </section>
