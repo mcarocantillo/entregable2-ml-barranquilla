@@ -44,8 +44,8 @@ K = F.kpis()
 # En Colombia, el **estrato socioeconómico** clasifica los inmuebles residenciales en seis niveles. Su uso principal es
 # tarifario: con él se cobran de forma diferenciada los servicios públicos domiciliarios. Los estratos 1, 2 y 3 reciben
 # subsidios y los estratos 5 y 6 pagan una contribución adicional, según el régimen de la Ley 142 de 1994. También se
-# usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna por manzana, con una
-# metodología del DANE que considera las características de las viviendas y de su entorno urbano.
+# usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna con una metodología
+# del DANE que considera las características de las viviendas y de su entorno urbano (ver 1.1.1).
 #
 # El proyecto plantea un problema de **aprendizaje supervisado**: predecir el estrato de cada unidad de vivienda de
 # Barranquilla a partir de la información del **catastro**, es decir, sus características físicas y su ubicación.
@@ -59,6 +59,49 @@ K = F.kpis()
 # características (posibles errores o desactualizaciones), para apoyar la revisión periódica de la estratificación y
 # para estimar el estrato donde no está registrado. No se plantea como reemplazo de la estratificación oficial, que
 # incluye información del entorno que el catastro no tiene.
+#
+# ### 1.1.1 Cómo asigna el DANE el estrato
+#
+# La metodología vigente de estratificación urbana del DANE {cite}`dane2015conceptual,dane2015manual` trabaja, desde
+# 2015, con la **información predial del catastro**. Tiene tres pasos:
+#
+# 1. **Zonas.** Se cruzan las zonas homogéneas físicas del catastro (topografía, vías, servicios, uso del suelo) con
+#    las zonas homogéneas geoeconómicas (zonas de valor del suelo similar). Cada intersección es una *unidad espacial de
+#    estratificación* (UEE). La alcaldía y el Comité Permanente de Estratificación pueden dividirlas o unirlas.
+# 2. **Estrato de la zona.** Cada UEE se califica de 0 a 100 con una medida de tendencia central del *puntaje de
+#    calificación de las edificaciones* (estructura, acabados, baño y cocina); en los apartamentos cuentan además el área
+#    privada y el número de cuartos, y casas y apartamentos se califican por separado. Los cortes entre estratos se
+#    calculan para cada municipio (Dalenius-Hodges, k-medias y una optimización) de modo que la varianza dentro de los
+#    grupos sea mínima, no para que los grupos tengan el mismo tamaño. Todas las viviendas de la UEE reciben su estrato.
+# 3. **Viviendas atípicas.** Solo cambia el estrato de una vivienda cuyo puntaje es atípico frente a todas las viviendas
+#    de ese estrato: fuera de $Q_1 - 1.5\,RIC$ o $Q_3 + 1.5\,RIC$ sube o baja un estrato; fuera de $3\,RIC$, dos.
+#
+# El avalúo catastral no se usa (Ley 14 de 1983), y el propio DANE muestra que el área del terreno y el área
+# construida de las casas casi no distinguen los estratos. Antes de adoptarse, el resultado lo revisan la alcaldía y el
+# comité, que pueden mover subzonas de grupo. La principal fuente de error, según el DANE, es la desactualización.
+#
+# **Qué implica para este proyecto.** El estrato es, ante todo, una propiedad de la **zona**, y la vivienda solo se
+# aparta de su zona cuando es claramente distinta. La siguiente tabla compara los insumos del DANE con lo que trae
+# el catastro abierto que usa el proyecto.
+
+# %% tags=["hide-input"]
+insumos_dane = pd.DataFrame([
+    ["Zonas homogéneas físicas y geoeconómicas", "Delimitar la zona (UEE)", "No; se aproximan con las coordenadas y la vecindad"],
+    ["Puntaje de calificación de la edificación", "Calificar la zona y detectar atípicas", "No"],
+    ["Área privada y cuartos (apartamentos)", "Calificar apartamentos", "Sí (área construida y habitaciones)"],
+    ["Tipo de vivienda (casa o apartamento)", "Se califican por separado", "Sí"],
+    ["Revisión de la alcaldía y el comité", "Ajustes manuales del resultado", "No observable"],
+    ["Avalúo catastral", "No se usa (Ley 14 de 1983)", "Tampoco se usa"],
+], columns=["Insumo del DANE", "Para qué", "¿Está en los datos del proyecto?"])
+insumos_dane
+
+# %% [markdown]
+# Por eso la pregunta del proyecto se precisa así: **¿cuánto del estrato se puede recuperar con la parte pública del
+# catastro?** Los datos abiertos no traen las dos piezas que el DANE usa directamente (las zonas homogéneas y el puntaje
+# de calificación); la ubicación y las variables físicas disponibles son sustitutos imperfectos de ellas. Esto anticipa
+# tres resultados del informe: la ubicación será la información dominante, el estrato casi no variará dentro de un
+# edificio, y los errores serán sobre todo de un estrato, el mismo salto que la metodología permite a las viviendas
+# atípicas.
 
 # %% [markdown]
 # ## 1.2 Revisión bibliográfica y brecha

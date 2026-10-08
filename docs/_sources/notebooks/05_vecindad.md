@@ -231,6 +231,8 @@ Cuatro lecturas:
 - **En zonas conocidas,** los árboles son claramente mejores que la logística, y el XGBoost geográfico, la propuesta
   novedosa del proyecto, supera de forma consistente a su control. Pero empata con copiar el estrato de los vecinos.
 
+**Lectura a la luz de la metodología del DANE.** Los dos escenarios se explican por cómo se asigna el estrato (sección 1.1.1): el DANE califica primero la zona y le da su estrato a todas sus viviendas, y solo corrige las viviendas atípicas. En zonas conocidas, los vecinos ya revelan la zona, y por eso votar con su estrato es tan difícil de superar: lo que aprende el modelo es, en esencia, la zona del DANE. En zonas nuevas, la zona hay que deducirla de las viviendas, y el insumo que el DANE usa para eso (el puntaje de calificación de las edificaciones) no está en los datos abiertos. Las variables de vecindad física son un sustituto parcial de ese puntaje medio de la zona; que funcionen en barrios homogéneos y fallen en los mezclados es coherente con una metodología pensada para zonas homogéneas.
+
 **Implicación práctica.** Para estimar el estrato de un predio en una zona ya estratificada, basta una regla de
 vecinos. Los modelos con variables catastrales solo son necesarios donde no hay estratos conocidos alrededor, y ahí
 el problema sigue abierto. Los siguientes pasos son medir la variedad física del entorno, para que el modelo sepa

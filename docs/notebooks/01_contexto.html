@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -61,6 +61,8 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/01_contexto';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Índice" href="../genindex.html" />
@@ -372,7 +374,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema">1.1 El problema</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema">1.1 El problema</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-asigna-el-dane-el-estrato">1.1.1 Cómo asigna el DANE el estrato</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#revision-bibliografica-y-brecha">1.2 Revisión bibliográfica y brecha</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#los-datos">1.3 Los datos</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#de-los-datos-descargados-a-las-viviendas-analizadas">1.4 De los datos descargados a las viviendas analizadas</a></li>
@@ -429,8 +434,8 @@
 <p>En Colombia, el <strong>estrato socioeconómico</strong> clasifica los inmuebles residenciales en seis niveles. Su uso principal es
 tarifario: con él se cobran de forma diferenciada los servicios públicos domiciliarios. Los estratos 1, 2 y 3 reciben
 subsidios y los estratos 5 y 6 pagan una contribución adicional, según el régimen de la Ley 142 de 1994. También se
-usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna por manzana, con una
-metodología del DANE que considera las características de las viviendas y de su entorno urbano.</p>
+usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna con una metodología
+del DANE que considera las características de las viviendas y de su entorno urbano (ver 1.1.1).</p>
 <p>El proyecto plantea un problema de <strong>aprendizaje supervisado</strong>: predecir el estrato de cada unidad de vivienda de
 Barranquilla a partir de la información del <strong>catastro</strong>, es decir, sus características físicas y su ubicación.
 Es un problema de <strong>clasificación multiclase</strong> con dos rasgos que condicionan todo el análisis:</p>
@@ -443,6 +448,105 @@ de clasificación habituales, se reportan métricas ordinales (MAE ordinal, accu
 características (posibles errores o desactualizaciones), para apoyar la revisión periódica de la estratificación y
 para estimar el estrato donde no está registrado. No se plantea como reemplazo de la estratificación oficial, que
 incluye información del entorno que el catastro no tiene.</p>
+<section id="como-asigna-el-dane-el-estrato">
+<h3>1.1.1 Cómo asigna el DANE el estrato<a class="headerlink" href="#como-asigna-el-dane-el-estrato" title="Link to this heading">#</a></h3>
+<p>La metodología vigente de estratificación urbana del DANE <span class="bibtex-citation" id="id1">[<a class="reference internal" href="B_referencias.html#id15" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>, <a class="reference internal" href="B_referencias.html#id16" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: manual de realización. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>]</span> trabaja, desde
+2015, con la <strong>información predial del catastro</strong>. Tiene tres pasos:</p>
+<ol class="arabic simple">
+<li><p><strong>Zonas.</strong> Se cruzan las zonas homogéneas físicas del catastro (topografía, vías, servicios, uso del suelo) con
+las zonas homogéneas geoeconómicas (zonas de valor del suelo similar). Cada intersección es una <em>unidad espacial de
+estratificación</em> (UEE). La alcaldía y el Comité Permanente de Estratificación pueden dividirlas o unirlas.</p></li>
+<li><p><strong>Estrato de la zona.</strong> Cada UEE se califica de 0 a 100 con una medida de tendencia central del <em>puntaje de
+calificación de las edificaciones</em> (estructura, acabados, baño y cocina); en los apartamentos cuentan además el área
+privada y el número de cuartos, y casas y apartamentos se califican por separado. Los cortes entre estratos se
+calculan para cada municipio (Dalenius-Hodges, k-medias y una optimización) de modo que la varianza dentro de los
+grupos sea mínima, no para que los grupos tengan el mismo tamaño. Todas las viviendas de la UEE reciben su estrato.</p></li>
+<li><p><strong>Viviendas atípicas.</strong> Solo cambia el estrato de una vivienda cuyo puntaje es atípico frente a todas las viviendas
+de ese estrato: fuera de <span class="math notranslate nohighlight">\(Q_1 - 1.5\,RIC\)</span> o <span class="math notranslate nohighlight">\(Q_3 + 1.5\,RIC\)</span> sube o baja un estrato; fuera de <span class="math notranslate nohighlight">\(3\,RIC\)</span>, dos.</p></li>
+</ol>
+<p>El avalúo catastral no se usa (Ley 14 de 1983), y el propio DANE muestra que el área del terreno y el área
+construida de las casas casi no distinguen los estratos. Antes de adoptarse, el resultado lo revisan la alcaldía y el
+comité, que pueden mover subzonas de grupo. La principal fuente de error, según el DANE, es la desactualización.</p>
+<p><strong>Qué implica para este proyecto.</strong> El estrato es, ante todo, una propiedad de la <strong>zona</strong>, y la vivienda solo se
+aparta de su zona cuando es claramente distinta. La siguiente tabla compara los insumos del DANE con lo que trae
+el catastro abierto que usa el proyecto.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Mostrar el código</p>
+<p class="expanded admonition-title">Ocultar el código</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">insumos_dane</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">[</span><span class="s2">"Zonas homogéneas físicas y geoeconómicas"</span><span class="p">,</span> <span class="s2">"Delimitar la zona (UEE)"</span><span class="p">,</span> <span class="s2">"No; se aproximan con las coordenadas y la vecindad"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Puntaje de calificación de la edificación"</span><span class="p">,</span> <span class="s2">"Calificar la zona y detectar atípicas"</span><span class="p">,</span> <span class="s2">"No"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Área privada y cuartos (apartamentos)"</span><span class="p">,</span> <span class="s2">"Calificar apartamentos"</span><span class="p">,</span> <span class="s2">"Sí (área construida y habitaciones)"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Tipo de vivienda (casa o apartamento)"</span><span class="p">,</span> <span class="s2">"Se califican por separado"</span><span class="p">,</span> <span class="s2">"Sí"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Revisión de la alcaldía y el comité"</span><span class="p">,</span> <span class="s2">"Ajustes manuales del resultado"</span><span class="p">,</span> <span class="s2">"No observable"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Avalúo catastral"</span><span class="p">,</span> <span class="s2">"No se usa (Ley 14 de 1983)"</span><span class="p">,</span> <span class="s2">"Tampoco se usa"</span><span class="p">],</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Insumo del DANE"</span><span class="p">,</span> <span class="s2">"Para qué"</span><span class="p">,</span> <span class="s2">"¿Está en los datos del proyecto?"</span><span class="p">])</span>
+<span class="n">insumos_dane</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Insumo del DANE</th>
+      <th>Para qué</th>
+      <th>¿Está en los datos del proyecto?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Zonas homogéneas físicas y geoeconómicas</td>
+      <td>Delimitar la zona (UEE)</td>
+      <td>No; se aproximan con las coordenadas y la vecindad</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Puntaje de calificación de la edificación</td>
+      <td>Calificar la zona y detectar atípicas</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Área privada y cuartos (apartamentos)</td>
+      <td>Calificar apartamentos</td>
+      <td>Sí (área construida y habitaciones)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Tipo de vivienda (casa o apartamento)</td>
+      <td>Se califican por separado</td>
+      <td>Sí</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Revisión de la alcaldía y el comité</td>
+      <td>Ajustes manuales del resultado</td>
+      <td>No observable</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Avalúo catastral</td>
+      <td>No se usa (Ley 14 de 1983)</td>
+      <td>Tampoco se usa</td>
+    </tr>
+  </tbody>
+</table></div></div>
+</div>
+<p>Por eso la pregunta del proyecto se precisa así: <strong>¿cuánto del estrato se puede recuperar con la parte pública del
+catastro?</strong> Los datos abiertos no traen las dos piezas que el DANE usa directamente (las zonas homogéneas y el puntaje
+de calificación); la ubicación y las variables físicas disponibles son sustitutos imperfectos de ellas. Esto anticipa
+tres resultados del informe: la ubicación será la información dominante, el estrato casi no variará dentro de un
+edificio, y los errores serán sobre todo de un estrato, el mismo salto que la metodología permite a las viviendas
+atípicas.</p>
+</section>
 </section>
 <section id="revision-bibliografica-y-brecha">
 <h2>1.2 Revisión bibliográfica y brecha<a class="headerlink" href="#revision-bibliografica-y-brecha" title="Link to this heading">#</a></h2>
@@ -455,8 +559,8 @@ supervisado.</p>
 de una vivienda usando como predictores sus características catastrales (área, baños, habitaciones, pisos, año de
 construcción) y su ubicación. Los trabajos más cercanos predicen el <strong>precio</strong> de la vivienda (con XGBoost, Random
 Forest o SVR) o usan el nivel socioeconómico como <strong>predictor</strong> de otra cosa, no como variable objetivo
-<span class="bibtex-citation" id="id1">[<a class="reference internal" href="B_referencias.html#id3" title="S. Jin, H. Zheng, N. Marantz, and A. Roy. Understanding the effects of socioeconomic factors on housing price appreciation using explainable ai. Applied Geography, 169:103339, 2024. doi:10.1016/j.apgeog.2024.103339.">Jin <em>et al.</em>, 2024</a>, <a class="reference internal" href="B_referencias.html#id5" title="Y. Ren. Ensemble learning models for house price prediction: a case study in king county, usa. In AIP Conference Proceedings, volume 3194, 020004. 2024. doi:10.1063/5.0222900.">Ren, 2024</a>, <a class="reference internal" href="B_referencias.html#id2" title="J. Rojas-Quiroz and C. Marmolejo-Duarte. More than black boxes: machine learning models' capacity to capture housing submarket patterns. Urban Science, 10(8):440, 2026. doi:10.3390/urbansci10080440.">Rojas-Quiroz and Marmolejo-Duarte, 2026</a>]</span>. El antecedente metodológico más próximo es de 1998 y usa regresión logística con
-datos agregados por sector censal <span class="bibtex-citation" id="id2">[<a class="reference internal" href="B_referencias.html#id6" title="M. W. Sermons and F. S. Koppelman. Factor analytic approach to incorporating systematic taste variation into models of residential location choice. Transportation Research Record, pages 194–202, 1998. doi:10.3141/1617-27.">Sermons and Koppelman, 1998</a>]</span>.</p>
+<span class="bibtex-citation" id="id2">[<a class="reference internal" href="B_referencias.html#id3" title="S. Jin, H. Zheng, N. Marantz, and A. Roy. Understanding the effects of socioeconomic factors on housing price appreciation using explainable ai. Applied Geography, 169:103339, 2024. doi:10.1016/j.apgeog.2024.103339.">Jin <em>et al.</em>, 2024</a>, <a class="reference internal" href="B_referencias.html#id5" title="Y. Ren. Ensemble learning models for house price prediction: a case study in king county, usa. In AIP Conference Proceedings, volume 3194, 020004. 2024. doi:10.1063/5.0222900.">Ren, 2024</a>, <a class="reference internal" href="B_referencias.html#id2" title="J. Rojas-Quiroz and C. Marmolejo-Duarte. More than black boxes: machine learning models' capacity to capture housing submarket patterns. Urban Science, 10(8):440, 2026. doi:10.3390/urbansci10080440.">Rojas-Quiroz and Marmolejo-Duarte, 2026</a>]</span>. El antecedente metodológico más próximo es de 1998 y usa regresión logística con
+datos agregados por sector censal <span class="bibtex-citation" id="id3">[<a class="reference internal" href="B_referencias.html#id6" title="M. W. Sermons and F. S. Koppelman. Factor analytic approach to incorporating systematic taste variation into models of residential location choice. Transportation Research Record, pages 194–202, 1998. doi:10.3141/1617-27.">Sermons and Koppelman, 1998</a>]</span>.</p>
 <p><strong>Brecha metodológica.</strong> La segunda búsqueda identificó modelos supervisados con evidencia de reducir el error frente
 a clasificadores convencionales, pero que no se han aplicado a este problema. Los más relevantes, en el orden de
 prioridad de la revisión, son:</p>
@@ -538,7 +642,7 @@ prioridad de la revisión, son:</p>
 </table>
 </div></div></div>
 </div>
-<p>Estos modelos son los candidatos del siguiente entregable <span class="bibtex-citation" id="id3">[<a class="reference internal" href="B_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>, <a class="reference internal" href="B_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>, <a class="reference internal" href="B_referencias.html#id11" title="B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. IOP Conference Series: Earth and Environmental Science, 187(1):012053, 2018. doi:10.1088/1755-1315/187/1/012053.">Sartono <em>et al.</em>, 2018</a>]</span>. El papel
+<p>Estos modelos son los candidatos del siguiente entregable <span class="bibtex-citation" id="id4">[<a class="reference internal" href="B_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>, <a class="reference internal" href="B_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>, <a class="reference internal" href="B_referencias.html#id11" title="B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. IOP Conference Series: Earth and Environmental Science, 187(1):012053, 2018. doi:10.1088/1755-1315/187/1/012053.">Sartono <em>et al.</em>, 2018</a>]</span>. El papel
 de <strong>este</strong> entregable es fijar la <strong>referencia</strong> contra la que se medirán: un modelo base lineal (regresión
 logística), evaluado con un protocolo que respeta la estructura espacial de los datos y comparado contra líneas base
 triviales. Si un modelo novedoso no supera con claridad esta referencia con el mismo protocolo, no aporta.</p>
@@ -4468,7 +4572,10 @@ En particular, allí se corrigió un error de uniones muchos-a-muchos que duplic
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema">1.1 El problema</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema">1.1 El problema</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-asigna-el-dane-el-estrato">1.1.1 Cómo asigna el DANE el estrato</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#revision-bibliografica-y-brecha">1.2 Revisión bibliográfica y brecha</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#los-datos">1.3 Los datos</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#de-los-datos-descargados-a-las-viviendas-analizadas">1.4 De los datos descargados a las viviendas analizadas</a></li>

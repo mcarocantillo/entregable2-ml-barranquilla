@@ -126,6 +126,23 @@ candidatos = pd.DataFrame([
     ["Bagged TAO Trees", "Árboles oblicuos optimizados", "Datos tabulares heterogéneos", "No (sin implementación mantenida)"],
 ], columns=["Modelo de la revisión", "Idea", "Por qué encaja", "¿Se evaluó?"])
 
+pasos_dane = pasos([("1", "Zonas", "Se cruzan las zonas homogéneas físicas (vías, servicios, uso) y "
+                                   "geoeconómicas (valor del suelo) del catastro"),
+                    ("2", "Estrato de la zona", "Se califica con el puntaje de las edificaciones (estructura, acabados, "
+                                                "baño, cocina) y se agrupa con cortes de mínima varianza"),
+                    ("3", "Revisión", "La alcaldía y el Comité de Estratificación ajustan zonas"),
+                    ("4", "Atípicas", "Una vivienda muy distinta de su estrato sube o baja 1 o 2 estratos (regla del RIC)"),
+                    ("5", "Adopción", "Decreto del alcalde; el avalúo catastral no se usa")])
+
+insumos_dane = pd.DataFrame([
+    ["Zonas homogéneas físicas y geoeconómicas", "Delimitar la zona", "No (se aproximan con coordenadas y vecindad)"],
+    ["Puntaje de calificación de la edificación", "Calificar zona y atípicas", "No"],
+    ["Área y cuartos (apartamentos)", "Calificar apartamentos", "Sí"],
+    ["Tipo: casa o apartamento", "Se califican por separado", "Sí"],
+    ["Revisión de alcaldía y comité", "Ajustes manuales", "No observable"],
+    ["Avalúo catastral", "No se usa (Ley 14 de 1983)", "Tampoco se usa"],
+], columns=["Insumo del DANE", "Para qué", "¿En los datos del proyecto?"])
+
 tab_contexto = dbc.Container([
     dbc.Row([
         dbc.Col(dbc.Card([
@@ -158,14 +175,29 @@ tab_contexto = dbc.Container([
                 dbc.Col(hallazgo("Ley 142", "Tarifas de servicios públicos",
                                  "Los estratos 1 a 3 reciben subsidios y los estratos 5 y 6 pagan una contribución "
                                  "adicional. Un estrato mal asignado es un subsidio mal dirigido.", "#1baf7a"), md=4),
-                dbc.Col(hallazgo("DANE", "Lo asigna cada alcaldía por manzana",
-                                 "Con una metodología que mira la vivienda y su entorno urbano. Se actualiza con poca "
-                                 "frecuencia y hay predios sin estrato.", "#2a78d6"), md=4),
+                dbc.Col(hallazgo("DANE", "Lo asigna cada alcaldía por zonas",
+                                 "Con la metodología del DANE: primero se estratifica la zona y luego se corrigen las "
+                                 "viviendas atípicas. Se actualiza con poca frecuencia.", "#2a78d6"), md=4),
                 dbc.Col(hallazgo("Focalización", "Más allá de las tarifas",
                                  "El estrato se usa para focalizar programas sociales y para planear la ciudad. Un "
                                  "modelo podría señalar estratos incoherentes con las características de la vivienda.",
                                  "#eb6834"), md=4),
             ], className="g-3")),
+
+    seccion("Cómo asigna el DANE el estrato", pasos_dane,
+            sub="Metodología de estratificación urbana vigente (DANE, 2015), basada en la información del catastro.",
+            *[dbc.Row([
+                dbc.Col(html.Div(tabla(insumos_dane), className="tabla-scroll"), lg=7),
+                dbc.Col(interpretacion(
+                    "El estrato es, ante todo, una propiedad de la zona: todas las viviendas de una zona reciben su "
+                    "estrato y solo cambian las que son claramente distintas, uno o dos estratos. Por eso la ubicación "
+                    "domina los modelos, el estrato casi no varía dentro de un edificio y los errores son casi siempre "
+                    "de un estrato.",
+                    "El catastro abierto no publica las zonas homogéneas ni el puntaje de calificación de las "
+                    "edificaciones, los dos insumos con los que el DANE calcula el estrato. La pregunta del proyecto es, "
+                    "en el fondo, cuánto del estrato se recupera con la parte pública del catastro.",
+                    titulo="Qué implica para el proyecto"), lg=5),
+            ], className="g-4 mt-1")]),
 
     seccion("Qué propone el proyecto",
             dbc.Row([
