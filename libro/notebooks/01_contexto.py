@@ -196,7 +196,7 @@ F.fig_distribucion_estrato("todas")
 
 # %% tags=["hide-input"]
 pd.DataFrame({
-    "Indicador": ["Viviendas analizadas", "Edificios distintos", "Viviendas sin coordenadas", "I de Moran del estrato",
+    "Indicador": ["Viviendas analizadas", "Predios matriz (edificios, conjuntos o lotes)", "Viviendas sin coordenadas", "I de Moran del estrato",
                   "F1 macro del modelo principal en test"],
     "Valor": [f"{K['viviendas']:,}".replace(",", " "), f"{K['edificios']:,}".replace(",", " "),
               f"{K['sin_coord']:.1%}", f"{K['moran']:.3f}", f"{K['f1_test']:.3f}"],

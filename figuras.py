@@ -322,22 +322,30 @@ def fig_correlograma():
     return _estilo(fig, alto=420, leyenda=False)
 
 
+def grupos_predio(v):
+    """Grupo de cada vivienda: su predio matriz (edificio, conjunto o lote). Las viviendas informales sin
+    coordenadas son mejoras en terreno ajeno (condición de propiedad 5): el catastro cuelga muchas viviendas
+    independientes del mismo lote, así que cada una es su propio grupo."""
+    mejora = ((v["condicion_predio"] == "Informal") & ~v["tiene_coordenadas"]).to_numpy()
+    return pd.Series(np.where(mejora, -1 - np.arange(len(v)), v["edificio_id"].to_numpy()), index=v.index)
+
+
 def fig_tamano_edificios():
     v = viviendas()
-    t = v.groupby("edificio_id").size()
+    t = v.groupby(grupos_predio(v)).size()
     bins = [0, 1, 5, 20, 100, 500, 4000]
     et = ["1 (casa)", "2–5", "6–20", "21–100", "101–500", "> 500"]
     c = pd.cut(t, bins, labels=et)
     edif = c.value_counts().reindex(et) / len(t)
     unid = t.groupby(c, observed=False).sum().reindex(et) / t.sum()
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=et, y=edif.values, name="% de edificios", marker_color="#86b6ef",
-                         hovertemplate="%{x}: %{y:.1%} de los edificios<extra></extra>"))
+    fig.add_trace(go.Bar(x=et, y=edif.values, name="% de predios matriz", marker_color="#86b6ef",
+                         hovertemplate="%{x}: %{y:.1%} de los predios matriz<extra></extra>"))
     fig.add_trace(go.Bar(x=et, y=unid.values, name="% de viviendas", marker_color="#1c5cab",
                          hovertemplate="%{x}: %{y:.1%} de las viviendas<extra></extra>"))
-    fig.update_layout(barmode="group", title=f"Unidades por edificio: mediana {int(t.median())}, máximo {t.max():,}".replace(",", " ").replace("  ", ", "))
+    fig.update_layout(barmode="group", title=f"Viviendas por predio matriz: mediana {int(t.median())}, máximo {t.max():,}".replace(",", " ").replace("  ", ", "))
     fig.update_yaxes(tickformat=".0%", title="proporción")
-    fig.update_xaxes(title="viviendas en el edificio")
+    fig.update_xaxes(title="viviendas en el predio matriz")
     return _estilo(fig, alto=420)
 
 

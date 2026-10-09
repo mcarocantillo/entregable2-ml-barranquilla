@@ -42,4 +42,4 @@ Los archivos `.pkl` son intermedios grandes y no se suben al repositorio (ver `.
   densidad) y excluyen el propio edificio. Nunca usan el estrato de los vecinos.
 - El estrato de los vecinos aparece solo en dos lugares: como diagnóstico en `05b` (nunca entra a un modelo) y en
   el escenario de zonas conocidas (`06`), donde esa información sí estaría disponible en la práctica.
-- En el escenario 2 se ocultan edificios completos, nunca filas sueltas (ICC = 0.991).
+- En el escenario 2 se ocultan edificios completos, nunca filas sueltas (ICC = 0.992).

@@ -221,7 +221,7 @@ F.fig_correlograma()
 F.fig_tamano_edificios()
 
 # %% [markdown]
-# **Dependencia dentro del edificio.** El ICC(1) es 0.991: dentro de un edificio el estrato prácticamente no varía.
+# **Dependencia dentro del predio matriz.** El ICC(1) es 0.992: dentro de un edificio o conjunto el estrato prácticamente no varía.
 # Esto quiere decir que cien apartamentos de una misma torre aportan casi la misma información sobre el estrato que uno
 # solo. Es como fotocopiar una hoja 1 000 veces: hay 1 000 hojas, pero una sola página de información. Por eso las
 # filas no son datos independientes, y la muestra vale menos de lo que sugiere su número de filas.
@@ -232,8 +232,8 @@ F.fig_tamano_edificios()
 #
 # $$\text{deff} \approx 1 + (\tilde m - 1)\times \text{ICC},$$
 #
-# donde ICC mide qué tanto se parecen entre sí las viviendas de un mismo edificio (0 = nada, 1 = son idénticas) y
-# $\tilde m$ es el tamaño medio del edificio **visto desde una vivienda**.
+# donde ICC mide qué tanto se parecen entre sí las viviendas de un mismo predio matriz (0 = nada, 1 = son idénticas) y
+# $\tilde m$ es el tamaño medio del grupo **visto desde una vivienda**. El grupo es el **predio matriz** (edificio, conjunto residencial o casa); las mejoras informales en terreno ajeno, que el catastro registra en un mismo lote aunque son viviendas independientes, cuentan cada una como su propio grupo.
 #
 # *Por qué $\tilde m$ no es el promedio por edificio.* Hay dos formas de calcular el "tamaño promedio" de un edificio:
 # preguntarle a cada **edificio** cuántas viviendas tiene (la mediana es 1, porque la mayoría son casas), o preguntarle
@@ -243,29 +243,30 @@ F.fig_tamano_edificios()
 # (99 × 1 + 901 × 901) ÷ 1 000 ≈ 812. Es un promedio ponderado por tamaño: los edificios grandes pesan más porque
 # contienen más filas, y las filas son lo que se usa para modelar. Esa segunda forma es la que mide la repetición.
 #
-# *En este catastro.* La figura lo muestra: el 86 % de los edificios son casas de una sola unidad, pero contienen
-# menos de la mitad de las viviendas; los edificios de más de 100 unidades son una fracción mínima de los edificios y
-# concentran más de una cuarta parte de las viviendas. Hay torres de hasta 3 045 unidades.
+# *En este catastro.* La figura lo muestra: el 91 % de los predios matriz tienen una sola vivienda, y contienen
+# la mitad de las viviendas; los de más de 100 unidades son una fracción mínima (0.1 %) y
+# concentran cerca de una cuarta parte de las viviendas. Hay conjuntos de hasta 1 860 unidades (93 torres).
 
 # %% tags=["hide-input"]
 v = F.viviendas()
-m = v.groupby("edificio_id").size()
+m = v.groupby(F.grupos_predio(v)).size()      # grupo = predio matriz; mejoras aparte
 m_tilde = float((m ** 2).sum() / m.sum())
-icc = 0.991  # ICC(1) calculado en el capítulo 1 del Entregable 1 (ANOVA de una vía por edificio)
+icc = 0.992  # ICC(1) calculado en el capítulo 1 del Entregable 1 (ANOVA de una vía por predio matriz)
 deff = 1 + (m_tilde - 1) * icc
-print(f"Viviendas: {len(v):,}   Edificios: {len(m):,}   Mediana de unidades por edificio: {int(m.median())}".replace(",", " "))
+print(f"Viviendas: {len(v):,}   Grupos: {len(m):,}   Mediana de unidades por grupo: {int(m.median())}".replace(",", " "))
 print(f"Tamaño medio visto desde una vivienda (m~): {m_tilde:.1f}")
 print(f"Efecto de diseño ≈ 1 + ({m_tilde:.1f} − 1) × {icc} = {deff:.1f}")
 print(f"Tamaño efectivo ≈ {len(v):,} ÷ {deff:.1f} ≈ {len(v) / deff:,.0f}".replace(",", " "))
 
 # %% [markdown]
-# **Cómo leer ese 1 870.** No es un conteo de viviendas, de predios, de edificios ni de combinaciones de
+# **Cómo leer ese 2 300.** No es un conteo de viviendas, de predios, de edificios ni de combinaciones de
 # características: es una medida de precisión. Significa que las estimaciones sobre el estrato tienen la precisión de
-# unas 1 870 observaciones independientes, no de 332 718. Tampoco significa que sobren o falten filas: hay 168 044
-# edificios distintos, muy por encima del mínimo de 20 000. Dos consecuencias prácticas: (1) la partición mantiene
+# unas 2 300 observaciones independientes, no de 332 718. Tampoco significa que sobren o falten filas: hay 168 044
+# predios matriz distintos, muy por encima del mínimo de 20 000. Dos consecuencias prácticas: (1) la partición mantiene
 # juntas las unidades de un mismo edificio y de una misma zona, para que una torre nunca quede repartida entre
 # entrenamiento y prueba; y (2) los intervalos de confianza remuestrean bloques, no filas (capítulo 3). (El efecto de
-# diseño exacto del Entregable 1, 177.8, usa el ICC sin redondear.)
+# diseño exacto del Entregable 1, 144.3, usa el ICC sin redondear. Sin separar las mejoras informales, el
+# «edificio» más grande sería un lote con 3 045 viviendas informales y el tamaño efectivo bajaría a ≈ 1 870.)
 
 # %% [markdown]
 # **Cobertura.** El 16.2 % de las viviendas no tiene coordenadas; el 99.5 % de ellas son predios informales y el

@@ -2,7 +2,7 @@
 
 Se usan solo las viviendas de los bloques de entrenamiento (el test del Entregable 1 no interviene).
 Se ocultan EDIFICIOS completos al azar (5 folds, semilla 42, sin buffer): el modelo ve a los vecinos de la vivienda,
-pero nunca a otras unidades de su mismo edificio (ICC = 0.991, ocultar filas sueltas sería fuga).
+pero nunca a otras unidades de su mismo edificio (ICC = 0.992, ocultar filas sueltas sería fuga).
 Hiperparámetros FIJOS en los que eligió la validación espacial (no se re-buscan para este escenario).
 En este escenario el estrato de los vecinos (de edificios con estrato conocido) es información legítima;
 en el escenario de zonas nuevas sería fuga.

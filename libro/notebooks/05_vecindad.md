@@ -177,7 +177,7 @@ datos ahí, y dejó pendiente medirlo **dentro de zonas conocidas**. Así se hiz
 - **Datos:** las 218 870 viviendas de los bloques de entrenamiento. El test del Entregable 1 no interviene.
 - **Partición:** se ocultan **edificios completos** al azar en 5 folds (semilla 42), sin buffer. El modelo ve a los
   vecinos de la vivienda, pero nunca otras unidades de su mismo edificio. Ocultar filas sueltas sería fuga, porque el
-  estrato casi no varía dentro de un edificio (ICC = 0.991).
+  estrato casi no varía dentro de un edificio o conjunto (ICC = 0.992).
 - **Información legítima en este escenario:** el estrato de las viviendas conocidas cercanas. En una zona ya
   estratificada esa información existe, así que aquí se usa. En zonas nuevas sería fuga.
 - **Hiperparámetros:** los elegidos por la validación espacial, sin una búsqueda nueva. El XGBoost geográfico usa la

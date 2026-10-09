@@ -161,7 +161,7 @@ tab_contexto = dbc.Container([
                     "habitaciones, los pisos, la antigüedad, el régimen de propiedad y la ubicación de cada vivienda."]),
             dbc.Row([
                 dbc.Col(tarjeta_kpi(fmt(K["viviendas"]), "viviendas analizadas"), xs=6, className="mb-3"),
-                dbc.Col(tarjeta_kpi(fmt(K["edificios"]), "edificios distintos"), xs=6, className="mb-3"),
+                dbc.Col(tarjeta_kpi(fmt(K["edificios"]), "predios matriz", "edificios, conjuntos o lotes"), xs=6, className="mb-3"),
                 dbc.Col(tarjeta_kpi("6", "clases ordinales", "estratos 1 a 6"), xs=6),
                 dbc.Col(tarjeta_kpi(f"{K['moran']:.2f}", "I de Moran del estrato", "la ciudad está segregada"), xs=6),
             ], className="g-3"),
@@ -322,9 +322,9 @@ eda_espacio = html.Div([
         f"El estrato tiene una autocorrelación espacial extremadamente fuerte (I de Moran = {K['moran']:.2f} entre "
         "edificios vecinos): viviendas cercanas casi siempre comparten estrato. El correlograma muestra que ese parecido cae "
         "por debajo de 0.3 a unos 2.9 km; con eso se fijó un buffer de 1 km entre entrenamiento y validación.",
-        "Además, el estrato casi no varía dentro de un edificio (ICC = 0.991) y unas pocas torres concentran muchas "
-        "viviendas. Las filas no son datos independientes: las 332 718 viviendas equivalen, en precisión, a unas 1 870 "
-        "observaciones independientes. Por eso la partición mantiene juntos los edificios y las zonas, y la incertidumbre se "
+        "Además, el estrato casi no varía dentro de un edificio o conjunto (ICC = 0.992) y unos pocos conjuntos concentran "
+        "muchas viviendas. Las filas no son datos independientes: las 332 718 viviendas equivalen, en precisión, a unas "
+        "2 300 observaciones independientes. Por eso la partición mantiene juntos los edificios y las zonas, y la incertidumbre se "
         "mide remuestreando bloques, no filas.",
         "Con «solo entrenamiento» el mapa muestra huecos rectangulares: son los bloques de 2 km reservados para test, que el "
         "EDA no mira. Cerca del 16 % de las viviendas (predios informales, casi todos de estratos 1–2) no tienen coordenadas "
@@ -340,8 +340,8 @@ tab_eda = dbc.Container([
                          "estrato; entre las físicas, los baños (0.31).", "#0f8a7a"), md=6, lg=3),
         dbc.Col(hallazgo(f"{K['moran']:.2f}", "Ciudad segregada", "I de Moran del estrato: los vecinos casi siempre "
                          "comparten estrato. Validar al azar sería engañoso.", "#4a3aa7"), md=6, lg=3),
-        dbc.Col(hallazgo("0.991", "Edificios homogéneos", "ICC del estrato dentro de un edificio: el tamaño efectivo es "
-                         "de unas 1 870 observaciones.", "#eb6834"), md=6, lg=3),
+        dbc.Col(hallazgo("0.992", "Edificios homogéneos", "ICC del estrato dentro de un edificio o conjunto: el tamaño "
+                         "efectivo es de unas 2 300 observaciones.", "#eb6834"), md=6, lg=3),
     ], className="g-3"),
     dbc.Alert(["El EDA se hace ", html.B("solo con el conjunto de entrenamiento"), ", para que ninguna decisión del modelo "
                "se tome mirando el test. Puedes cambiar a todas las viviendas para describir la ciudad completa."],

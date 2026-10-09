@@ -18,7 +18,7 @@ El dashboard está desplegado en Render: **https://entregable2-ml-barranquilla.o
 
 ## Resumen de resultados
 
-Se trabajó con **332 718 viviendas** del catastro abierto (168 044 edificios). El estrato está moderadamente desbalanceado, es ordinal y tiene una autocorrelación espacial muy fuerte (I de Moran = 0.91): la ciudad está segregada de sur a norte. Por eso la partición entrenamiento/prueba y la validación cruzada se hicieron por **bloques espaciales de 2 km con un buffer de 1 km**, y la incertidumbre se midió remuestreando bloques.
+Se trabajó con **332 718 viviendas** del catastro abierto (168 044 predios matriz: edificios, conjuntos o lotes). El estrato está moderadamente desbalanceado, es ordinal y tiene una autocorrelación espacial muy fuerte (I de Moran = 0.91): la ciudad está segregada de sur a norte. Por eso la partición entrenamiento/prueba y la validación cruzada se hicieron por **bloques espaciales de 2 km con un buffer de 1 km**, y la incertidumbre se midió remuestreando bloques.
 
 El modelo base, una **regresión logística multinomial** con variables físicas y de ubicación, obtiene un **F1 macro de 0.30 ± 0.09 en validación cruzada espacial y de 0.45 en test** (IC 95 % [0.16, 0.46]). Supera con claridad a las líneas base Dummy. También supera en todas las métricas a la línea base geográfica, la clase más frecuente por zona de 2 km, aunque esa diferencia de F1 no es significativa. Los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.94). Los residuos siguen autocorrelacionados en el espacio (Moran = 0.70).
 
