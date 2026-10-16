@@ -1,33 +1,31 @@
-"""Dashboard del proyecto — Estrato socioeconómico de las viviendas de Barranquilla.
+"""Dashboard del Entregable 2 — Estrato socioeconómico de las viviendas de Barranquilla.
 
 Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
 Machine Learning — Maestría, Universidad del Norte. Profesor Lihki Rubio.
 
-Tres pestañas: (1) Contexto, (2) EDA y (3) ML models (modelo base, diagnóstico, modelos de la revisión
-bibliográfica, variables de vecindad y los dos escenarios de predicción, simulador y conclusiones).
-Todas las figuras salen de ``figuras.py``; los datos y resultados, de ``datos/`` (ver ``preparar_datos.py``,
-``entrenar_avanzados.py`` y la carpeta ``vecindad/``). Las imágenes de ``assets/`` las genera
-``generar_portada.py`` a partir de los datos. Para Render: ``gunicorn app:server``.
+Cuatro pestañas: (1) contexto del problema, (2) base de datos y calidad (Entregable 1),
+(3) EDA y (4) modelos
+(regresión logística frente a líneas base triviales). Todas las figuras salen
+de ``figuras.py``; los datos y resultados, de ``datos/`` (ver
+``preparar_datos.py``). Para Render: ``gunicorn app:server``.
 """
 import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
-from dash import Dash, Input, Output, dcc, html
+from dash import Dash, Input, Output, State, dcc, html
 
 import figuras as F
 
 # El tema Bootstrap (Flatly) va en assets/bootstrap_flatly.css: no depende de un CDN externo.
-app = Dash(__name__, title="Estrato socioeconómico — Barranquilla", suppress_callback_exceptions=True)
+app = Dash(__name__,
+           title="Estrato socioeconómico — Barranquilla", suppress_callback_exceptions=True)
 server = app.server
 
 AUTORES = "María Carolina Cantillo Orozco (200179105) · Juan Camilo Oñoro Araujo (200177329)"
 GRAF = {"displaylogo": False, "toImageButtonOptions": {"format": "png", "scale": 2}}
 
 
-# ===========================================================================
-# Componentes reutilizables
-# ===========================================================================
 def fmt(n):
     return f"{n:,}".replace(",", " ")
 
@@ -43,26 +41,14 @@ def tarjeta_kpi(valor, etiqueta, nota=None):
                                   html.Div(nota, className="kpi-nota") if nota else None]), className="h-100 kpi")
 
 
-def hallazgo(valor, titulo, texto, color="#2a78d6"):
-    """Tarjeta de hallazgo: cifra grande, título y una frase."""
-    return dbc.Card(dbc.CardBody([html.Div(valor, className="hallazgo-valor", style={"color": color}),
-                                  html.Div(titulo, className="hallazgo-titulo"), html.P(texto, className="hallazgo-texto")]),
-                    className="h-100 hallazgo", style={"borderTopColor": color})
-
-
 def grafico(fig, id_=None):
     props = {"figure": fig, "config": GRAF}
     return dcc.Graph(id=id_, **props) if id_ else dcc.Graph(**props)
 
 
-def tarjeta_grafico(fig, id_=None):
-    return dbc.Card(dbc.CardBody(grafico(fig, id_), className="p-2"), className="tarjeta-grafico h-100")
-
-
-def seccion(titulo, *hijos, sub=None, id_=None):
-    extra = {"id": id_} if id_ else {}
+def seccion(titulo, *hijos, sub=None):
     return html.Section([html.H3(titulo, className="mt-4 mb-1"), html.P(sub, className="text-muted") if sub else None,
-                         *hijos], className="mb-4", **extra)
+                         *hijos], className="mb-4")
 
 
 def tabla(df, decimales=3):
@@ -72,288 +58,285 @@ def tabla(df, decimales=3):
     return dbc.Table.from_dataframe(df, striped=True, bordered=False, hover=True, size="sm", className="tabla")
 
 
-def pasos(lista, clase="flujo"):
-    return html.Div([html.Div([html.Div(n, className="paso-num"), html.Div(t, className="paso-titulo"),
-                               html.Div(d, className="paso-desc")], className="paso") for n, t, d in lista],
-                    className=clase)
-
-
-def subpestanas(id_, items):
-    return dbc.Tabs([dbc.Tab(contenido, label=etq, tab_id=f"{id_}-{i}") for i, (etq, contenido) in enumerate(items)],
-                    id=id_, active_tab=f"{id_}-0", className="subpestanas mt-3")
-
-
 K = F.kpis()
 R = F.resultados()
 D = F.diagnosticos()
 IC = R["ic_modelo_principal"]
-VEC = F.hay_vecindad()
 
 # ===========================================================================
-# Cabecera (la imagen de fondo es assets/portada.svg, generada con los datos)
+# Pestaña 1 — Contexto del problema
 # ===========================================================================
-cabecera = html.Header(dbc.Container([
-    html.Div("Proyecto final · Machine Learning · Maestría, Universidad del Norte · Profesor Lihki Rubio",
-             className="hero-kicker"),
-    html.H1("¿Qué revela el catastro sobre el estrato de una vivienda?", className="hero-titulo"),
-    html.P(["Clasificación supervisada del estrato socioeconómico (1 a 6) de ", html.B(fmt(K["viviendas"])),
-            " viviendas de Barranquilla, con sus características físicas y su ubicación."], className="hero-sub"),
-    html.Div(AUTORES, className="hero-autores"),
-], fluid=True), className="hero")
-
-# ===========================================================================
-# Pestaña 1 — Contexto
-# ===========================================================================
-flujo = pasos([("1", "Descarga", "Catastro abierto (ArcGIS REST), 15-sep-2026"),
-               ("2", "Limpieza", "Reglas por fila, antes de partir"),
-               ("3", "Partición espacial", "Bloques de 2 km; test reservado"),
-               ("4", "EDA en train", "Uni, bi, multivariado y espacial"),
-               ("5", "Pipeline", "Imputar, log, escalar, one-hot"),
-               ("6", "CV espacial", "Bloques + buffer de 1 km"),
-               ("7", "Test", "Una sola evaluación")])
-
-ruta = pasos([("E1", "Entregable 1", "Base de datos, EDA riguroso y modelo base (regresión logística)"),
-              ("E2", "Entregable 2", "Dashboard y modelos de la revisión bibliográfica (XGBoost geográfico, "
-                                     "Rotation Forest, SVM RBF + TPE)"),
-              ("+", "Análisis adicional", "Variables de vecindad física y comparación de dos escenarios de predicción")],
-             clase="flujo ruta")
-
-candidatos = pd.DataFrame([
-    ["Geographical XGBoost", "Pesos espaciales locales sobre XGBoost", "El estrato cambia por barrios", "Sí, adaptado a clasificación"],
-    ["TPE-SVM", "Optimización bayesiana de hiperparámetros", "Espacio de hiperparámetros amplio", "Sí (SVM RBF + TPE)"],
-    ["Rotation Forest", "Rotación PCA antes de cada árbol", "Variables de tamaño correlacionadas", "Sí"],
-    ["Ensemble RF + SVM", "RF selecciona variables y SVM clasifica", "Variables catastrales correlacionadas", "No"],
-    ["Bagged TAO Trees", "Árboles oblicuos optimizados", "Datos tabulares heterogéneos", "No (sin implementación mantenida)"],
-], columns=["Modelo de la revisión", "Idea", "Por qué encaja", "¿Se evaluó?"])
-
-pasos_dane = pasos([("1", "Zonas", "Se cruzan las zonas homogéneas físicas (vías, servicios, uso) y "
-                                   "geoeconómicas (valor del suelo) del catastro"),
-                    ("2", "Estrato de la zona", "Se califica con el puntaje de las edificaciones (estructura, acabados, "
-                                                "baño, cocina) y se agrupa con cortes de mínima varianza"),
-                    ("3", "Revisión", "La alcaldía y el Comité de Estratificación ajustan zonas"),
-                    ("4", "Atípicas", "Una vivienda muy distinta de su estrato sube o baja 1 o 2 estratos (regla del RIC)"),
-                    ("5", "Adopción", "Decreto del alcalde; el avalúo catastral no se usa")])
-
-insumos_dane = pd.DataFrame([
-    ["Zonas homogéneas físicas y geoeconómicas", "Delimitar la zona", "No (se aproximan con coordenadas y vecindad)"],
-    ["Puntaje de calificación de la edificación", "Calificar zona y atípicas", "No"],
-    ["Área y cuartos (apartamentos)", "Calificar apartamentos", "Sí"],
-    ["Tipo: casa o apartamento", "Se califican por separado", "Sí"],
-    ["Revisión de alcaldía y comité", "Ajustes manuales", "No observable"],
-    ["Avalúo catastral", "No se usa (Ley 14 de 1983)", "Tampoco se usa"],
-], columns=["Insumo del DANE", "Para qué", "¿En los datos del proyecto?"])
+pasos = [("1", "Descarga", "Catastro abierto (ArcGIS REST), 15-sep-2026"),
+         ("2", "Limpieza", "Reglas por fila, antes de partir"),
+         ("3", "Partición espacial", "Bloques de 2 km; test reservado"),
+         ("4", "EDA en train", "Uni, bi, multivariado y espacial"),
+         ("5", "Pipeline", "Imputar, log, escalar, one-hot"),
+         ("6", "CV espacial", "Bloques + buffer de 1 km"),
+         ("7", "Test", "Una sola evaluación")]
+flujo = html.Div([html.Div([html.Div(n, className="paso-num"), html.Div(t, className="paso-titulo"),
+                            html.Div(d, className="paso-desc")], className="paso") for n, t, d in pasos],
+                 className="flujo")
 
 tab_contexto = dbc.Container([
-    dbc.Row([
-        dbc.Col(dbc.Card([
-            html.Img(src=app.get_asset_url("portada.svg"), className="portada",
-                     alt="Mapa de Barranquilla de noche: cada luz es una zona con viviendas y el brillo indica el estrato"),
-            dbc.CardBody(html.P(["Barranquilla de noche, vista desde el catastro. ", html.B("Cada luz es una zona de "
-                                 "unos 165 m"), " con viviendas; su brillo es el estrato medio. Las luces doradas (estratos "
-                                 "5 y 6) se concentran en el norte y el sur es casi todo azul tenue (estratos 1 y 2). La "
-                                 "imagen se generó con los datos del proyecto."], className="mb-0 text-muted pie-imagen")),
-        ], className="tarjeta-portada"), lg=7),
-        dbc.Col([
-            html.Div("La pregunta", className="etiqueta-seccion"),
-            html.H2("¿Se puede predecir el estrato de una vivienda solo con sus datos catastrales?", className="pregunta"),
-            html.P(["El estrato define cuánto paga cada hogar por agua, luz y gas, y quién recibe subsidios. Este proyecto "
-                    "usa ", html.B("aprendizaje supervisado"), " para estimarlo a partir del área, los baños, las "
-                    "habitaciones, los pisos, la antigüedad, el régimen de propiedad y la ubicación de cada vivienda."]),
-            dbc.Row([
-                dbc.Col(tarjeta_kpi(fmt(K["viviendas"]), "viviendas analizadas"), xs=6, className="mb-3"),
-                dbc.Col(tarjeta_kpi(fmt(K["edificios"]), "predios matriz", "edificios, conjuntos o lotes"), xs=6, className="mb-3"),
-                dbc.Col(tarjeta_kpi("6", "clases ordinales", "estratos 1 a 6"), xs=6),
-                dbc.Col(tarjeta_kpi(f"{K['moran']:.2f}", "I de Moran del estrato", "la ciudad está segregada"), xs=6),
-            ], className="g-3"),
-        ], lg=5),
-    ], className="g-4 mt-1"),
-
-    seccion("¿Qué es el estrato y por qué importa?",
-            html.Img(src=app.get_asset_url("escala_estratos.svg"), className="escala-estratos",
-                     alt="Escala de estratos: 1 a 3 con subsidio, 4 con tarifa plena, 5 y 6 con contribución"),
-            dbc.Row([
-                dbc.Col(hallazgo("Ley 142", "Tarifas de servicios públicos",
-                                 "Los estratos 1 a 3 reciben subsidios y los estratos 5 y 6 pagan una contribución "
-                                 "adicional. Un estrato mal asignado es un subsidio mal dirigido.", "#1baf7a"), md=4),
-                dbc.Col(hallazgo("DANE", "Lo asigna cada alcaldía por zonas",
-                                 "Con la metodología del DANE: primero se estratifica la zona y luego se corrigen las "
-                                 "viviendas atípicas. Se actualiza con poca frecuencia.", "#2a78d6"), md=4),
-                dbc.Col(hallazgo("Focalización", "Más allá de las tarifas",
-                                 "El estrato se usa para focalizar programas sociales y para planear la ciudad. Un "
-                                 "modelo podría señalar estratos incoherentes con las características de la vivienda.",
-                                 "#eb6834"), md=4),
-            ], className="g-3")),
-
-    seccion("Cómo asigna el DANE el estrato", pasos_dane,
-            sub="Metodología de estratificación urbana vigente (DANE, 2015), basada en la información del catastro.",
-            *[dbc.Row([
-                dbc.Col(html.Div(tabla(insumos_dane), className="tabla-scroll"), lg=7),
-                dbc.Col(interpretacion(
-                    "El estrato es, ante todo, una propiedad de la zona: todas las viviendas de una zona reciben su "
-                    "estrato y solo cambian las que son claramente distintas, uno o dos estratos. Por eso la ubicación "
-                    "domina los modelos, el estrato casi no varía dentro de un edificio y los errores son casi siempre "
-                    "de un estrato.",
-                    "El catastro abierto no publica las zonas homogéneas ni el puntaje de calificación de las "
-                    "edificaciones, los dos insumos con los que el DANE calcula el estrato. La pregunta del proyecto es, "
-                    "en el fondo, cuánto del estrato se recupera con la parte pública del catastro.",
-                    titulo="Qué implica para el proyecto"), lg=5),
-            ], className="g-4 mt-1")]),
-
-    seccion("Qué propone el proyecto",
+    seccion("¿Se puede predecir el estrato de una vivienda con sus datos catastrales?",
             dbc.Row([
                 dbc.Col([
-                    html.P(["Es un problema de ", html.B("clasificación multiclase ordinal"), " con dos rasgos que "
-                            "condicionan todo el análisis: las clases tienen ", html.B("orden"), " (confundir 1 con 2 es "
-                            "menos grave que 1 con 6) y los datos tienen ", html.B("coordenadas"), " (viviendas cercanas "
-                            "se parecen). Por eso, además de las métricas habituales, se reportan métricas ordinales (MAE "
-                            "ordinal, accuracy ±1, kappa cuadrático) y toda la validación es por bloques espaciales."]),
+                    html.P(["En Colombia, el ", html.B("estrato socioeconómico"), " (1 a 6) clasifica los inmuebles "
+                            "residenciales para cobrar tarifas diferenciadas de servicios públicos: los estratos 1 a 3 "
+                            "reciben subsidios y los estratos 5 y 6 pagan una contribución (Ley 142 de 1994). Lo asigna "
+                            "cada alcaldía por manzana, con una metodología que mira la vivienda y su entorno."]),
+                    html.P(["Este proyecto plantea un problema de ", html.B("clasificación multiclase ordinal"), ": "
+                            "predecir el estrato de cada unidad de vivienda de Barranquilla a partir de sus "
+                            "características físicas en el catastro (área, baños, habitaciones, pisos, antigüedad, "
+                            "régimen de propiedad) y de su ubicación. Un modelo así serviría para detectar viviendas "
+                            "con un estrato inconsistente con sus características, apoyar la actualización de la "
+                            "estratificación y estimarlo donde falta."]),
                     html.P(["La revisión bibliográfica en Scopus (octubre de 2026) no encontró estudios que clasifiquen "
-                            "el estrato con variables catastrales: los trabajos cercanos predicen el ", html.B("precio"),
-                            " de la vivienda o usan el nivel socioeconómico como predictor. Esa es la ",
-                            html.B("brecha"), " del proyecto. La revisión identificó modelos con evidencia de mejora "
-                            "frente a clasificadores convencionales, que aquí se ponen a prueba con el mismo protocolo:"]),
-                    html.Div(tabla(candidatos), className="tabla-scroll"),
-                ], lg=7),
+                            "el estrato directamente con variables catastrales: los trabajos cercanos predicen precios "
+                            "de vivienda o usan el nivel socioeconómico como predictor. Esa es la ", html.B("brecha"),
+                            " que motiva el proyecto. Este entregable fija la referencia: un modelo base lineal "
+                            "comparado con líneas base triviales. Los modelos novedosos identificados en la revisión "
+                            "(por ejemplo, XGBoost geográfico o árboles TAO) se evaluarán contra esta referencia."]),
+                ], md=7),
                 dbc.Col(dbc.Card(dbc.CardBody([
-                    html.H5("Ficha técnica", className="fw-bold"),
+                    html.H5("Ficha del problema", className="fw-bold"),
                     html.Ul([
-                        html.Li([html.B("Variable objetivo: "), "estrato (1–6), ordinal y desbalanceado"]),
+                        html.Li([html.B("Objetivo: "), "estrato (1–6), ordinal y desbalanceado"]),
                         html.Li([html.B("Unidad de observación: "), "unidad de vivienda del catastro"]),
-                        html.Li([html.B("Tipo de datos: "), "transversal con componente espacial"]),
-                        html.Li([html.B("Fuente: "), "catastro abierto, Alcaldía de Barranquilla (15-sep-2026)"]),
-                        html.Li([html.B("Predictoras: "), "8 físicas, 3 categóricas y 3 de ubicación"]),
+                        html.Li([html.B("Tipo de datos: "), "transversal con componente espacial (foto del catastro)"]),
+                        html.Li([html.B("Fuente: "), "datos abiertos de catastro, Alcaldía de Barranquilla"]),
+                        html.Li([html.B("Ruta del enunciado: "), "A (clasificación) + componente espacial"]),
                         html.Li([html.B("Métrica principal: "), "F1 macro (todas las clases pesan igual)"]),
-                        html.Li([html.B("Validación: "), "bloques espaciales de 2 km con buffer de 1 km"]),
-                        html.Li([html.B("Sin coordenadas: "), f"{K['sin_coord']:.0%} de las viviendas (casi todas "
-                                                              "informales); quedan fuera del modelo"]),
                     ], className="mb-0"),
-                ]), className="ficha"), lg=5),
-            ], className="g-4")),
-
+                ])), md=5),
+            ])),
+    dbc.Row([
+        dbc.Col(tarjeta_kpi(fmt(K["viviendas"]), "viviendas analizadas"), md=3),
+        dbc.Col(tarjeta_kpi(fmt(K["edificios"]), "predios matriz", "edificios, conjuntos o casas"), md=3),
+        dbc.Col(tarjeta_kpi(f"{K['moran']:.2f}", "I de Moran del estrato", "autocorrelación espacial muy fuerte"), md=3),
+        dbc.Col(tarjeta_kpi(f"{K['f1_test']:.2f}", "F1 macro del modelo en test",
+                            f"IC 95 %: [{IC['IC95_inf']['f1_macro']:.2f}, {IC['IC95_sup']['f1_macro']:.2f}]"), md=3),
+    ], className="g-3 my-2"),
     seccion("Cómo se trabajó", flujo,
             interpretacion("El orden importa: las reglas que miran una sola fila (por ejemplo, descartar áreas "
                            "imposibles) se aplican antes de partir los datos; todo lo que se aprende de los datos "
                            "(medianas, cuantiles, escalas) se calcula solo con entrenamiento y dentro de un Pipeline. "
                            "El conjunto de prueba son zonas completas de la ciudad que el modelo nunca vio.",
                            titulo="Por qué este orden")),
-    seccion("Hoja de ruta del proyecto", ruta),
+    dbc.Row([
+        dbc.Col(grafico(F.fig_embudo()), md=7),
+        dbc.Col(grafico(F.fig_distribucion_estrato()), md=5),
+    ]),
+    interpretacion(
+        "La limpieza excluye usos no habitacionales, unidades de menos de 10 m² (parqueaderos o depósitos), registros "
+        "que describen un edificio entero en una fila y filas sin estrato residencial. Quedan 332 718 viviendas "
+        "(87 % de lo descargado).",
+        "El estrato está desbalanceado: el estrato 1 es la clase más frecuente y el 6 la más escasa. Por eso la métrica "
+        "principal es el F1 macro y no la accuracy, que premiaría predecir solo las clases grandes."),
 ], fluid=True)
 
 # ===========================================================================
-# Pestaña 2 — EDA
+# Pestaña 2 — Base de datos y calidad (capítulo 1 del Entregable 1)
+# ===========================================================================
+LIBRO_E1 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/"
+E1 = F.entregable1()
+GX, G0, MJ = E1["grupo"]["con_excepcion"], E1["grupo"]["sin_excepcion"], E1["mejoras"]
+estr = {e["estrato"]: e for e in E1["estratos"]}
+
+
+def pct(a, b):
+    return f"{100 * a / b:.1f} %"
+
+
+unidades = [("382 597", "filas descargadas", "catastro abierto, 15-sep-2026"),
+            (fmt(E1["viviendas"]), "unidades de vivienda", "cada fila: una casa o un apartamento"),
+            (fmt(E1["predios"]), "predios", "números prediales (NPN) de 30 dígitos distintos"),
+            (fmt(E1["predios_matriz"]), "predios matriz", "edificio, conjunto o casa: 22 primeros dígitos del NPN"),
+            (fmt(GX["grupos"]), "grupos para el ICC", "predios matriz, separando las mejoras en terreno ajeno")]
+
+tabla_imp = [{"Regla": r["variable"], "Rango o condición": r["rango plausible"], "Filas": fmt(int(r["n imposibles"])),
+              "% de filas": f'{float(r["%"]):.3f} %'} for r in E1["tabla_imposibles"]]
+
+tab_datos = dbc.Container([
+    dbc.Alert(["Esta pestaña resume el ", html.B("capítulo 1 del Entregable 1"), " (base de datos y calidad). El "
+               "detalle, con el código, está en el ", html.A("Jupyter Book del Entregable 1", href=LIBRO_E1,
+                                                               target="_blank"), "."],
+              color="info", className="mt-3"),
+
+    seccion("1. ¿Qué se cuenta? Viviendas, predios y predios matriz",
+            dbc.Row([dbc.Col(tarjeta_kpi(v, e, n), className="mb-2") for v, e, n in unidades], className="g-3"),
+            interpretacion(
+                "Las mismas viviendas se pueden contar de tres maneras. Una unidad de vivienda es una fila. Un predio es "
+                "un número predial nacional (NPN) de 30 dígitos: hay algo menos de predios que de viviendas porque unas "
+                "pocas viviendas comparten número. Un predio matriz es el lote o edificio al que pertenecen: los "
+                "22 primeros dígitos del NPN (los dígitos 23–24 identifican la torre y los siguientes el apartamento).",
+                "Ejemplo: un conjunto con 200 apartamentos son 200 viviendas y 200 predios, pero un solo predio matriz. "
+                "Una casa sola es 1 vivienda, 1 predio y 1 predio matriz.",
+                f"Excepción, condición de propiedad 5 («mejoras en terreno ajeno»): son construcciones levantadas sobre "
+                f"un lote que no es del dueño de la vivienda, casi siempre viviendas informales. El catastro registra "
+                f"muchas viviendas independientes bajo el mismo lote matriz, así que para medir la dependencia cada "
+                f"mejora es su propio grupo. Son {fmt(MJ['viviendas'])} viviendas ({pct(MJ['viviendas'], E1['viviendas'])}) "
+                f"en {fmt(MJ['prefijos'])} lotes, que pasan a ser {fmt(MJ['grupos'])} grupos propios.",
+                titulo="Cómo leer estos números")),
+
+    seccion("2. Estratos antes y después de la revisión de coordenadas",
+            dbc.Row([dbc.Col(grafico(F.fig_estratos_coordenadas()), md=7),
+                     dbc.Col(grafico(F.fig_cobertura_coordenadas()), md=5)]),
+            interpretacion(
+                f"{fmt(E1['sin_coordenadas'])} viviendas ({pct(E1['sin_coordenadas'], E1['viviendas'])}) no tienen "
+                "coordenadas: todas son faltantes, ninguna cae fuera de Barranquilla. Como el modelo usa la ubicación, "
+                "solo trabaja con las que sí las tienen.",
+                f"Las coordenadas no faltan al azar: falta un tercio del estrato 1 (cobertura "
+                f"{pct(estr[1]['con_coord'], estr[1]['todas'])}) y casi una cuarta parte del 2 "
+                f"({pct(estr[2]['con_coord'], estr[2]['todas'])}), mientras que los estratos 3 a 6 las conservan casi "
+                "todas. Por eso el estrato 1 baja de 32.8 % a 26.3 %, el 2 también pierde peso y los demás lo ganan: "
+                "el estrato 3 pasa a ser casi tan frecuente como el 1.",
+                "Consecuencia: el modelo describe la ciudad formal. Para las viviendas sin coordenadas (sobre todo "
+                "informales de estratos 1 y 2) sus resultados no aplican sin más.")),
+
+    seccion("3. Calidad de los datos",
+            dbc.Row([
+                dbc.Col(html.Div(tabla(pd.DataFrame(tabla_imp), 3), className="tabla-scroll"), md=7),
+                dbc.Col(interpretacion(
+                    "Un valor imposible está fuera de lo físicamente posible para cualquier vivienda (un piso 0 o 99, "
+                    "un año de construcción 1512). Un valor incoherente es posible por sí solo, pero no con el resto "
+                    "de la fila (menos de 6 m² por habitación o más baños que habitaciones + 3).",
+                    f"En ambos casos el valor pasa a faltante, queda marcado y la fila se conserva: "
+                    f"{E1['filas_con_imposible']} filas con algún valor imposible "
+                    f"({100 * E1['filas_con_imposible'] / E1['viviendas']:.2f} %) y {E1['filas_con_incoherente']} con alguna "
+                    "incoherencia. Distinto es lo que no es una vivienda (parqueaderos de menos de 10 m², registros que "
+                    "describen un edificio entero): esas filas sí se excluyen en el embudo.",
+                    "Los faltantes de las variables físicas son menores del 0.2 % y vienen casi todos de estas "
+                    "reglas; se imputan con la mediana de entrenamiento dentro del Pipeline.",
+                    titulo="Imposible, incoherente o fuera de alcance"), md=5)])),
+
+    seccion("4. Dependencia dentro del grupo y tamaño efectivo",
+            dbc.Row([
+                dbc.Col(tarjeta_kpi(f"{GX['icc']:.3f}", "ICC(1) del estrato", "dentro del predio matriz"), md=3),
+                dbc.Col(tarjeta_kpi(f"{GX['m_pond']:.1f}", "tamaño medio ponderado m̃", "Σm² / N"), md=3),
+                dbc.Col(tarjeta_kpi(f"{GX['deff']:.1f}", "efecto de diseño de Kish",
+                                    f"errores estándar ≈ {GX['deff'] ** 0.5:.0f} veces mayores"), md=3),
+                dbc.Col(tarjeta_kpi(f"≈ {fmt(int(round(GX['n_ef'], -2)))}", "tamaño efectivo",
+                                    f"frente a {fmt(E1['viviendas'])} filas"), md=3),
+            ], className="g-3 mb-2"),
+            dbc.Row([dbc.Col(grafico(F.fig_viviendas_por_tamano_grupo()), md=6),
+                     dbc.Col([grafico(F.fig_kish(GX["icc"], GX["m_pond"]), "kish-fig"),
+                              dbc.Label("Prueba otro ICC:"),
+                              dcc.Slider(id="kish-icc", min=0, max=1, step=0.001, value=round(GX["icc"], 3),
+                                         marks={0: "0", 0.25: "0.25", 0.5: "0.5", 0.75: "0.75", 1: "1"})], md=6)]),
+            interpretacion(
+                f"Paso 1, el grupo: el {pct(GX['grupos_1'], GX['grupos'])} de los grupos son casas de una sola "
+                f"unidad, pero el {pct(GX['filas_multi'], E1['viviendas'])} de las viviendas vive en grupos de varias "
+                f"unidades, y solo {GX['multi_no_uniformes']} de esos {fmt(GX['multi'])} grupos mezclan estratos. El "
+                f"grupo más grande tiene {fmt(GX['max'])} unidades en {GX['torres_mayor']} torres.",
+                f"Paso 2, ICC(1) por ANOVA de una vía: mide qué parte de la variación del estrato está entre grupos. "
+                f"Vale {GX['icc']:.3f}: dentro de un conjunto el estrato casi nunca cambia.",
+                f"Paso 3, tamaño medio ponderado: el promedio simple es {GX['media']:.2f} unidades por grupo, pero "
+                f"visto desde una vivienda típica el grupo tiene m̃ = Σm²/N = {GX['m_pond']:.1f} unidades.",
+                f"Paso 4, efecto de diseño de Kish: deff = 1 + (m̃ − 1)·ICC = 1 + {GX['m_pond'] - 1:.1f} × "
+                f"{GX['icc']:.3f} ≈ {GX['deff']:.1f}. Con ICC = 0 sería 1 (filas independientes); con ICC = 1 sería "
+                "m̃ (cada grupo vale por una sola observación).",
+                f"Paso 5, tamaño efectivo: n_ef = N / deff ≈ {fmt(int(round(GX['n_ef'])))}. Las {fmt(E1['viviendas'])} "
+                f"filas aportan tanta información independiente como unas {fmt(int(round(GX['n_ef'], -2)))} viviendas sueltas. "
+                f"Sin la excepción de las mejoras el resultado sería peor y engañoso: ICC {G0['icc']:.3f}, grupo máximo "
+                f"{fmt(G0['max'])}, deff {G0['deff']:.1f}, n_ef ≈ {fmt(int(round(G0['n_ef'], -1)))}.",
+                "Es una descripción, no una decisión de modelado: lo que se hace con ella es mantener juntos los "
+                "edificios y las zonas al partir los datos (bloques espaciales) y medir la incertidumbre remuestreando "
+                "bloques, no filas.",
+                titulo="Interpretación, en cinco pasos")),
+], fluid=True)
+
+# ===========================================================================
+# Pestaña 3 — EDA
 # ===========================================================================
 selector_particion = dbc.RadioItems(
     id="eda-particion", value="train", inline=True,
     options=[{"label": "Solo entrenamiento (como en el EDA)", "value": "train"},
              {"label": "Todas las viviendas", "value": "todas"}])
 
-eda_objetivo = html.Div([
-    dbc.Row([dbc.Col(tarjeta_grafico(F.fig_distribucion_estrato("train"), "eda-dist"), lg=5),
-             dbc.Col(tarjeta_grafico(F.fig_gradiente_norte_sur("train"), "eda-ns"), lg=7)], className="g-3 mt-1"),
-    interpretacion(
-        "En entrenamiento los estratos 1 y 3 son los más frecuentes (alrededor de una cuarta parte cada uno) y el 6 "
-        "apenas pasa del 5 %: la razón entre la clase mayor y la menor es 4.6:1. Con este desbalance, un modelo que "
-        "siempre predijera la clase más frecuente acertaría cerca de una de cada cuatro viviendas sin aprender nada. Por "
-        "eso la métrica principal es el F1 macro: las notas de clase recomiendan la media macro cuando importa cada clase "
-        "por igual (sección 9.5).",
-        "La ciudad está segregada de sur a norte: las franjas del sur son casi todas de estratos 1 y 2, y el estrato medio "
-        "sube hasta cerca de 5 en la penúltima franja. En la franja más al norte vuelve a bajar, porque allí también hay "
-        "barrios de estratos bajos: el gradiente no es una línea recta. La ubicación será la información más fuerte del "
-        "modelo, y también la razón por la que la validación debe ser espacial."),
-    seccion("De los datos descargados a las viviendas analizadas", tarjeta_grafico(F.fig_embudo()),
-            interpretacion("La limpieza excluye usos no habitacionales, unidades de menos de 10 m² (parqueaderos o "
-                           "depósitos), registros que describen un edificio entero en una fila y filas sin estrato "
-                           "residencial. Quedan 332 718 viviendas (87 % de lo descargado).")),
-])
-
-eda_numericas = html.Div([
-    dbc.Row([
-        dbc.Col(dcc.Dropdown(id="eda-num", options=[{"label": v, "value": k} for k, v in F.NUMERICAS.items()],
-                             value="total_banios", clearable=False), md=5),
-        dbc.Col(dbc.Checklist(id="eda-log", options=[{"label": "escala log(1 + x)", "value": "log"}],
-                              value=["log"], switch=True), md=3),
-    ], className="filtros my-3"),
-    tarjeta_grafico(F.fig_numerica("total_banios"), "eda-num-fig"),
-    html.Div(id="eda-num-texto", className="mt-2"),
-    html.H5("Resumen estadístico", className="mt-3"),
-    html.Div(tabla(F.tabla_resumen_numericas(), 2), id="eda-resumen", className="tabla-scroll"),
-    interpretacion(
-        "Casi todas las variables físicas son muy asimétricas a la derecha (asimetría > 1) y tienen colas largas: por eso "
-        "se transforman con log(1 + x) dentro del Pipeline. Los valores faltantes son muy pocos (< 0.2 %) y se imputan con "
-        "la mediana de entrenamiento.",
-        "El número de baños es la variable física más asociada al estrato (η² ≈ 0.31), seguida del piso de ubicación y del "
-        "área construida. La relación es monótona: a mayor estrato, más baños y más área, pero con mucho traslape entre "
-        "estratos vecinos, que es justo donde el modelo se equivocará."),
-])
-
-eda_categoricas = html.Div([
-    dcc.Dropdown(id="eda-cat", options=[{"label": v, "value": k} for k, v in F.CATEGORICAS.items()],
-                 value="condicion_predio", clearable=False, className="filtros my-3", style={"maxWidth": 480}),
-    tarjeta_grafico(F.fig_categorica("condicion_predio"), "eda-cat-fig"),
-    interpretacion(
-        "El régimen de propiedad es la categórica más informativa: los predios informales son casi todos de estratos 1 y 2, "
-        "y las unidades en propiedad horizontal (apartamentos) se concentran en estratos medios y altos. El uso y el tipo de "
-        "vivienda aportan menos y son redundantes con el régimen.",
-        "Las categorías con menos del 1 % de las viviendas se agrupan en una sola dentro del Pipeline (one-hot con "
-        "categorías infrecuentes), para no crear columnas casi vacías."),
-])
-
-eda_relaciones = html.Div([
-    dbc.Row([dbc.Col(tarjeta_grafico(F.fig_correlacion(), "eda-corr"), lg=7),
-             dbc.Col(tarjeta_grafico(F.fig_faltantes(), "eda-falt"), lg=5)], className="g-3 mt-1"),
-    interpretacion(
-        "Se usa Spearman porque las relaciones son monótonas pero no lineales y hay colas largas. Las variables de tamaño "
-        "(área, baños, habitaciones) están correlacionadas entre sí, pero ninguna pareja es tan alta como para excluir una "
-        "variable (los VIF del Entregable 1 quedaron por debajo del umbral).",
-        "El terreno se correlaciona negativamente con el piso de ubicación: en los edificios, cada apartamento registra solo "
-        "su cuota del lote, que es más pequeña cuanto más alto es el edificio."),
-])
-
-eda_espacio = html.Div([
-    dbc.Row([dbc.Col(dcc.Dropdown(id="eda-mapa-var",
-                                  options=[{"label": "Estrato medio", "value": "estrato_num"}] +
-                                          [{"label": v, "value": k} for k, v in F.NUMERICAS.items()
-                                           if k != "dist_centro_km"],
-                                  value="estrato_num", clearable=False), md=5)], className="filtros my-3"),
-    tarjeta_grafico(F.fig_mapa("estrato_num", "train"), "eda-mapa"),
-    dbc.Row([dbc.Col(tarjeta_grafico(F.fig_correlograma()), lg=6),
-             dbc.Col(tarjeta_grafico(F.fig_tamano_edificios()), lg=6)], className="g-3 mt-1"),
-    interpretacion(
-        f"El estrato tiene una autocorrelación espacial extremadamente fuerte (I de Moran = {K['moran']:.2f} entre "
-        "edificios vecinos): viviendas cercanas casi siempre comparten estrato. El correlograma muestra que ese parecido cae "
-        "por debajo de 0.3 a unos 2.9 km; con eso se fijó un buffer de 1 km entre entrenamiento y validación.",
-        "Además, el estrato casi no varía dentro de un edificio o conjunto (ICC = 0.992) y unos pocos conjuntos concentran "
-        "muchas viviendas. Las filas no son datos independientes: las 332 718 viviendas equivalen, en precisión, a unas "
-        "2 300 observaciones independientes. Por eso la partición mantiene juntos los edificios y las zonas, y la incertidumbre se "
-        "mide remuestreando bloques, no filas.",
-        "Con «solo entrenamiento» el mapa muestra huecos rectangulares: son los bloques de 2 km reservados para test, que el "
-        "EDA no mira. Cerca del 16 % de las viviendas (predios informales, casi todos de estratos 1–2) no tienen coordenadas "
-        "y quedan fuera del modelo: las conclusiones aplican a la ciudad formal."),
-])
-
 tab_eda = dbc.Container([
-    html.Div("Lo esencial del EDA", className="etiqueta-seccion mt-4"),
-    dbc.Row([
-        dbc.Col(hallazgo("4.6 : 1", "Desbalance moderado", "Entre la clase más y la menos frecuente en entrenamiento. "
-                         "La accuracy engaña: se usa F1 macro.", "#2a78d6"), md=6, lg=3),
-        dbc.Col(hallazgo("η² = 0.50", "La ubicación domina", "La posición norte-sur es la variable más asociada al "
-                         "estrato; entre las físicas, los baños (0.31).", "#0f8a7a"), md=6, lg=3),
-        dbc.Col(hallazgo(f"{K['moran']:.2f}", "Ciudad segregada", "I de Moran del estrato: los vecinos casi siempre "
-                         "comparten estrato. Validar al azar sería engañoso.", "#4a3aa7"), md=6, lg=3),
-        dbc.Col(hallazgo("0.992", "Edificios homogéneos", "ICC del estrato dentro de un edificio o conjunto: el tamaño "
-                         "efectivo es de unas 2 300 observaciones.", "#eb6834"), md=6, lg=3),
-    ], className="g-3"),
-    dbc.Alert(["El EDA se hace ", html.B("solo con el conjunto de entrenamiento"), ", para que ninguna decisión del modelo "
-               "se tome mirando el test. Puedes cambiar a todas las viviendas para describir la ciudad completa."],
-              color="info", className="mt-4 mb-2"),
-    html.Div(selector_particion, className="filtros"),
-    subpestanas("eda-sub", [("Variable objetivo", eda_objetivo), ("Variables numéricas", eda_numericas),
-                            ("Variables categóricas", eda_categoricas), ("Correlaciones y faltantes", eda_relaciones),
-                            ("Componente espacial", eda_espacio)]),
+    dbc.Alert(["El EDA se hace ", html.B("solo con el conjunto de entrenamiento"), ", para que ninguna decisión del "
+               "modelo se tome mirando el test. Puedes cambiar a todas las viviendas para describir la ciudad completa."],
+              color="info", className="mt-3"),
+    html.Div(selector_particion, className="mb-3 filtros"),
+
+    seccion("1. Variable objetivo",
+            dbc.Row([dbc.Col(grafico(F.fig_distribucion_estrato("train"), "eda-dist"), md=5),
+                     dbc.Col(grafico(F.fig_gradiente_norte_sur("train"), "eda-ns"), md=7)]),
+            interpretacion(
+                "En entrenamiento los estratos 1 y 3 son los más frecuentes (alrededor de una cuarta parte cada uno) y el 6 "
+                "apenas pasa del 5 %: la razón entre la clase mayor y la menor es 4.6:1. Con este desbalance, un modelo que "
+                "siempre predijera la clase más frecuente acertaría cerca de una de cada cuatro viviendas sin aprender nada.",
+                "La ciudad está segregada de sur a norte: las franjas del sur son casi todas de estratos 1 y 2, y el "
+                "estrato medio sube hasta cerca de 5 en la penúltima franja (F9), donde dominan los estratos 4 a 6. En la "
+                "franja más al norte vuelve a bajar (3.3), porque allí también hay barrios de estratos bajos: el gradiente "
+                "no es una línea recta. La ubicación será la información más fuerte del modelo, y también la razón por la "
+                "que la validación debe ser espacial.")),
+
+    seccion("2. Variables numéricas",
+            dbc.Row([
+                dbc.Col(dcc.Dropdown(id="eda-num", options=[{"label": v, "value": k} for k, v in F.NUMERICAS.items()],
+                                     value="total_banios", clearable=False), md=5),
+                dbc.Col(dbc.Checklist(id="eda-log", options=[{"label": "escala log(1 + x)", "value": "log"}],
+                                      value=["log"], switch=True), md=3),
+            ], className="filtros mb-2"),
+            grafico(F.fig_numerica("total_banios"), "eda-num-fig"),
+            html.Div(id="eda-num-texto"),
+            html.H5("Resumen estadístico (train)", className="mt-3"),
+            html.Div(tabla(F.tabla_resumen_numericas(), 2), id="eda-resumen"),
+            interpretacion(
+                "Casi todas las variables físicas son muy asimétricas a la derecha (asimetría > 1) y tienen colas largas: "
+                "por eso se transforman con log(1 + x) dentro del Pipeline. Los valores faltantes son muy pocos (< 0.2 %) "
+                "y se imputan con la mediana de entrenamiento.",
+                "El número de baños es la variable física más asociada al estrato (η² ≈ 0.31), seguida del piso de "
+                "ubicación y del área construida. La relación es monótona: a mayor estrato, más baños y más área, pero "
+                "con mucho traslape entre estratos vecinos, que es justo donde el modelo se equivocará.")),
+
+    seccion("3. Variables categóricas",
+            dcc.Dropdown(id="eda-cat", options=[{"label": v, "value": k} for k, v in F.CATEGORICAS.items()],
+                         value="condicion_predio", clearable=False, className="filtros mb-2", style={"maxWidth": 480}),
+            grafico(F.fig_categorica("condicion_predio"), "eda-cat-fig"),
+            interpretacion(
+                "El régimen de propiedad es la categórica más informativa: los predios informales son casi todos de "
+                "estratos 1 y 2, y las unidades en propiedad horizontal (apartamentos) se concentran en estratos medios y "
+                "altos. El uso y el tipo de vivienda aportan menos y son redundantes con el régimen.",
+                "Las categorías con menos del 1 % de las viviendas se agrupan en una sola dentro del Pipeline "
+                "(one-hot con categorías infrecuentes), para no crear columnas casi vacías.")),
+
+    seccion("4. Correlaciones y valores faltantes",
+            dbc.Row([dbc.Col(grafico(F.fig_correlacion(), "eda-corr"), md=7),
+                     dbc.Col(grafico(F.fig_faltantes(), "eda-falt"), md=5)]),
+            interpretacion(
+                "Se usa Spearman porque las relaciones son monótonas pero no lineales y hay colas largas. Las variables "
+                "de tamaño (área, baños, habitaciones) están correlacionadas entre sí, pero ninguna pareja es tan alta "
+                "como para excluir una variable (los VIF del Entregable 1 quedaron por debajo del umbral).",
+                "El terreno se correlaciona negativamente con el piso de ubicación: en los edificios, cada apartamento "
+                "registra solo su cuota del lote, que es más pequeña cuanto más alto es el edificio.")),
+
+    seccion("5. Componente espacial",
+            dbc.Row([dbc.Col(dcc.Dropdown(id="eda-mapa-var",
+                                          options=[{"label": "Estrato medio", "value": "estrato_num"}] +
+                                                  [{"label": v, "value": k} for k, v in F.NUMERICAS.items()
+                                                   if k != "dist_centro_km"],
+                                          value="estrato_num", clearable=False), md=5)], className="filtros mb-2"),
+            grafico(F.fig_mapa("estrato_num", "train"), "eda-mapa"),
+            dbc.Row([dbc.Col(grafico(F.fig_correlograma()), md=6), dbc.Col(grafico(F.fig_tamano_edificios()), md=6)]),
+            interpretacion(
+                f"El estrato tiene una autocorrelación espacial extremadamente fuerte (I de Moran = {K['moran']:.2f} entre "
+                "edificios vecinos): viviendas cercanas casi siempre comparten estrato. El correlograma muestra que ese "
+                "parecido cae por debajo de 0.3 a unos 2.9 km; con eso se fijó un buffer de 1 km entre entrenamiento y "
+                "validación.",
+                "Además, el estrato casi no varía dentro de un predio matriz (ICC = 0.992; tamaño efectivo ≈ 2 300, ver pestaña 2) y unas pocas torres concentran "
+                "muchas viviendas. Las filas no son datos independientes: por eso la partición mantiene juntos los "
+                "edificios y las zonas, y la incertidumbre se mide remuestreando bloques, no filas.",
+                "Con «solo entrenamiento» el mapa muestra huecos rectangulares: son los bloques de 2 km reservados para "
+                "test, que el EDA no mira.",
+                "Cerca del 16 % de las viviendas (predios informales, casi todos de estratos 1–2) no tienen coordenadas y "
+                "quedan fuera del modelo: las conclusiones aplican a la ciudad formal.")),
 ], fluid=True)
 
 # ===========================================================================
-# Pestaña 3 — ML models
+# Pestaña 3 — Modelos base
 # ===========================================================================
 opciones_modelo = [{"label": F.NOMBRE_CORTO[m], "value": m} for m in F.modelos_disponibles()]
 rangos = F.rangos_simulador()
@@ -370,8 +353,8 @@ def control_numero(var, etiqueta):
 simulador = dbc.Card(dbc.CardBody([
     html.H5("Simulador: ¿qué estrato predice el modelo?", className="fw-bold"),
     html.P("Cambia las características de una vivienda y su ubicación. Los valores iniciales son las medianas de "
-           "entrenamiento. Usa la logística B, el modelo principal en zonas nuevas. Es una herramienta para entender el "
-           "modelo, no para asignar estratos reales.", className="text-muted"),
+           "entrenamiento. Es una herramienta para entender el modelo, no para asignar estratos reales.",
+           className="text-muted"),
     dbc.Row([control_numero(v, F.NUMERICAS[v]) for v in ["area_construida", "area_catastral_terreno",
                                                           "total_habitaciones", "total_banios"]], className="g-2"),
     dbc.Row([control_numero(v, F.NUMERICAS[v]) for v in ["total_plantas", "planta_ubicacion", "altura",
@@ -389,29 +372,101 @@ simulador = dbc.Card(dbc.CardBody([
             className="g-2 mt-2"),
     dbc.Row([dbc.Col(dcc.Graph(id="sim-fig", config=GRAF), md=6),
              dbc.Col(dcc.Graph(id="sim-mapa", config=GRAF), md=6)]),
-]), className="mt-3")
+]), className="mt-2")
 
-ml_protocolo = html.Div([
-    seccion("Un protocolo que respeta el espacio",
-            pasos([("1", "Partición por bloques", "Ciudad en celdas de 2 km; el 20 % de los bloques es test"),
-                   ("2", "Buffer de 1 km", "Se quita del entrenamiento lo que está pegado a la validación"),
-                   ("3", "CV espacial (5 folds)", "Hiperparámetros elegidos solo con la CV"),
-                   ("4", "Regla 1-SE", "Entre combinaciones empatadas, la más regularizada"),
-                   ("5", "Test una vez", "Zonas que el modelo nunca vio"),
-                   ("6", "Bootstrap por bloques", "Intervalos de confianza honestos")]),
-            tarjeta_grafico(F.fig_optimismo()),
-            interpretacion(
-                "Con validación aleatoria, viviendas del mismo edificio y de la misma cuadra caen a la vez en "
-                "entrenamiento y validación, y el modelo «reconoce» la zona: el F1 sube a 0.60, el doble que con bloques. "
-                "Ese número sería engañoso para predecir en zonas nuevas.",
-                "El buffer también importa: sin él el F1 de CV es 0.40, con 1 km baja a 0.30 y con el alcance completo del "
-                "correlograma (2.9 km) cae a 0.18, porque se pierde mucho entrenamiento. Se eligió 1 km como compromiso.",
-                "Nota crítica de las instrucciones del proyecto: si la accuracy supera 0.80–0.90 hay que sospechar fuga. "
-                "Aquí es 0.60 en test y 0.46 en la CV espacial: el problema no es trivial y no hay señales de fuga.")),
-])
 
-ml_base = html.Div([
-    seccion("Modelo base y líneas base",
+# ---------------------------------------------------------------------------
+# Sección 7 — Modelos de la revisión bibliográfica (solo si se ejecutó entrenar_avanzados.py)
+# ---------------------------------------------------------------------------
+def seccion_avanzados():
+    if not F.hay_avanzados():
+        return html.Div()
+    A = R["avanzados"]
+    cmp = A["comparaciones_f1"]
+    pasos_geo = [("1", "Modelo global", "XGBoost con todas las viviendas de entrenamiento"),
+                 ("2", "Anclas", f"{A['anclas_final']} centros de celdas de 2 km con ≥ 300 viviendas"),
+                 ("3", "Ventana adaptativa", f"{A['hiperparametros']['XGBoost geográfico']['frac_vecinos']:.0%} del "
+                                             f"entrenamiento ({A['k_usado_final']:,} viviendas)".replace(",", " ")),
+                 ("4", "Modelos locales", "un XGBoost por ancla, kernel bicuadrado"),
+                 ("5", "Mezcla", f"p = {A['hiperparametros']['XGBoost geográfico']['alpha']}·global + "
+                                 f"{1 - A['hiperparametros']['XGBoost geográfico']['alpha']:.2f}·local")]
+    flujo_geo = html.Div([html.Div([html.Div(n, className="paso-num"), html.Div(t, className="paso-titulo"),
+                                    html.Div(d, className="paso-desc")], className="paso") for n, t, d in pasos_geo],
+                         className="flujo")
+    f = lambda k: float(cmp[k]["diferencia"])  # noqa: E731
+    lo = lambda k: float(cmp[k]["IC95_inf"])  # noqa: E731
+    hi = lambda k: float(cmp[k]["IC95_sup"])  # noqa: E731
+    cv = R["tabla_cv"]["f1_macro (media)"]
+    sd = R["tabla_cv"]["F1 macro (desv. entre folds)"]
+    t = R["resultados_test"]
+    return seccion(
+        "7. Más allá del modelo base: modelos de la revisión bibliográfica",
+        html.P(["Se evaluaron cuatro modelos con el ", html.B("mismo protocolo"), " de la logística: misma partición, "
+                "mismos folds espaciales con buffer, selección de hiperparámetros solo con la CV y una única "
+                "evaluación en test. ", html.B("XGBoost geográfico"), " es la propuesta novedosa: el artículo original "
+                "(Grekousis, 2025) es de regresión y aquí se adaptó a clasificación de estratos mezclando "
+                "probabilidades de un modelo global y de modelos locales. ", html.B("XGBoost"), " es su control (el "
+                "mismo algoritmo sin la parte geográfica). Además se probaron ", html.B("Rotation Forest"),
+                " y una ", html.B("SVM con kernel RBF"), " (aproximación de Nyström) con hiperparámetros buscados "
+                "por optimización bayesiana TPE."]),
+        flujo_geo,
+        dcc.Dropdown(id="avz-metrica", value="f1_macro", clearable=False, style={"maxWidth": 420},
+                     options=[{"label": v, "value": k} for k, v in F.METRICAS_COMPARABLES.items()],
+                     className="filtros mb-2"),
+        grafico(F.fig_comparacion_avanzados("f1_macro"), "avz-comp"),
+        html.Div(tabla(F.tabla_metricas_avanzados()), className="tabla-scroll"),
+        dbc.Row([dbc.Col(grafico(F.fig_diferencias()), md=6), dbc.Col(grafico(F.fig_geoxgb_busqueda()), md=6)]),
+        interpretacion(
+            "El criterio para cambiar de modelo se fijó antes de mirar el test: un modelo reemplaza a la logística B solo "
+            "si su F1 de CV la supera en más de un error estándar de la diferencia pareada por fold. Ninguno lo cumple. "
+            f"La SVM RBF es la única con ventaja media en CV (+{A['cv_pareado']['SVM RBF (Nyström) + TPE']['media']:.3f}), "
+            f"pero su error estándar es {A['cv_pareado']['SVM RBF (Nyström) + TPE']['se']:.3f} y la ventaja depende de "
+            "un solo fold. La logística B sigue siendo el modelo principal.",
+            f"El test lo confirma: la SVM queda en {t['f1_macro']['SVM RBF (Nyström) + TPE']:.3f} (diferencia "
+            f"{f('SVM RBF (Nyström) + TPE − Logística B'):+.3f}, IC [{lo('SVM RBF (Nyström) + TPE − Logística B'):+.3f}, "
+            f"{hi('SVM RBF (Nyström) + TPE − Logística B'):+.3f}]) y reconoce mejor el estrato 5, pero a costa del 4. "
+            f"XGBoost, que en la CV empataba con la logística ({cv['XGBoost']:.3f}), en test queda en "
+            f"{t['f1_macro']['XGBoost']:.3f} y con un MAE ordinal claramente peor ({t['MAE_ordinal']['XGBoost']:.2f} "
+            f"frente a {t['MAE_ordinal']['Logística B_fisicas+ubicacion']:.2f}). Los árboles parten el mapa en "
+            "rectángulos y no extrapolan: en una zona nueva repiten el estrato de la zona de entrenamiento más parecida, "
+            "mientras que la logística prolonga el gradiente sur-norte.",
+            f"El XGBoost geográfico apenas se distingue de su control (diferencia de F1 "
+            f"{f('XGBoost geográfico − XGBoost'):+.3f}). En la CV, dar más peso a los modelos locales empeoró el F1 "
+            "(figura de la derecha), aun cuando cubrían la mayoría de las viviendas de validación: con el buffer de 1 km, "
+            "los modelos locales se entrenan con los barrios vecinos y no con el de la vivienda, y el estrato cambia de "
+            f"forma brusca entre barrios. En test, solo el {A['cobertura_test']:.0%} de las viviendas cae dentro de "
+            "alguna ventana local. Los efectos locales que este modelo busca necesitan datos de la misma zona, que es "
+            "justo lo que la validación espacial excluye: serviría para completar viviendas dentro de barrios ya "
+            "conocidos, no para zonas nuevas.",
+            f"Rotation Forest queda cerca de la logística en las métricas ordinales (kappa "
+            f"{t['kappa_cuadrático']['Rotation Forest']:.2f}) pero por debajo en F1 (diferencia "
+            f"{f('Rotation Forest − Logística B'):+.3f}, IC [{lo('Rotation Forest − Logística B'):+.3f}, "
+            f"{hi('Rotation Forest − Logística B'):+.3f}]).",
+            titulo="Interpretación"),
+        dcc.Dropdown(id="avz-residuo", value="XGBoost geográfico", clearable=False, style={"maxWidth": 420},
+                     options=[{"label": F.NOMBRE_CORTO[m], "value": m}
+                              for m in ["Logística B_fisicas+ubicacion"] + F.AVANZADOS], className="filtros mb-2"),
+        grafico(F.fig_mapa_residuos_modelo("XGBoost geográfico"), "avz-residuo-fig"),
+        interpretacion(
+            "Compara los mapas de residuos: todos los modelos nuevos dejan los residuos más agrupados que la logística "
+            "(I de Moran entre 0.77 y 0.87, frente a 0.70). Ninguno de los modelos elimina la autocorrelación de los residuos: la información "
+            "de barrio que falta no está en las variables del catastro de la propia vivienda.",
+            titulo="Residuos espaciales por modelo"),
+    )
+
+
+tab_modelos = dbc.Container([
+    dbc.Row([
+        dbc.Col(tarjeta_kpi(f"{IC['valor en test']['f1_macro']:.2f}", "F1 macro en test",
+                            f"IC 95 % por bloques: [{IC['IC95_inf']['f1_macro']:.2f}, {IC['IC95_sup']['f1_macro']:.2f}]"), md=3),
+        dbc.Col(tarjeta_kpi(f"{IC['valor en test']['accuracy']:.2f}", "accuracy en test", "por debajo de la alerta de 0.80"), md=3),
+        dbc.Col(tarjeta_kpi(f"{R['resultados_test']['accuracy_±1']['Logística B_fisicas+ubicacion']:.2f}",
+                            "accuracy ±1 estrato", "casi todos los errores son entre vecinos"), md=3),
+        dbc.Col(tarjeta_kpi(f"{IC['valor en test']['kappa_cuadrático']:.2f}", "kappa cuadrático",
+                            "acuerdo ordinal alto"), md=3),
+    ], className="g-3 mt-2"),
+
+    seccion("1. Modelo base y líneas base",
             html.P(["Modelo base: ", html.B("regresión logística multinomial"), " con penalización L2, dentro de un "
                     "Pipeline (winsorización → imputación por mediana → log(1 + x) → estandarización; categóricas a "
                     "one-hot). Se comparan dos conjuntos de variables: ", html.B("A"), " solo físicas y ", html.B("B"),
@@ -423,275 +478,102 @@ ml_base = html.Div([
             dcc.Dropdown(id="mod-metrica", value="f1_macro", clearable=False, style={"maxWidth": 420},
                          options=[{"label": v, "value": k} for k, v in F.METRICAS_COMPARABLES.items()],
                          className="filtros mb-2"),
-            tarjeta_grafico(F.fig_comparacion("f1_macro"), "mod-comp"),
-            html.Div(tabla(F.tabla_metricas()), className="tabla-scroll mt-3"),
+            grafico(F.fig_comparacion("f1_macro"), "mod-comp"),
+            html.Div(tabla(F.tabla_metricas()), className="tabla-scroll"),
             interpretacion(
-                "La logística B es el modelo principal: tiene el mayor F1 en la validación cruzada espacial (0.30) y en test "
-                "(0.45). Supera con claridad a las Dummy: la diferencia de F1 frente a la mayoritaria es +0.38 (IC 95 % "
-                "[0.11, 0.39]) y frente a la estratificada +0.28 (IC [0.03, 0.31]).",
+                "La logística B es el modelo principal: tiene el mayor F1 en la validación cruzada espacial (0.30) y en "
+                "test (0.45). Supera con claridad a las Dummy: la diferencia de F1 frente a la mayoritaria es +0.38 "
+                "(IC 95 % [0.11, 0.39]) y frente a la estratificada +0.28 (IC [0.03, 0.31]).",
                 "Frente a la moda por zona también gana en todas las métricas de test (F1 0.45 frente a 0.33; MAE 0.46 "
                 "frente a 0.94), pero la diferencia de F1 no es estadísticamente significativa (+0.12, IC [−0.01, 0.19]): "
                 "con solo 7 bloques de test la incertidumbre es grande. Lo mismo pasa entre B y A.",
                 "El F1 de test (0.45) es mayor que el de la CV (0.30) por dos razones probables: los 7 bloques de test "
-                "resultaron favorables (con muy poco estrato 6) y el modelo final se entrena con 138 239 viviendas, entre 1.9 "
-                "y 2.6 veces las de cada fold. La estimación más representativa del desempeño en zonas nuevas es la de la CV "
-                "espacial.")),
-    seccion("Coeficientes",
+                "resultaron favorables (con muy poco estrato 6) y el modelo final se entrena con 138 239 viviendas, entre "
+                "1.9 y 2.6 veces las de cada fold. La estimación más representativa del desempeño en zonas nuevas es la "
+                "de la CV espacial. La accuracy (0.60) no activa la alerta de posible fuga (≥ 0.80).")),
+
+    seccion("2. ¿Por qué validar por bloques espaciales?",
+            grafico(F.fig_optimismo()),
+            interpretacion(
+                "Con validación aleatoria, viviendas del mismo edificio y de la misma cuadra caen a la vez en "
+                "entrenamiento y validación, y el modelo «reconoce» la zona: el F1 sube a 0.60, el doble que con "
+                "bloques. Ese número sería engañoso para predecir en zonas nuevas.",
+                "El buffer también importa: sin él el F1 de CV es 0.40, con 1 km baja a 0.30 y con el alcance completo "
+                "del correlograma (2.9 km) cae a 0.18, porque se pierde mucho entrenamiento. Se eligió 1 km como "
+                "compromiso.")),
+
+    seccion("3. Diagnóstico por modelo",
+            dbc.Row([dbc.Col(dcc.Dropdown(id="mod-modelo", options=opciones_modelo,
+                                          value="Logística B_fisicas+ubicacion", clearable=False), md=5),
+                     dbc.Col(dbc.Checklist(id="mod-normalizar", value=["si"], switch=True,
+                                           options=[{"label": "matriz en % por fila", "value": "si"}]), md=3)],
+                    className="filtros mb-2"),
+            dbc.Row([dbc.Col(grafico(F.fig_confusion(), "mod-conf"), md=6),
+                     dbc.Col(grafico(F.fig_por_clase(), "mod-clase"), md=6)]),
+            dbc.Row([dbc.Col(grafico(F.fig_roc(), "mod-roc"), md=6),
+                     dbc.Col(grafico(F.fig_calibracion(), "mod-cal"), md=6)]),
+            interpretacion(
+                "En la logística B los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.94). Hay dos "
+                "desplazamientos hacia el centro de la escala: el estrato 2 casi nunca se predice (recall 0.06; la "
+                "mayoría se clasifica como 3) y más de la mitad de los estratos 5 y 6 se predicen como 4.",
+                "Las curvas ROC muestran que el modelo sí ordena bien el estrato 2 (AUC alto), pero casi nunca gana el "
+                "argmax frente al 3: el problema es de calibración y de umbral, no de falta de señal. La calibración "
+                "confirma que el estrato 3 está sobreestimado y el 2 subestimado.",
+                "Selecciona otro modelo en la lista para comparar: la Dummy mayoritaria solo predice estrato 1 (la clase más frecuente en el entrenamiento que queda tras el buffer) y la moda "
+                "por zona acierta las zonas grandes pero falla en los bordes entre estratos.")),
+
+    seccion("4. Coeficientes",
             dbc.RadioItems(id="mod-coef", value="B_fisicas+ubicacion", inline=True, className="filtros mb-2",
                            options=[{"label": "Logística B", "value": "B_fisicas+ubicacion"},
                                     {"label": "Logística A", "value": "A_fisicas"}]),
-            tarjeta_grafico(F.fig_coeficientes(), "mod-coef-fig"),
+            grafico(F.fig_coeficientes(), "mod-coef-fig"),
             interpretacion(
-                "Cada celda es el coeficiente de la variable (estandarizada) en la ecuación de ese estrato: azul empuja hacia "
-                "el estrato, rojo lo aleja. Se muestran las variables con mayor diferencia entre el estrato 6 y el 1.",
+                "Cada celda es el coeficiente de la variable (estandarizada) en la ecuación de ese estrato: azul empuja "
+                "hacia el estrato, rojo lo aleja. Se muestran las variables con mayor diferencia entre el estrato 6 y el 1.",
                 "La posición norte-sur domina: moverse al norte aumenta la probabilidad de estratos altos y reduce la de "
                 "estratos bajos. Entre las físicas, más baños y más área empujan hacia estratos altos, y los predios "
-                "informales hacia el estrato 1. Cautela: las variables están correlacionadas, así que un coeficiente aislado "
-                "no es un efecto causal, y la multinomial no usa el orden de los estratos.")),
-    seccion("Curva de aprendizaje y residuos espaciales",
-            dbc.Row([dbc.Col(tarjeta_grafico(F.fig_curva_aprendizaje()), lg=5),
-                     dbc.Col(tarjeta_grafico(F.fig_mapa_residuos()), lg=7)], className="g-3"),
+                "informales hacia el estrato 1.",
+                "Cautela: las variables están correlacionadas entre sí, así que un coeficiente aislado no es un efecto "
+                "causal, y la multinomial no usa el orden de los estratos.")),
+
+    seccion("5. Curva de aprendizaje y residuos espaciales",
+            dbc.Row([dbc.Col(grafico(F.fig_curva_aprendizaje()), md=5), dbc.Col(grafico(F.fig_mapa_residuos()), md=7)]),
             interpretacion(
-                "La curva de validación casi no sube al multiplicar los datos por 20, de 2 700 a 54 000 viviendas (F1 de 0.27 "
-                "a 0.30): es poco probable que más filas cambien mucho este modelo. La brecha entre entrenamiento y "
-                "validación refleja sobre todo el cambio de zona, no sobreajuste a filas.",
+                "La curva de validación casi no sube al multiplicar los datos por 20, de 2 700 a 54 000 viviendas (F1 de "
+                "0.27 a 0.30): es poco probable que más filas cambien mucho este modelo. Lo que falta es flexibilidad (no linealidades, interacciones) y variables del "
+                "entorno. La brecha entre entrenamiento y validación refleja sobre todo el cambio de zona, no "
+                "sobreajuste a filas.",
+                "En el mapa, cada punto es el residuo medio (estrato real − estrato esperado) de las viviendas de test en "
+                "una celda de ~110 m: azul significa que el modelo subestima el estrato, rojo que lo sobreestima.",
                 f"Los residuos siguen fuertemente autocorrelacionados en el espacio (Moran = "
                 f"{D['moran_residuos']['B_fisicas+ubicacion']['I']:.2f}): el modelo capta el gradiente norte-sur, pero no "
-                "los barrios. Esa fue la motivación para probar modelos con efectos locales y variables de vecindad.")),
-])
+                "los barrios. Hay zonas enteras donde subestima (azul) o sobreestima (rojo). Esa fue la motivación para "
+                "probar modelos con efectos locales, como el XGBoost geográfico de la revisión bibliográfica (sección 7).")),
 
-ml_diagnostico = html.Div([
-    dbc.Row([dbc.Col(dcc.Dropdown(id="mod-modelo", options=opciones_modelo,
-                                  value="Logística B_fisicas+ubicacion", clearable=False), md=5),
-             dbc.Col(dbc.Checklist(id="mod-normalizar", value=["si"], switch=True,
-                                   options=[{"label": "matriz en % por fila", "value": "si"}]), md=3)],
-            className="filtros my-3"),
-    dbc.Row([dbc.Col(tarjeta_grafico(F.fig_confusion(), "mod-conf"), lg=6),
-             dbc.Col(tarjeta_grafico(F.fig_por_clase(), "mod-clase"), lg=6)], className="g-3"),
-    dbc.Row([dbc.Col(tarjeta_grafico(F.fig_roc(), "mod-roc"), lg=6),
-             dbc.Col(tarjeta_grafico(F.fig_calibracion(), "mod-cal"), lg=6)], className="g-3 mt-1"),
-    interpretacion(
-        "En la logística B los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.94). Hay dos "
-        "desplazamientos hacia el centro de la escala: el estrato 2 casi nunca se predice (recall 0.06; la mayoría se "
-        "clasifica como 3) y más de la mitad de los estratos 5 y 6 se predicen como 4.",
-        "Las curvas ROC muestran que el modelo sí ordena bien el estrato 2 (AUC alto), pero casi nunca gana el argmax frente "
-        "al 3: el problema es de calibración y de umbral, no de falta de señal. La calibración confirma que el estrato 3 "
-        "está sobreestimado y el 2 subestimado.",
-        "Selecciona otro modelo en la lista para comparar: la Dummy mayoritaria solo predice una clase, la moda por zona "
-        "acierta las zonas grandes pero falla en los bordes entre estratos, y XGBoost casi nunca predice los estratos 5 y 6 "
-        "en zonas nuevas."),
-])
-
-
-def ml_avanzados():
-    if not F.hay_avanzados():
-        return html.Div()
-    A = R["avanzados"]
-    cmp = A["comparaciones_f1"]
-    hp = A["hiperparametros"]["XGBoost geográfico"]
-    pasos_geo = pasos([("1", "Modelo global", "XGBoost con todas las viviendas de entrenamiento"),
-                       ("2", "Anclas", f"{A['anclas_final']} centros de celdas de 2 km con ≥ 300 viviendas"),
-                       ("3", "Ventana adaptativa", f"{hp['frac_vecinos']:.0%} del entrenamiento "
-                                                   f"({fmt(A['k_usado_final'])} viviendas)"),
-                       ("4", "Modelos locales", "un XGBoost por ancla, kernel bicuadrado"),
-                       ("5", "Mezcla", f"p = {hp['alpha']}·global + {1 - hp['alpha']:.2f}·local")])
-    f = lambda k: float(cmp[k]["diferencia"])  # noqa: E731
-    lo = lambda k: float(cmp[k]["IC95_inf"])  # noqa: E731
-    hi = lambda k: float(cmp[k]["IC95_sup"])  # noqa: E731
-    cv = R["tabla_cv"]["f1_macro (media)"]
-    t = R["resultados_test"]
-    return html.Div([
-        seccion("Modelos de la revisión bibliográfica en zonas nuevas",
-                html.P(["Se evaluaron cuatro modelos con el ", html.B("mismo protocolo"), " de la logística: misma "
-                        "partición, mismos folds espaciales con buffer, selección de hiperparámetros solo con la CV y una "
-                        "única evaluación en test. ", html.B("XGBoost geográfico"), " es la propuesta novedosa: el artículo "
-                        "original (Grekousis, 2025) es de regresión y aquí se adaptó a clasificación de estratos mezclando "
-                        "probabilidades de un modelo global y de modelos locales. ", html.B("XGBoost"), " es su control. "
-                        "Además se probaron ", html.B("Rotation Forest"), " y una ", html.B("SVM con kernel RBF"),
-                        " (aproximación de Nyström) con hiperparámetros buscados por optimización bayesiana TPE."]),
-                html.H6("Cómo funciona la adaptación del XGBoost geográfico", className="fw-bold mt-2"),
-                pasos_geo,
-                dcc.Dropdown(id="avz-metrica", value="f1_macro", clearable=False, style={"maxWidth": 420},
-                             options=[{"label": v, "value": k} for k, v in F.METRICAS_COMPARABLES.items()],
-                             className="filtros mb-2"),
-                tarjeta_grafico(F.fig_comparacion_avanzados("f1_macro"), "avz-comp"),
-                html.Div(tabla(F.tabla_metricas_avanzados()), className="tabla-scroll mt-3"),
-                dbc.Row([dbc.Col(tarjeta_grafico(F.fig_diferencias()), lg=6),
-                         dbc.Col(tarjeta_grafico(F.fig_geoxgb_busqueda()), lg=6)], className="g-3 mt-1"),
-                interpretacion(
-                    "El criterio para cambiar de modelo se fijó antes de mirar el test: un modelo reemplaza a la logística "
-                    "B solo si su F1 de CV la supera en más de un error estándar de la diferencia pareada por fold. Ninguno "
-                    f"lo cumple. La SVM RBF es la única con ventaja media en CV "
-                    f"(+{A['cv_pareado']['SVM RBF (Nyström) + TPE']['media']:.3f}), pero su error estándar es "
-                    f"{A['cv_pareado']['SVM RBF (Nyström) + TPE']['se']:.3f} y la ventaja depende de un solo fold.",
-                    f"El test lo confirma: la SVM queda en {t['f1_macro']['SVM RBF (Nyström) + TPE']:.3f} (diferencia "
-                    f"{f('SVM RBF (Nyström) + TPE − Logística B'):+.3f}, IC [{lo('SVM RBF (Nyström) + TPE − Logística B'):+.3f}, "
-                    f"{hi('SVM RBF (Nyström) + TPE − Logística B'):+.3f}]). XGBoost, que en la CV empataba con la logística "
-                    f"({cv['XGBoost']:.3f}), en test queda en {t['f1_macro']['XGBoost']:.3f}: los árboles parten el mapa "
-                    "en rectángulos y no extrapolan, mientras que la logística prolonga el gradiente sur-norte.",
-                    f"El XGBoost geográfico apenas se distingue de su control en zonas nuevas (diferencia de F1 "
-                    f"{f('XGBoost geográfico − XGBoost'):+.3f}). Con el buffer de 1 km, sus modelos locales se entrenan con "
-                    "los barrios vecinos y no con el de la vivienda. Por eso se midió también en zonas conocidas: ver la "
-                    "sub-pestaña «Vecindad y escenarios».")),
-        seccion("Residuos espaciales por modelo",
-                dcc.Dropdown(id="avz-residuo", value="XGBoost geográfico", clearable=False, style={"maxWidth": 420},
-                             options=[{"label": F.NOMBRE_CORTO[m], "value": m}
-                                      for m in ["Logística B_fisicas+ubicacion"] + F.AVANZADOS], className="filtros mb-2"),
-                tarjeta_grafico(F.fig_mapa_residuos_modelo("XGBoost geográfico"), "avz-residuo-fig"),
-                interpretacion("Todos los modelos nuevos dejan los residuos más agrupados que la logística (I de Moran entre "
-                               "0.77 y 0.87, frente a 0.70): la información de barrio que falta no está en las variables "
-                               "del catastro de la propia vivienda.")),
-    ])
-
-
-def ml_vecindad():
-    if not VEC:
-        return html.Div("Los resultados de vecindad/ no están disponibles.", className="mt-3")
-    return html.Div([
-        html.P(["Los residuos agrupados por barrios sugerían que al modelo le falta información del ", html.B("entorno"),
-                ". Se hicieron dos experimentos con el mismo protocolo (código en la carpeta ", html.Code("vecindad/"),
-                " y capítulo 5 del libro):"], className="mt-3"),
-        dbc.Row([
-            dbc.Col(hallazgo("Experimento 1", "Variables de vecindad física",
-                             "12 variables que describen a las viviendas vecinas a 300 m y 1 km (tamaño, baños, "
-                             "antigüedad, % de apartamentos, % informal, densidad). Nunca usan el estrato de los vecinos.",
-                             "#0f8a7a"), md=6),
-            dbc.Col(hallazgo("Experimento 2", "Dos escenarios de predicción",
-                             "Zonas nuevas (bloques no vistos, como en todo el proyecto) frente a zonas conocidas "
-                             "(edificios completos ocultos dentro de zonas con datos).", "#4a3aa7"), md=6),
-        ], className="g-3"),
-        seccion("El resultado central: el mejor modelo depende del escenario",
-                tarjeta_grafico(F.fig_escenarios()),
-                interpretacion(
-                    "En zonas nuevas, la logística B supera a los árboles: XGBoost y su versión geográfica no saben "
-                    "extrapolar a zonas sin datos. En zonas conocidas el orden se invierte: los árboles superan a la "
-                    "logística por +0.20 de F1.",
-                    "La estrella es la regla más simple: votar con el estrato de las 15 viviendas conocidas más cercanas. "
-                    "En zonas conocidas empata con el mejor modelo (0.788 frente a 0.784), pero no se puede usar en zonas "
-                    "nuevas, donde no hay estratos conocidos alrededor.",
-                    "Los dos escenarios se evalúan con conjuntos distintos (test de 7 bloques frente a predicciones fuera de "
-                    "muestra en 5 folds por edificio): lo que se compara es el orden de los modelos dentro de cada "
-                    "escenario, no los valores entre escenarios.", titulo="Cómo leer esta figura")),
-        seccion("Experimento 1 · Zonas nuevas: ¿ayuda ver el barrio?",
-                tarjeta_grafico(F.fig_vecindad_diferencias()),
-                html.Div(tabla(F.tabla_vecindad()), className="tabla-scroll mt-3"),
-                interpretacion(
-                    "El modelo principal (fijado antes de ver resultados) es la logística B más las 12 variables. En test "
-                    "mejora todas las métricas: F1 de 0.450 a 0.590, MAE ordinal de 0.463 a 0.281, y el recall del estrato 2 "
-                    "pasa de 0.06 a 0.68. Pero el estrato 5 empeora (de 0.19 a 0.04).",
-                    "En la validación cruzada la mejora es pequeña (+0.025) y no supera un error estándar: por el criterio "
-                    "fijado de antemano, no reemplaza a B. Con una variante estricta (vecindad calculada solo dentro de cada "
-                    "partición) la mejora en test se mantiene (F1 0.568), y al quitar un bloque a la vez sigue siendo "
-                    "positiva en los siete casos.")),
-        dbc.Row([dbc.Col(tarjeta_grafico(F.fig_vecindad_folds15()), lg=6),
-                 dbc.Col(tarjeta_grafico(F.fig_vecindad_entorno()), lg=6)], className="g-3"),
-        interpretacion(
-            "Con 15 folds la vecindad mejora en solo 7: la diferencia media es +0.006 (error estándar 0.021). Los dos modelos "
-            "con vecindad ganan y pierden en los mismos folds, lo que apunta a una propiedad de las zonas.",
-            "El análisis por entorno (exploratorio) explica parte: la vecindad «suaviza» la predicción hacia lo típico del "
-            "barrio. Ayuda a casi todas las viviendas, que se parecen a su entorno, y perjudica mucho a las pocas que viven en "
-            "entornos muy mezclados. Es el único patrón que se repite igual en la validación cruzada y en test.",
-            "Veredicto: resultado mixto. La vecindad es una línea prometedora, pero no una mejora demostrada en zonas nuevas.",
-            titulo="Por qué el resultado es mixto"),
-        seccion("Experimento 2 · Zonas conocidas: el escenario natural del XGBoost geográfico",
-                dbc.Row([dbc.Col(tarjeta_grafico(F.fig_zonas_conocidas()), lg=5),
-                         dbc.Col(html.Div(tabla(F.tabla_comparaciones_conocidas()), className="tabla-scroll"), lg=7)],
-                        className="g-3"),
-                interpretacion(
-                    "En zonas conocidas, el XGBoost geográfico supera a su control en los cinco folds (+0.010 de F1, IC "
-                    "[+0.007, +0.024]): en su escenario natural, la adaptación propuesta sí aporta, aunque poco. En zonas "
-                    "nuevas su ganancia era de +0.003.",
-                    "La vecindad física también ayuda a la logística aquí (+0.111), pero incluso con el estrato de los "
-                    "vecinos la logística (0.718) queda muy por debajo del voto de los vecinos (0.788): un modelo lineal no "
-                    "aprovecha bien la información local.",
-                    "Implicación práctica: para estimar el estrato en una zona ya estratificada basta una regla de vecinos; "
-                    "los modelos con variables catastrales son necesarios donde no hay estratos conocidos alrededor.")),
-        dbc.Alert(["Estos experimentos se corrieron con una réplica del protocolo hecha con numpy y scipy (en el equipo "
-                   "donde se corrieron, Windows bloquea scikit-learn). La réplica reproduce el modelo B guardado con "
-                   "diferencias de una milésima como máximo (F1 de test 0.4500)."], color="secondary", className="mt-2"),
-    ])
-
-
-ml_conclusiones = html.Div([
-    dbc.Row([
-        dbc.Col(dbc.Card(dbc.CardBody([
-            html.H5("Lo que aprendimos", className="fw-bold"),
-            html.Ul([
-                html.Li([html.B("El estrato se puede predecir con el catastro, pero solo en parte: "),
-                         "F1 macro 0.30 en CV espacial y 0.45 en test, con errores casi siempre de un estrato."]),
-                html.Li([html.B("La ubicación es la información dominante: "),
-                         "Barranquilla está segregada de sur a norte (I de Moran = 0.91)."]),
-                html.Li([html.B("La estructura manda sobre la cantidad de filas: "),
-                         "validar al azar habría duplicado el F1 (0.60 frente a 0.30)."]),
-                html.Li([html.B("El mejor modelo depende del escenario: "),
-                         "en zonas nuevas gana la logística; en zonas conocidas, los árboles."]),
-                html.Li([html.B("La propuesta novedosa aporta en su escenario: "),
-                         "el XGBoost geográfico supera a su control en zonas conocidas, aunque empata con votar con los "
-                         "vecinos."]),
-            ], className="mb-0"),
-        ]), className="h-100 conclusion"), lg=4),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            html.H5("Limitaciones", className="fw-bold"),
-            html.Ul([
-                html.Li("El 16 % de las viviendas (predios informales) no tiene coordenadas: las conclusiones aplican a "
-                        "la ciudad formal."),
-                html.Li("Solo 7 bloques de test: intervalos muy anchos; la CV espacial es la cifra más representativa."),
-                html.Li("Buffer parcial (1 km frente a un alcance de 2.9 km): la validación sigue algo optimista."),
-                html.Li("El estrato es una etiqueta administrativa con información del entorno que el catastro no tiene."),
-                html.Li("Riesgo ético: un modelo de estrato podría usarse para discriminar; su propósito aquí es "
-                        "analítico. Las coordenadas se publican redondeadas y sin número predial."),
-            ], className="mb-0"),
-        ]), className="h-100 conclusion"), lg=4),
-        dbc.Col(dbc.Card(dbc.CardBody([
-            html.H5("Próximos pasos", className="fw-bold"),
-            html.Ul([
-                html.Li("Medir la variedad física del entorno, para que el modelo sepa cuándo confiar en la vecindad."),
-                html.Li("Combinar la logística y la SVM RBF (stacking): aciertan estratos distintos en la parte alta."),
-                html.Li("Regresión logística ordinal y recalibración de umbrales (el estrato 2 ordena bien pero pierde "
-                        "el argmax)."),
-                html.Li("Más bloques de evaluación para distinguir mejoras pequeñas."),
-            ], className="mb-0"),
-        ]), className="h-100 conclusion"), lg=4),
-    ], className="g-3 mt-3"),
-])
-
-tab_modelos = dbc.Container([
-    dbc.Row([
-        dbc.Col(tarjeta_kpi(f"{IC['valor en test']['f1_macro']:.2f}", "F1 macro en test (logística B)",
-                            f"IC 95 % por bloques: [{IC['IC95_inf']['f1_macro']:.2f}, {IC['IC95_sup']['f1_macro']:.2f}]"),
-                md=6, lg=3),
-        dbc.Col(tarjeta_kpi(f"{R['resultados_test']['accuracy_±1']['Logística B_fisicas+ubicacion']:.2f}",
-                            "accuracy ±1 estrato", "casi todos los errores son entre vecinos"), md=6, lg=3),
-        dbc.Col(tarjeta_kpi(f"{IC['valor en test']['kappa_cuadrático']:.2f}", "kappa cuadrático", "acuerdo ordinal alto"),
-                md=6, lg=3),
-        dbc.Col(tarjeta_kpi(f"{F.vecindad('zonas_conocidas')['modelos']['XGBoost geográfico']['F1_macro']:.2f}"
-                            if VEC else "—", "F1 del XGBoost geográfico", "en zonas conocidas"), md=6, lg=3),
-    ], className="g-3 mt-3"),
-    html.Div("La ruta de modelado", className="etiqueta-seccion mt-4"),
-    pasos([("1", "Líneas base", "Dummy y moda por zona"),
-           ("2", "Logística A y B", "Modelo base con CV espacial"),
-           ("3", "Revisión bibliográfica", "XGBoost geográfico, XGBoost, Rotation Forest, SVM"),
-           ("4", "Vecindad física", "El modelo ve el barrio"),
-           ("5", "Dos escenarios", "Zonas nuevas frente a zonas conocidas")]),
-    subpestanas("ml-sub", [("Protocolo", ml_protocolo), ("Modelo base", ml_base), ("Diagnóstico", ml_diagnostico),
-                           ("Modelos de la revisión", ml_avanzados()), ("Vecindad y escenarios", ml_vecindad()),
-                           ("Simulador", simulador), ("Conclusiones", ml_conclusiones)]),
+    seccion("6. Simulador", simulador),
+    seccion_avanzados(),
 ], fluid=True)
 
 # ===========================================================================
 # Layout
 # ===========================================================================
 app.layout = html.Div([
-    cabecera,
+    html.Header(dbc.Container([
+        html.H1("Estrato socioeconómico de las viviendas de Barranquilla", className="titulo"),
+        html.Div(["Clasificación con datos catastrales — Entregables 1 y 2, Machine Learning (Maestría, Universidad del "
+                  "Norte). Profesor Lihki Rubio. ", html.A("Jupyter Book del Entregable 1", href=LIBRO_E1, target="_blank",
+                                                           style={"color": "#fff", "textDecoration": "underline"})], className="subtitulo"),
+        html.Div(AUTORES, className="autores"),
+    ], fluid=True), className="cabecera"),
     dbc.Container(dbc.Tabs([
-        dbc.Tab(tab_contexto, label="Contexto", tab_id="t1"),
-        dbc.Tab(tab_eda, label="EDA", tab_id="t2"),
-        dbc.Tab(tab_modelos, label="ML models", tab_id="t3"),
-    ], active_tab="t1", className="pestanas mt-3"), fluid=True),
+        dbc.Tab(tab_contexto, label="1. Contexto del problema", tab_id="t1"),
+        dbc.Tab(tab_datos, label="2. Base de datos y calidad", tab_id="t2"),
+        dbc.Tab(tab_eda, label="3. Análisis exploratorio", tab_id="t3"),
+        dbc.Tab(tab_modelos, label="4. Modelos", tab_id="t4"),
+    ], active_tab="t1", className="mt-3"), fluid=True),
     html.Footer(dbc.Container(html.Small(
         "Datos: catastro abierto de la Alcaldía de Barranquilla (descarga del 15-sep-2026). Coordenadas redondeadas a "
-        "~110 m y sin número predial. Semilla 42. Informe completo en el Jupyter Book del proyecto. " + AUTORES),
-        fluid=True), className="pie"),
+        "~110 m y sin número predial. Semilla 42. " + AUTORES), fluid=True), className="pie"),
 ])
 
 
@@ -774,6 +656,11 @@ def actualizar_comparacion_avanzados(metrica):
 @app.callback(Output("avz-residuo-fig", "figure"), Input("avz-residuo", "value"))
 def actualizar_residuos_avanzados(modelo):
     return F.fig_mapa_residuos_modelo(modelo)
+
+
+@app.callback(Output("kish-fig", "figure"), Input("kish-icc", "value"))
+def actualizar_kish(icc):
+    return F.fig_kish(GX["icc"] if icc is None else icc, GX["m_pond"])
 
 
 if __name__ == "__main__":
