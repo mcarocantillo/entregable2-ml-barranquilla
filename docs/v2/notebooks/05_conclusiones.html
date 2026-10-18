@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Conclusiones y próximos pasos &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script src="../_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/05_conclusiones';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="next" title="A. El dashboard y su despliegue" href="A_dashboard_y_despliegue.html" />
+    <link rel="prev" title="5. Variables de vecindad física y los dos escenarios de predicción" href="05_vecindad.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Estrato y catastro en Barranquilla — Entregable 2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Estrato socioeconómico y catastro en Barranquilla — Entregable 2
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Informe del dashboard</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_contexto.html">1. Contexto del problema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Conclusiones y próximos pasos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="A_dashboard_y_despliegue.html">A. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="B_referencias.html">B. Referencias</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/05_conclusiones.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>6. Conclusiones y próximos pasos</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">6.1 Qué se aprendió</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">6.2 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">6.3 Próximos pasos</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="conclusiones-y-proximos-pasos">
+<h1>6. Conclusiones y próximos pasos<a class="headerlink" href="#conclusiones-y-proximos-pasos" title="Link to this heading">#</a></h1>
+<p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
+<section id="que-se-aprendio">
+<h2>6.1 Qué se aprendió<a class="headerlink" href="#que-se-aprendio" title="Link to this heading">#</a></h2>
+<p><strong>El estrato se puede predecir con el catastro, pero solo en parte.</strong> Una regresión logística con las características físicas de la vivienda y su ubicación, con pesos de clase balanceados, alcanza un F1 macro de 0.32 en validación cruzada espacial y de 0.49 en siete bloques de test, con errores casi siempre de un estrato (accuracy ±1 = 0.96; kappa cuadrático = 0.84). Supera con claridad a las líneas base Dummy y, en todas las métricas de test, a la regla geográfica «clase más frecuente en la zona», aunque esta última diferencia de F1 no es estadísticamente significativa.</p>
+<p><strong>La ubicación es la información dominante.</strong> La posición norte-sur es la variable más asociada al estrato y la de mayor peso en el modelo. Barranquilla está segregada: el estrato medio pasa de 1.5 en el sur a cerca de 5 en el norte, aunque la franja más al norte vuelve a mezclar estratos. Entre las variables físicas, el número de baños, el piso de ubicación y el área construida son las más informativas; el régimen de propiedad separa bien los predios informales.</p>
+<p><strong>La estructura de los datos manda sobre la cantidad de filas.</strong> El estrato casi no varía dentro de un edificio o conjunto (ICC = 0.992) y tiene una autocorrelación espacial muy fuerte (Moran = 0.92). Las 332 718 viviendas equivalen, en precisión, a unas 2 300 observaciones independientes. Validar con filas mezcladas habría casi duplicado el F1 (0.62 frente a 0.32), así que el protocolo de bloques con buffer es lo que hace creíbles las cifras de este informe.</p>
+<p><strong>El modelo lineal llegó a su techo, pero los modelos más complejos no lo superan en zonas nuevas.</strong> La curva de aprendizaje es plana hasta 80 000 viviendas (F1 de validación entre 0.32 y 0.33) y los residuos siguen autocorrelacionados (Moran = 0.56): el modelo capta la tendencia de la ciudad, pero no los barrios. Al probar los candidatos de la revisión bibliográfica con el mismo protocolo (capítulo 4), ninguno mejoró a la logística en test. La SVM con kernel RBF pasó el criterio de la validación cruzada (+0.030 de F1), pero en test queda por debajo (0.45 frente a 0.49) y con errores ordinales y probabilidades peores; se mantuvo la logística como desviación declarada del criterio. Rotation Forest empata en F1 y tiene el menor error ordinal. XGBoost queda por debajo en test, y la adaptación del <strong>XGBoost geográfico a clasificación</strong>, la propuesta novedosa del proyecto, no aporta de forma estable frente a su control porque los modelos locales no tienen datos en las zonas nuevas que evalúa la validación espacial.</p>
+<p><strong>El mejor modelo depende del escenario de predicción (capítulo 5).</strong> Se midieron dos escenarios por separado. En
+<strong>zonas nuevas</strong>, agregar variables de vecindad física (cómo son las viviendas de alrededor, sin usar su estrato)
+mejora las métricas ordinales del test y sube el F1 de 0.49 a 0.55, pero esa mejora de F1 no es significativa, la
+validación cruzada no la confirma y depende sobre todo de un bloque del norte. En <strong>zonas conocidas</strong> (viviendas ocultas dentro de zonas con datos), los árboles superan a la logística por más de 0.2 de F1, también cuando se ocultan manzanas completas, lo que descarta que su ventaja sea solo memorizar la manzana. Ocultando edificios, el XGBoost geográfico empata con votar con el estrato de las viviendas conocidas más cercanas (F1 0.79); ocultando manzanas, lo supera (0.75 frente a 0.71): la propuesta novedosa aporta donde hay datos cerca.</p>
+<p><strong>Los resultados reproducen la lógica de la metodología del DANE.</strong> Según la metodología vigente <span class="bibtex-citation" id="id1">[<a class="reference internal" href="B_referencias.html#id15" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>, <a class="reference internal" href="B_referencias.html#id16" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: manual de realización. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>]</span>, el estrato se asigna a zonas homogéneas del catastro y solo cambia en las viviendas atípicas (sección 1.1.1). Eso explica cuatro hallazgos del informe: que la ubicación domine, que el estrato casi no varíe dentro de un edificio o conjunto (ICC = 0.992), que los vecinos conocidos sean el mejor predictor y que los errores sean casi siempre de un estrato, el mismo salto que la metodología permite a una vivienda atípica. También explica el techo del modelo en zonas nuevas: el catastro abierto no publica las zonas homogéneas ni el puntaje de calificación de las edificaciones, que son los dos insumos con los que el DANE calcula el estrato. La respuesta a la pregunta del proyecto es, entonces, que <strong>la parte pública del catastro revela sobre todo la zona; lo que distingue a la vivienda dentro de su zona no está publicado</strong>.</p>
+</section>
+<section id="limitaciones">
+<h2>6.2 Limitaciones<a class="headerlink" href="#limitaciones" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Cobertura.</strong> En la versión 2 del Entregable 1, las viviendas sin coordenadas propias se ubican con el centroide de su manzana, y el modelo cubre el 96.9 % de las viviendas. Quedan fuera 10 300 (3.1 %), casi todas de estrato 1. Las viviendas ubicadas por manzana comparten una misma coordenada, una aproximación de hasta 250 m.</p></li>
+<li><p><strong>Pocos bloques de test.</strong> Con siete bloques, los intervalos son muy anchos y el resultado de test es favorable (pocos estratos 6 y un modelo final con más datos que cada fold). La cifra más representativa es la de la CV espacial.</p></li>
+<li><p><strong>Buffer parcial.</strong> El alcance del correlograma (2.6 km) es mayor que el buffer usado (1 km): la validación sigue siendo algo optimista.</p></li>
+<li><p><strong>El estrato es una etiqueta administrativa.</strong> Se asigna a zonas homogéneas del catastro (vías, servicios, uso y valor del suelo) con el puntaje de calificación de las edificaciones, y lo revisan la alcaldía y el Comité Permanente de Estratificación, que pueden ajustarlo a mano. Ninguno de estos insumos está en los datos abiertos. Además, la estratificación vigente de Barranquilla puede ser anterior a la metodología de 2015 o estar desactualizada, que el DANE señala como la principal fuente de error. Por todo esto, el modelo tiene un techo que no depende de su flexibilidad.</p></li>
+<li><p><strong>Calidad del catastro.</strong> Las características físicas pueden estar desactualizadas; hay años de construcción amontonados en ciertos valores y viviendas con 0 habitaciones o 0 baños que no se pudieron verificar con un diccionario oficial.</p></li>
+<li><p><strong>Riesgo ético.</strong> Un modelo que predice el estrato podría usarse para discriminar (crédito, seguros). Su propósito aquí es analítico. En el dashboard las coordenadas se redondean a unos 110 m y no se publica el número predial.</p></li>
+</ul>
+</section>
+<section id="proximos-pasos">
+<h2>6.3 Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
+<p>Los resultados de los capítulos 4 y 5 cambian la agenda: el cuello de botella no es la flexibilidad del modelo, sino la información disponible en zonas sin datos y la forma de evaluar. Los dos escenarios de predicción ya se midieron por separado (capítulo 5); quedan estos pasos:</p>
+<ol class="arabic simple">
+<li><p><strong>Medir la variedad física del entorno</strong> (por ejemplo, la dispersión del área o de los baños a 300 m). El efecto de las variables de vecindad cambia mucho entre zonas; estas medidas, que tampoco usan el estrato, le permitirían al modelo saber cuándo confiar en la vecindad.</p></li>
+<li><p><strong>Una CV anidada para la SVM RBF</strong> (la búsqueda de hiperparámetros repetida dentro de cada fold), para saber si su ventaja en la validación cruzada es real o efecto de la búsqueda. Y <strong>combinar la logística y la SVM</strong> (<em>stacking</em>), porque aciertan estratos distintos: la SVM reconoce mejor el 1, el 5 y el 6, y la logística el 2.</p></li>
+<li><p><strong>Regresión logística ordinal</strong> como segunda referencia lineal, porque respeta el orden de los estratos.</p></li>
+<li><p><strong>Más bloques de evaluación.</strong> Con 7 bloques de test y 32 de entrenamiento, varias diferencias del capítulo 5 no se pueden distinguir del ruido. Bloques más pequeños o una validación con más folds darían comparaciones por pares con más poder.</p></li>
+<li><p><strong>Un modelo en dos etapas, como el del DANE.</strong> Primero estimar el estrato de la zona y luego decidir si cada vivienda es atípica frente a su zona. Y, si la Alcaldía o el catastro entregan las zonas homogéneas o el puntaje de calificación de las edificaciones, incorporarlos: son los insumos que el DANE usa de forma directa.</p></li>
+<li><p><strong>Recalibración</strong> de probabilidades y umbrales por clase, dentro de la CV espacial.</p></li>
+<li><p><strong>Búsquedas de hiperparámetros más amplias</strong> (más ensayos TPE, Bagged TAO Trees <span class="bibtex-citation" id="id2">[<a class="reference internal" href="B_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>]</span>) cuando se disponga de más cómputo.</p></li>
+</ol>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05_vecindad.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">5. Variables de vecindad física y los dos escenarios de predicción</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="A_dashboard_y_despliegue.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">A. El dashboard y su despliegue</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio">6.1 Qué se aprendió</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">6.2 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">6.3 Próximos pasos</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
