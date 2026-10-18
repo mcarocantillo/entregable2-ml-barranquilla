@@ -15,7 +15,7 @@ from dash import ALL, Dash, Input, Output, State, ctx, dcc, html
 from dash.exceptions import PreventUpdate
 
 import diapositivas as DP
-from componentes import fmt, glosario_completo
+from componentes import fmt, glosario_completo, radio
 
 app = Dash(__name__, title="Estrato socioeconómico en Barranquilla — Proyecto final de Machine Learning",
            suppress_callback_exceptions=True,
@@ -51,7 +51,8 @@ navegacion = html.Div(dbc.Container([
     html.Div([html.Span("Estrato · Barranquilla", className="nav-marca"),
               dbc.Tabs(id="pestana", active_tab="contexto", className="pestanas",
                        children=[dbc.Tab(label=f"{i + 1}. {p['titulo']}", tab_id=p["id"]) for i, p in enumerate(DP.PESTANAS)]),
-              html.Div([dbc.Button("Glosario", id="btn-glosario", className="btn-nav", n_clicks=0),
+              html.Div([radio("vista", [("continua", "Continua"), ("diapositivas", "Por diapositiva")], "continua"),
+                        dbc.Button("Glosario", id="btn-glosario", className="btn-nav", n_clicks=0),
                         dbc.Button("Presentar", id="btn-presentar", className="btn-nav", n_clicks=0)],
                        className="nav-acciones")], className="nav-fila")], fluid=True), id="navegacion", className="barra-nav")
 
@@ -90,17 +91,37 @@ def pie_navegacion(pid, i):
         className="pie-navegacion")
 
 
-def cuerpo_diapositiva(pid, i):
+def construir(pid, i):
     titulo, funcion = PESTANAS[pid]["diapositivas"][i]
     try:
-        contenido = funcion()
+        return funcion()
     except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
-        contenido = dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
-    return html.Div([contenido, pie_navegacion(pid, i)], className="diapo-marco")
+        return dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
 
 
-@app.callback(Output("cuerpo", "children"), Input("pestana", "active_tab"), State("indices", "data"))
-def mostrar_pestana(pid, indices):
+def cuerpo_diapositiva(pid, i):
+    return html.Div([construir(pid, i), pie_navegacion(pid, i)], className="diapo-marco")
+
+
+# Vista continua: todas las diapositivas de la pestaña una debajo de otra; el menú salta a cada una.
+def menu_continuo(pid):
+    p = PESTANAS[pid]
+    return html.Div([html.A([html.Span(f"{i + 1:02d}", className="menu-num"), html.Span(t, className="menu-texto")],
+                            href=f"#d-{pid}-{i}", className="menu-item menu-enlace")
+                     for i, (t, _) in enumerate(p["diapositivas"])], className="menu")
+
+
+def cuerpo_continuo(pid):
+    return html.Div([html.Section(construir(pid, i), id=f"d-{pid}-{i}", className="diapo-marco diapo-continua")
+                     for i in range(len(PESTANAS[pid]["diapositivas"]))])
+
+
+@app.callback(Output("cuerpo", "children"), Input("pestana", "active_tab"), Input("vista", "value"),
+              State("indices", "data"))
+def mostrar_pestana(pid, vista, indices):
+    if vista == "continua":
+        return dbc.Row([dbc.Col(menu_continuo(pid), lg=2, className="col-menu"),
+                        dbc.Col(cuerpo_continuo(pid), lg=10, className="col-area")], className="g-4")
     i = indices.get(pid, 0)
     return dbc.Row([dbc.Col(menu(pid, i), lg=2, className="col-menu"),
                     dbc.Col(html.Div(cuerpo_diapositiva(pid, i), id="area"), lg=10, className="col-area")], className="g-4")

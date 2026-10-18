@@ -206,3 +206,12 @@ p, li { line-height: 1.5; }
   .hitos { grid-template-columns: 1fr; }
   .cuerpo { padding: 16px; }
 }
+
+/* Vista continua: diapositivas apiladas; el menú lateral (fijo) salta a cada una */
+.diapo-continua { scroll-margin-top: 86px; margin-bottom: 26px; }
+.menu-enlace { text-decoration: none; color: var(--tinta-2, #3b4a5c); }
+.menu-enlace:hover { text-decoration: none; }
+html { scroll-behavior: smooth; }
+.nav-acciones .segmentado { margin-right: 6px; }
+.nav-acciones .segmentado .btn-segmento { color: #dfe6ef; border-color: rgba(255,255,255,.25); padding: 4px 10px; font-size: .85rem; }
+.nav-acciones .segmentado .btn-segmento.activo { background: #fff; color: var(--azul-oscuro, #0d366b); }
