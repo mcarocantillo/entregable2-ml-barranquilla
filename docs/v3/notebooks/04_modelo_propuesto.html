@@ -1,0 +1,707 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. El modelo propuesto: XGBoost geográfico adaptado a clasificación &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script src="../_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/04_modelo_propuesto';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="next" title="5. Cómo se compara: el protocolo de evaluación" href="05_protocolo.html" />
+    <link rel="prev" title="3. El modelo base: regresión logística" href="03_modelo_base.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Estrato y catastro en Barranquilla — Entregable 2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Estrato socioeconómico y catastro en Barranquilla — Entregable 2
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I. El problema</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_revision.html">1. El problema y la revisión bibliográfica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. Datos y análisis exploratorio</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II. Método</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_modelo_base.html">3. El modelo base: regresión logística</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">4. El modelo propuesto: XGBoost geográfico adaptado a clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_protocolo.html">5. Cómo se compara: el protocolo de evaluación</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III. Resultados</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="A_versiones.html">A. Historia de las versiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="B_dashboard.html">B. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="C_referencias.html">C. Referencias</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/04_modelo_propuesto.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>4. El modelo propuesto: XGBoost geográfico adaptado a clasificación</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#la-idea-original-efectos-que-cambian-de-un-lugar-a-otro">4.1 La idea original: efectos que cambian de un lugar a otro</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#la-adaptacion-a-clasificacion-multiclase">4.2 La adaptación a clasificación multiclase</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#los-demas-candidatos-de-la-revision">4.3 Los demás candidatos de la revisión</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="el-modelo-propuesto-xgboost-geografico-adaptado-a-clasificacion">
+<h1>4. El modelo propuesto: XGBoost geográfico adaptado a clasificación<a class="headerlink" href="#el-modelo-propuesto-xgboost-geografico-adaptado-a-clasificacion" title="Link to this heading">#</a></h1>
+<p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
+<div class="tip admonition">
+<p class="admonition-title">Qué responde este capítulo</p>
+<p>¿En qué consiste el modelo nuevo, por qué podría superar al modelo base y con qué otros candidatos de la revisión se
+compara? Corresponde a la pestaña <strong>5. Modelo propuesto y protocolo</strong> del dashboard. Los resultados están en los
+capítulos 6 a 8.</p>
+</div>
+<section id="la-idea-original-efectos-que-cambian-de-un-lugar-a-otro">
+<h2>4.1 La idea original: efectos que cambian de un lugar a otro<a class="headerlink" href="#la-idea-original-efectos-que-cambian-de-un-lugar-a-otro" title="Link to this heading">#</a></h2>
+<p>Un modelo global, como la logística del capítulo 3 o un XGBoost, aprende <strong>una sola</strong> relación entre las
+variables y el estrato para toda la ciudad. Pero el capítulo 3 mostró que sus errores siguen agrupados por barrios
+(I de Moran de los residuos 0.56): hay zonas enteras donde el modelo se equivoca en la misma dirección. Eso indica que
+la relación cambia de un lugar a otro: por ejemplo, un apartamento de 70 m² con dos baños puede ser estrato 3 en un
+barrio y estrato 5 en otro.</p>
+<p>Grekousis <span class="bibtex-citation" id="id1">[<a class="reference internal" href="C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span> propuso el <strong>XGBoost geográfico (G-XGBoost)</strong> para ese tipo de problemas, en
+<strong>regresión</strong>: además de un XGBoost global, entrena modelos <strong>locales</strong> en los que cada observación pesa según su
+distancia a un punto (un kernel espacial, como en la regresión geográficamente ponderada), y combina las predicciones
+del global y de los locales. En sus aplicaciones redujo el error alrededor de un 17 % frente a XGBoost, la regresión
+geográficamente ponderada (GWR) y el Random Forest geográfico.</p>
+<p><strong>Lo nuevo de este proyecto.</strong> No encontramos una versión del G-XGBoost para <strong>clasificación</strong>, ni ninguna aplicación
+al estrato socioeconómico (capítulo 1). La adaptación que sigue es propia.</p>
+</section>
+<section id="la-adaptacion-a-clasificacion-multiclase">
+<h2>4.2 La adaptación a clasificación multiclase<a class="headerlink" href="#la-adaptacion-a-clasificacion-multiclase" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Modelo global.</strong> Un XGBoost multiclase (6 estratos) con todas las viviendas de entrenamiento. Da, para cada
+vivienda, un vector de probabilidades <span class="math notranslate nohighlight">\(p_\text{global}\)</span>.</p></li>
+<li><p><strong>Anclas.</strong> En lugar de un modelo local por observación (inviable con cientos de miles de viviendas), se ubica un
+ancla en el centroide de las viviendas de cada celda de 2 km con al menos 300 viviendas de entrenamiento.</p></li>
+<li><p><strong>Ventana adaptativa.</strong> Para cada ancla <span class="math notranslate nohighlight">\(a\)</span>, el radio <span class="math notranslate nohighlight">\(h_a\)</span> es la distancia a su vecino de entrenamiento número
+<span class="math notranslate nohighlight">\(k\)</span>, con <span class="math notranslate nohighlight">\(k\)</span> igual a una <strong>fracción</strong> del entrenamiento. En zonas densas la ventana es pequeña y en zonas
+dispersas, grande; y al ser una fracción, se traslada igual de la validación cruzada (pliegues más pequeños) al
+modelo final.</p></li>
+<li><p><strong>Kernel bicuadrado.</strong> Cada vivienda <span class="math notranslate nohighlight">\(i\)</span> pesa <span class="math notranslate nohighlight">\(w_{ia} = \left(1 - (d_{ia}/h_a)^2\right)^2\)</span> si <span class="math notranslate nohighlight">\(d_{ia} &lt; h_a\)</span> y 0
+si no. Con esos pesos se entrena un <strong>XGBoost local</strong> (150 árboles de profundidad 4) en cada ancla. Si en la ventana
+hay un solo estrato, el modelo local es esa clase con probabilidad 1.</p></li>
+<li><p><strong>Predicción.</strong> Para una vivienda nueva, las probabilidades de los modelos locales que la cubren se promedian con
+el mismo kernel (<span class="math notranslate nohighlight">\(p_\text{local}\)</span>); si ninguna ancla la cubre se usa solo el global. La probabilidad final mezcla
+las dos:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[p = \alpha\, p_\text{global} + (1 - \alpha)\, p_\text{local}.\]</div>
+<p>Los hiperparámetros propios son la <strong>fracción de la ventana</strong> y el <strong>peso del global</strong> <span class="math notranslate nohighlight">\(\alpha\)</span>: con <span class="math notranslate nohighlight">\(\alpha = 1\)</span> es
+un XGBoost global puro, y con <span class="math notranslate nohighlight">\(\alpha = 0\)</span> solo cuentan los modelos locales. Por eso el <strong>XGBoost global</strong> con los
+mismos hiperparámetros es el <strong>control natural</strong> del modelo nuevo: la diferencia entre los dos mide cuánto aporta la
+parte geográfica.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Mostrar el código</p>
+<p class="expanded admonition-title">Ocultar el código</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">[</span><span class="s2">"Modelo global"</span><span class="p">,</span> <span class="s2">"XGBoost multiclase, todo el entrenamiento"</span><span class="p">,</span> <span class="s2">"Profundidad, número de árboles, pesos de clase"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Anclas"</span><span class="p">,</span> <span class="s2">"Centroides de celdas de 2 km con ≥ 300 viviendas"</span><span class="p">,</span> <span class="s2">"Tamaño de celda (fijo)"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Ventana"</span><span class="p">,</span> <span class="s2">"Distancia al vecino k = fracción × n"</span><span class="p">,</span> <span class="s2">"Fracción: 5 </span><span class="si">% o</span><span class="s2"> 15 %"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Kernel"</span><span class="p">,</span> <span class="s2">"Bicuadrado"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Modelos locales"</span><span class="p">,</span> <span class="s2">"XGBoost de 150 árboles, profundidad 4, con pesos del kernel"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Mezcla"</span><span class="p">,</span> <span class="s2">"p = α·p_global + (1 − α)·p_local"</span><span class="p">,</span> <span class="s2">"α ∈ {0, 0.25, 0.5, 0.75}"</span><span class="p">],</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Componente"</span><span class="p">,</span> <span class="s2">"Qué es"</span><span class="p">,</span> <span class="s2">"Hiperparámetros"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Componente</th>
+      <th>Qué es</th>
+      <th>Hiperparámetros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Modelo global</td>
+      <td>XGBoost multiclase, todo el entrenamiento</td>
+      <td>Profundidad, número de árboles, pesos de clase</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Anclas</td>
+      <td>Centroides de celdas de 2 km con ≥ 300 viviendas</td>
+      <td>Tamaño de celda (fijo)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Ventana</td>
+      <td>Distancia al vecino k = fracción × n</td>
+      <td>Fracción: 5 % o 15 %</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Kernel</td>
+      <td>Bicuadrado</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Modelos locales</td>
+      <td>XGBoost de 150 árboles, profundidad 4, con pes...</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Mezcla</td>
+      <td>p = α·p_global + (1 − α)·p_local</td>
+      <td>α ∈ {0, 0.25, 0.5, 0.75}</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p><strong>Por qué podría superar al modelo base.</strong> (1) Como todo XGBoost, captura relaciones no lineales e interacciones (un
+baño adicional no pesa igual en una casa que en un apartamento); (2) los modelos locales pueden aprender que la misma
+vivienda corresponde a estratos distintos según el barrio, que es exactamente lo que la metodología del DANE hace al
+calificar primero la zona (sección 1.2).</p>
+<p><strong>Por qué podría no hacerlo.</strong> Los modelos locales aprenden del barrio <strong>si hay datos de ese barrio</strong>. En una zona
+nueva, sin viviendas de entrenamiento cerca, la ventana se llena con barrios vecinos que pueden ser de otro estrato.
+Por eso el capítulo 5 evalúa dos escenarios por separado: predecir zonas nuevas y predecir viviendas dentro de zonas
+con datos.</p>
+</section>
+<section id="los-demas-candidatos-de-la-revision">
+<h2>4.3 Los demás candidatos de la revisión<a class="headerlink" href="#los-demas-candidatos-de-la-revision" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>Papel en la comparación</p></th>
+<th class="head"><p>Problema que ataca</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>XGBoost geográfico (adaptado a clasificación)</strong></p></td>
+<td><p><strong>Modelo propuesto</strong></p></td>
+<td><p>Relaciones que cambian según la zona</p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost</p></td>
+<td><p>Control del anterior: mismo algoritmo sin la parte geográfica</p></td>
+<td><p>No linealidades e interacciones</p></td>
+</tr>
+<tr class="row-even"><td><p>Rotation Forest</p></td>
+<td><p>Ensemble de árboles de la revisión <span class="bibtex-citation" id="id2">[<a class="reference internal" href="C_referencias.html#id11" title="B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. IOP Conference Series: Earth and Environmental Science, 187(1):012053, 2018. doi:10.1088/1755-1315/187/1/012053.">Sartono <em>et al.</em>, 2018</a>]</span></p></td>
+<td><p>Variables de tamaño correlacionadas</p></td>
+</tr>
+<tr class="row-odd"><td><p>SVM RBF (Nyström) + TPE</p></td>
+<td><p>SVM no lineal con optimización bayesiana <span class="bibtex-citation" id="id3">[<a class="reference internal" href="C_referencias.html#id12" title="L. W. Rizkallah. Optimizing svm hyperparameters for satellite imagery classification using metaheuristic and statistical techniques. International Journal of Data Science and Analytics, 20(5):4945–4962, 2025. doi:10.1007/s41060-025-00762-7.">Rizkallah, 2025</a>]</span></p></td>
+<td><p>Fronteras no lineales</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>XGBoost.</strong> Árboles de gradiente con 300 árboles y tasa de aprendizaje 0.1; se buscó la profundidad (4, 6 u 8) y si
+usar pesos de clase balanceados.</p>
+<p><strong>Rotation Forest.</strong> Para cada uno de 30 árboles, las variables se reparten al azar en 3 grupos; en cada grupo se
+ajusta un PCA sobre una muestra de un subconjunto aleatorio de clases, y el árbol se entrena con los datos rotados.
+Así los cortes son oblicuos respecto a las variables originales, lo que ayuda con variables correlacionadas.
+Implementación propia.</p>
+<p><strong>SVM RBF (Nyström) + TPE.</strong> Una SVM con kernel RBF exacto sobre 145 000 viviendas es inviable en tiempo. La
+aproximación de Nyström proyecta los datos a unos cientos de dimensiones donde el producto interno aproxima el kernel,
+y sobre esa proyección se entrena una SVM lineal por descenso de gradiente estocástico. Los hiperparámetros se
+buscaron con Optuna (12 ensayos: 4 aleatorios y 8 guiados por TPE).</p>
+<p><strong>Bagged TAO Trees</strong>, también en la revisión, no se implementó: no hay una implementación mantenida en Python y
+programarla desde el artículo era un riesgo desproporcionado. Rotation Forest cubre el lado de «ensemble de árboles
+novedoso».</p>
+<p>Todos los candidatos usan las mismas variables del modelo base (físicas + ubicación) y el mismo preprocesamiento,
+ajustado dentro de cada pliegue. En la ronda 2 (capítulo 7) se les agrega información del entorno de la vivienda.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03_modelo_base.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">3. El modelo base: regresión logística</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05_protocolo.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">5. Cómo se compara: el protocolo de evaluación</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#la-idea-original-efectos-que-cambian-de-un-lugar-a-otro">4.1 La idea original: efectos que cambian de un lugar a otro</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#la-adaptacion-a-clasificacion-multiclase">4.2 La adaptación a clasificación multiclase</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#los-demas-candidatos-de-la-revision">4.3 Los demás candidatos de la revisión</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

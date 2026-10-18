@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>B. Referencias &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+    <title>9. Conclusiones &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
   
   
   
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -61,11 +61,12 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/B_referencias';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/09_conclusiones';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
-    <link rel="prev" title="A. El dashboard y su despliegue" href="A_dashboard_y_despliegue.html" />
+    <link rel="next" title="A. Historia de las versiones" href="A_versiones.html" />
+    <link rel="prev" title="8. ¿Supera el modelo nuevo al modelo base?" href="08_modelo_nuevo_vs_base.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
   <meta name="docsearch:version" content="" />
@@ -153,6 +154,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -209,19 +214,29 @@
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Informe del dashboard</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I. El problema</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_contexto.html">1. Contexto del problema</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">6. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_revision.html">1. El problema y la revisión bibliográfica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. Datos y análisis exploratorio</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II. Método</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_modelo_base.html">3. El modelo base: regresión logística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_modelo_propuesto.html">4. El modelo propuesto: XGBoost geográfico adaptado a clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_protocolo.html">5. Cómo se compara: el protocolo de evaluación</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III. Resultados</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">9. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="A_dashboard_y_despliegue.html">A. El dashboard y su despliegue</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">B. Referencias</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="A_versiones.html">A. Historia de las versiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="B_dashboard.html">B. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="C_referencias.html">C. Referencias</a></li>
 </ul>
 
     </div>
@@ -281,7 +296,7 @@
       
       
       
-      <li><a href="../_sources/notebooks/B_referencias.md" target="_blank"
+      <li><a href="../_sources/notebooks/09_conclusiones.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Descargar archivo fuente"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -344,7 +359,9 @@
 <button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
 </button>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -355,11 +372,22 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>B. Referencias</h1>
+    <h1>9. Conclusiones</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#respuesta-a-la-pregunta-y-a-la-hipotesis">9.1 Respuesta a la pregunta y a la hipótesis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio-en-el-camino">9.2 Qué se aprendió en el camino</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">9.3 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">9.4 Próximos pasos</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -369,76 +397,89 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="b-referencias">
-<h1>B. Referencias<a class="headerlink" href="#b-referencias" title="Link to this heading">#</a></h1>
-<div class="docutils container" id="id1">
-<div role="list" class="citation-list">
-<div class="citation" id="id9" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>CPZ20<span class="fn-bracket">]</span></span>
-<p>M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In <em>Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS)</em>, 35–46. 2020. <a class="reference external" href="https://doi.org/10.1145/3412815.3416882">doi:10.1145/3412815.3416882</a>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="conclusiones">
+<h1>9. Conclusiones<a class="headerlink" href="#conclusiones" title="Link to this heading">#</a></h1>
+<p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
+<section id="respuesta-a-la-pregunta-y-a-la-hipotesis">
+<h2>9.1 Respuesta a la pregunta y a la hipótesis<a class="headerlink" href="#respuesta-a-la-pregunta-y-a-la-hipotesis" title="Link to this heading">#</a></h2>
+<p><strong>Pregunta.</strong> ¿Se puede predecir el estrato socioeconómico de una vivienda de Barranquilla con su información catastral
+abierta y su ubicación? <strong>En parte.</strong> El modelo base (regresión logística) acierta el estrato exacto en algo más de la
+mitad de los casos de una zona nueva (F1 macro 0.49 en test) y casi siempre a un estrato de distancia (accuracy ±1 de
+0.96). La ubicación domina, como anticipa la metodología del DANE: el estrato es una propiedad de la zona.</p>
+<p><strong>Brecha de la revisión bibliográfica.</strong> Ningún estudio encontrado clasifica el estrato de una vivienda con datos
+catastrales, y el modelo con mejor respaldo para problemas espaciales, el XGBoost geográfico, solo existía para
+regresión.</p>
+<p><strong>Hipótesis: el modelo nuevo supera al modelo base. Se confirma, con dos condiciones</strong> (capítulo 8):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Resultado</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ronda 1 (variables del modelo base, validación con buffer)</p></td>
+<td><p>No lo supera en zonas nuevas: empata en validación y pierde en test (cap. 6)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ronda 2, zonas nuevas, con vecindad física (validación kNNDM)</p></td>
+<td><p><strong>Lo supera en validación (5 de 5 pliegues) y en test: 0.585 frente a 0.493 (+0.092, IC 95 % [+0.034, +0.199])</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Ronda 2, zonas conocidas</p></td>
+<td><p><strong>Lo supera por +0.19 a +0.23 de F1</strong>, y también a una logística con la misma información</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="citation" id="id7" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>Gre25<span class="fn-bracket">]</span></span>
-<p>G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. <em>Journal of Geographical Systems</em>, 27(2):169–195, 2025. <a class="reference external" href="https://doi.org/10.1007/s10109-025-00465-4">doi:10.1007/s10109-025-00465-4</a>.</p>
-</div>
-<div class="citation" id="id13" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>HTF09<span class="fn-bracket">]</span></span>
-<p>T. Hastie, R. Tibshirani, and J. Friedman. <em>The Elements of Statistical Learning</em>. Springer, 2 edition, 2009.</p>
-</div>
-<div class="citation" id="id3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>JZMR24<span class="fn-bracket">]</span></span>
-<p>S. Jin, H. Zheng, N. Marantz, and A. Roy. Understanding the effects of socioeconomic factors on housing price appreciation using explainable ai. <em>Applied Geography</em>, 169:103339, 2024. <a class="reference external" href="https://doi.org/10.1016/j.apgeog.2024.103339">doi:10.1016/j.apgeog.2024.103339</a>.</p>
-</div>
-<div class="citation" id="id8" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>OK26<span class="fn-bracket">]</span></span>
-<p>O. R. Ojekemi and D. Kirikkaleli. Explainable ai for economic performance prediction evidence from industrial production, institutional quality, and consumer demand. <em>Discover Computing</em>, 29(1):467, 2026. <a class="reference external" href="https://doi.org/10.1007/s10791-026-10196-9">doi:10.1007/s10791-026-10196-9</a>.</p>
-</div>
-<div class="citation" id="id5" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>Ren24<span class="fn-bracket">]</span></span>
-<p>Y. Ren. Ensemble learning models for house price prediction: a case study in king county, usa. In <em>AIP Conference Proceedings</em>, volume 3194, 020004. 2024. <a class="reference external" href="https://doi.org/10.1063/5.0222900">doi:10.1063/5.0222900</a>.</p>
-</div>
-<div class="citation" id="id12" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>Riz25<span class="fn-bracket">]</span></span>
-<p>L. W. Rizkallah. Optimizing svm hyperparameters for satellite imagery classification using metaheuristic and statistical techniques. <em>International Journal of Data Science and Analytics</em>, 20(5):4945–4962, 2025. <a class="reference external" href="https://doi.org/10.1007/s41060-025-00762-7">doi:10.1007/s41060-025-00762-7</a>.</p>
-</div>
-<div class="citation" id="id2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>RQMD26<span class="fn-bracket">]</span></span>
-<p>J. Rojas-Quiroz and C. Marmolejo-Duarte. More than black boxes: machine learning models' capacity to capture housing submarket patterns. <em>Urban Science</em>, 10(8):440, 2026. <a class="reference external" href="https://doi.org/10.3390/urbansci10080440">doi:10.3390/urbansci10080440</a>.</p>
-</div>
-<div class="citation" id="id17" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>Rub26<span class="fn-bracket">]</span></span>
-<p>L. Rubio. Notas de clase de machine learning y de visualización de datos con python (dash). <a class="reference external" href="https://lihkir.github.io/">https://lihkir.github.io/</a>, 2026.</p>
-</div>
-<div class="citation" id="id4" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>SZOVW26<span class="fn-bracket">]</span></span>
-<p>J. Salas, M. Zea-Ortiz, P. Vera, and D. Wood. A two-stage approach to improve poverty mapping spatial resolution. <em>Remote Sensing</em>, 18(3):427, 2026. <a class="reference external" href="https://doi.org/10.3390/rs18030427">doi:10.3390/rs18030427</a>.</p>
-</div>
-<div class="citation" id="id11" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>SRS18<span class="fn-bracket">]</span></span>
-<p>B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. <em>IOP Conference Series: Earth and Environmental Science</em>, 187(1):012053, 2018. <a class="reference external" href="https://doi.org/10.1088/1755-1315/187/1/012053">doi:10.1088/1755-1315/187/1/012053</a>.</p>
-</div>
-<div class="citation" id="id6" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>SK98<span class="fn-bracket">]</span></span>
-<p>M. W. Sermons and F. S. Koppelman. Factor analytic approach to incorporating systematic taste variation into models of residential location choice. <em>Transportation Research Record</em>, pages 194–202, 1998. <a class="reference external" href="https://doi.org/10.3141/1617-27">doi:10.3141/1617-27</a>.</p>
-</div>
-<div class="citation" id="id14" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>TT14<span class="fn-bracket">]</span></span>
-<p>M. Tomczak and E. Tomczak. The need to report effect size estimates revisited. an overview of some recommended measures of effect size. <em>Trends in Sport Sciences</em>, 21(1):19–25, 2014.</p>
-</div>
-<div class="citation" id="id10" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>ZSM26<span class="fn-bracket">]</span></span>
-<p>Y. Zhai, Z. Song, and J. Ma. Research on land cover classification method based on rf + svm remote sensing imagery. In <em>Proc. 3rd Int. Conf. Machine Intelligence and Digital Applications (MIDA)</em>, 1568–1572. 2026. <a class="reference external" href="https://doi.org/10.1145/3801438.3801468">doi:10.1145/3801438.3801468</a>.</p>
-</div>
-<div class="citation" id="id15" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>DANE15a<span class="fn-bracket">]</span></span>
-<p>DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.</p>
-</div>
-<div class="citation" id="id16" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>DANE15b<span class="fn-bracket">]</span></span>
-<p>DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: manual de realización. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.</p>
-</div>
-</div>
-</div>
+<ol class="arabic simple">
+<li><p><strong>Necesita información del entorno.</strong> En zonas sin datos, la ventaja aparece cuando el modelo recibe la vecindad
+física (cómo son las viviendas de alrededor, sin usar su estrato); con esa misma información la logística empata
+con él, así que en este escenario la mejora viene sobre todo de la información.</p></li>
+<li><p><strong>Su ventaja propia aparece donde hay datos cerca.</strong> En zonas conocidas, los modelos locales aprenden el mapa del
+barrio y superan incluso a la logística con la misma información (+0.02 a +0.08).</p></li>
+</ol>
+</section>
+<section id="que-se-aprendio-en-el-camino">
+<h2>9.2 Qué se aprendió en el camino<a class="headerlink" href="#que-se-aprendio-en-el-camino" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Cómo se valida cambia las conclusiones.</strong> Un buffer fijo de 1 km evaluaba a 1.4–1.5 km del dato más cercano, más
+lejos que el escenario declarado (0.45 km). Con la validación kNNDM, que reproduce esa distancia, la validación
+cruzada anticipa el test (0.46 frente a 0.49) y la vecindad física pasa de «resultado mixto» a mejora significativa.</p></li>
+<li><p><strong>El escenario importa.</strong> El mejor modelo para zonas nuevas y para zonas conocidas no es el mismo, y hay que
+reportarlos por separado.</p></li>
+<li><p><strong>Otros candidatos de la revisión.</strong> La SVM con TPE pasó el criterio de validación pero no se sostuvo en test
+(optimismo de la búsqueda en los mismos pliegues); Rotation Forest tuvo el menor error ordinal; XGBoost colapsa la
+escala en zonas nuevas sin información del entorno.</p></li>
+<li><p><strong>La regresión logística ordinal y los umbrales por estrato no mejoraron</strong> al modelo base.</p></li>
+</ul>
+</section>
+<section id="limitaciones">
+<h2>9.3 Limitaciones<a class="headerlink" href="#limitaciones" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Pocos bloques de test (7).</strong> Los intervalos son anchos; la validación cruzada kNNDM es la estimación más estable.</p></li>
+<li><p><strong>Hiperparámetros de la ronda 2 fijos.</strong> Los árboles usan los elegidos en la ronda 1 (con el buffer); una búsqueda
+con la validación kNNDM podría mejorarlos (es parte del Entregable 3).</p></li>
+<li><p><strong>Comparaciones múltiples.</strong> Se evaluaron varias variantes de variables; la conclusión se apoya en la regla fijada de
+antemano y en el test, y el Entregable 3 aplica correcciones formales (Friedman, Nemenyi, Holm).</p></li>
+<li><p><strong>Cobertura.</strong> Quedan sin ubicar 10 300 viviendas (3.1 %), casi todas de estrato 1; las ubicadas por manzana
+comparten coordenada.</p></li>
+<li><p><strong>El estrato es una etiqueta administrativa</strong> que usa insumos no publicados (zonas homogéneas, puntaje de las
+edificaciones) y ajustes manuales; el modelo tiene un techo que no depende de su flexibilidad.</p></li>
+<li><p><strong>Riesgo ético.</strong> Un modelo que predice el estrato podría usarse para discriminar (crédito, seguros). Su propósito
+aquí es analítico; el dashboard redondea las coordenadas a unos 110 m y no publica el número predial.</p></li>
+</ul>
+</section>
+<section id="proximos-pasos">
+<h2>9.4 Próximos pasos<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Búsqueda de hiperparámetros del XGBoost geográfico con la validación kNNDM</strong> y comparación estadística formal
+con todos los modelos de la guía (Entregable 3).</p></li>
+<li><p><strong>Medir la variedad física del entorno</strong> (dispersión del área o de los baños a 300 m), para que el modelo sepa
+cuándo confiar en la vecindad.</p></li>
+<li><p><strong>Un modelo en dos etapas, como el del DANE:</strong> estimar el estrato de la zona y luego decidir si cada vivienda es
+atípica frente a ella; e incorporar las zonas homogéneas o el puntaje de calificación si la Alcaldía los entrega.</p></li>
+<li><p><strong>Combinar modelos</strong> (<em>stacking</em> de la logística y la SVM, que aciertan estratos distintos) y probar Bagged TAO
+Trees <span class="bibtex-citation" id="id1">[<a class="reference internal" href="C_referencias.html#id9" title="M. Á. Carreira-Perpiñán and A. Zharmagambetov. Ensembles of bagged tao trees consistently improve over random forests, adaboost and gradient boosting. In Proc. 2020 ACM-IMS Foundations of Data Science Conference (FODS), 35–46. 2020. doi:10.1145/3412815.3416882.">Carreira-Perpiñán and Zharmagambetov, 2020</a>]</span> cuando haya más cómputo.</p></li>
+</ol>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -472,13 +513,22 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="A_dashboard_y_despliegue.html"
+       href="08_modelo_nuevo_vs_base.html"
        title="página anterior">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">anterior</p>
-        <p class="prev-next-title">A. El dashboard y su despliegue</p>
+        <p class="prev-next-title">8. ¿Supera el modelo nuevo al modelo base?</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="A_versiones.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">A. Historia de las versiones</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -486,6 +536,26 @@
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#respuesta-a-la-pregunta-y-a-la-hipotesis">9.1 Respuesta a la pregunta y a la hipótesis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-se-aprendio-en-el-camino">9.2 Qué se aprendió en el camino</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">9.3 Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">9.4 Próximos pasos</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

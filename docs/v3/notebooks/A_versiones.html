@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>A. El dashboard y su despliegue &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+    <title>A. Historia de las versiones &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
   
   
   
@@ -61,12 +61,12 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/A_dashboard_y_despliegue';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/A_versiones';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
-    <link rel="next" title="B. Referencias" href="B_referencias.html" />
-    <link rel="prev" title="7. Conclusiones y próximos pasos" href="05_conclusiones.html" />
+    <link rel="next" title="B. El dashboard y su despliegue" href="B_dashboard.html" />
+    <link rel="prev" title="9. Conclusiones" href="09_conclusiones.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
   <meta name="docsearch:version" content="" />
@@ -214,20 +214,29 @@
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Informe del dashboard</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I. El problema</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_contexto.html">1. Contexto del problema</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
-<li class="toctree-l1"><a class="reference internal" href="06_validacion_vecinos.html">6. Versión 3: validación por vecinos más cercanos y vecindad con grafo KNN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">7. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_revision.html">1. El problema y la revisión bibliográfica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. Datos y análisis exploratorio</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II. Método</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_modelo_base.html">3. El modelo base: regresión logística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_modelo_propuesto.html">4. El modelo propuesto: XGBoost geográfico adaptado a clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_protocolo.html">5. Cómo se compara: el protocolo de evaluación</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III. Resultados</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">A. El dashboard y su despliegue</a></li>
-<li class="toctree-l1"><a class="reference internal" href="B_referencias.html">B. Referencias</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">A. Historia de las versiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="B_dashboard.html">B. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="C_referencias.html">C. Referencias</a></li>
 </ul>
 
     </div>
@@ -287,7 +296,7 @@
       
       
       
-      <li><a href="../_sources/notebooks/A_dashboard_y_despliegue.md" target="_blank"
+      <li><a href="../_sources/notebooks/A_versiones.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Descargar archivo fuente"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -363,7 +372,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>A. El dashboard y su despliegue</h1>
+    <h1>A. Historia de las versiones</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -373,11 +382,9 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-1-arquitectura">A.1 Arquitectura</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-2-organizacion-e-interactividad">A.2 Organización e interactividad</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-3-datos-que-se-publican">A.3 Datos que se publican</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-4-despliegue-en-render">A.4 Despliegue en Render</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-5-reproducibilidad">A.5 Reproducibilidad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-1-replica-sin-scikit-learn-version-2">A.1 Réplica sin scikit-learn (versión 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-2-la-validacion-con-buffer-versiones-1-y-2">A.2 La validación con buffer (versiones 1 y 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-3-que-cifras-cambiaron-entre-versiones">A.3 Qué cifras cambiaron entre versiones</a></li>
 </ul>
             </nav>
         </div>
@@ -389,118 +396,118 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="a-el-dashboard-y-su-despliegue">
-<h1>A. El dashboard y su despliegue<a class="headerlink" href="#a-el-dashboard-y-su-despliegue" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="a-historia-de-las-versiones">
+<h1>A. Historia de las versiones<a class="headerlink" href="#a-historia-de-las-versiones" title="Link to this heading">#</a></h1>
 <p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
-<section id="a-1-arquitectura">
-<h2>A.1 Arquitectura<a class="headerlink" href="#a-1-arquitectura" title="Link to this heading">#</a></h2>
-<p>El proyecto separa el cálculo pesado de la visualización, para que el tablero sea rápido y quepa en el plan gratuito de Render (512 MB de memoria):</p>
+<p>El proyecto se revisó dos veces después de la primera entrega. Cada versión conserva la anterior publicada (la v1 en la
+raíz del sitio, la v2 en <code class="docutils literal notranslate"><span class="pre">/v2/</span></code> y esta en <code class="docutils literal notranslate"><span class="pre">/v3/</span></code>), y el código de cada una está en su rama o etiqueta del repositorio.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Archivo</p></th>
-<th class="head"><p>Qué hace</p></th>
+<tr class="row-odd"><th class="head"><p>Versión</p></th>
+<th class="head"><p>Qué cambió</p></th>
+<th class="head"><p>Por qué</p></th>
+<th class="head"><p>Efecto principal</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">preparar_entregable1.py</span></code></p></td>
-<td><p>Resume el capítulo 1 del Entregable 1 (embudo, cobertura de coordenadas, faltantes, ICC y efecto de diseño) en <code class="docutils literal notranslate"><span class="pre">datos/entregable1.json</span></code>, solo con agregados. La pestaña «Base de datos y calidad» lo necesita.</p></td>
+<tr class="row-even"><td><p><strong>v1</strong> (entregada)</p></td>
+<td><p>Modelo base y candidatos de la revisión con validación por bloques de 2 km y buffer de 1 km</p></td>
+<td><p>—</p></td>
+<td><p>Ningún candidato superó a la logística en test</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">preparar_datos.py</span></code></p></td>
-<td><p>Se ejecuta una vez, en local. Lee las salidas del Entregable 1, reajusta los seis modelos con los hiperparámetros ya elegidos, verifica que las métricas de test coinciden con las del Entregable 1 y guarda en <code class="docutils literal notranslate"><span class="pre">datos/</span></code> las predicciones, coeficientes, diagnósticos (curva de aprendizaje, sensibilidad al buffer, correlograma, Moran) y el modelo principal.</p></td>
+<tr class="row-odd"><td><p><strong>v2</strong></p></td>
+<td><p>Las viviendas sin coordenadas propias (16 %) se ubican con el centroide de su manzana; pesos de clase; vecindad física; escenario de zonas conocidas (ocultando edificios y manzanas)</p></td>
+<td><p>Las viviendas excluidas eran casi todas de estratos 1 y 2: sesgaban el modelo</p></td>
+<td><p>Cobertura del 83.8 % al 96.9 %; los árboles ganan en zonas conocidas; la vecindad dio un «resultado mixto» en zonas nuevas</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">entrenar_avanzados.py</span></code>, <code class="docutils literal notranslate"><span class="pre">avanzados.py</span></code></p></td>
-<td><p>Entrenan y evalúan los modelos del capítulo 4 (XGBoost, XGBoost geográfico, Rotation Forest, SVM RBF + TPE) con el mismo protocolo, y agregan sus resultados a <code class="docutils literal notranslate"><span class="pre">datos/</span></code>. Necesitan además <code class="docutils literal notranslate"><span class="pre">requirements-entrenamiento.txt</span></code> (xgboost y optuna); el dashboard no.</p></td>
+<tr class="row-even"><td><p><strong>v3</strong></p></td>
+<td><p>Validación <strong>kNNDM</strong> en lugar del buffer fijo; vecindad con <strong>grafo KNN</strong>; XGBoost geográfico con vecindad (ronda 2)</p></td>
+<td><p>Sugerencia del profesor (libro de Modelos Espacio-Temporales, cap. 2): usar vecinos más cercanos</p></td>
+<td><p>El buffer evaluaba un escenario más difícil que el declarado; con kNNDM la vecindad ayuda y <strong>el modelo nuevo supera al base</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">figuras.py</span></code></p></td>
-<td><p>Figuras del Entregable 2 (Plotly). Las usan el dashboard y este libro.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">figuras_proyecto.py</span></code></p></td>
-<td><p>Figuras de los capítulos del Entregable 1, la vecindad y los escenarios, para el dashboard final.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">proyecto/</span></code></p></td>
-<td><p>Precalculan <code class="docutils literal notranslate"><span class="pre">datos/proyecto/</span></code>: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">diapositivas.py</span></code>, <code class="docutils literal notranslate"><span class="pre">componentes.py</span></code>, <code class="docutils literal notranslate"><span class="pre">glosario.py</span></code></p></td>
-<td><p>El dashboard final: portada, seis pestañas de diapositivas, glosario de métricas y modo presentación. No entrena nada.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">generar_portada.py</span></code></p></td>
-<td><p>Genera la infografía de la escala de estratos.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vecindad/</span></code></p></td>
-<td><p>Código del capítulo 5 (variables de vecindad y escenario de zonas conocidas) y del capítulo 6 (<code class="docutils literal notranslate"><span class="pre">07_vecindad_knn.py</span></code>: grafo KNN y validación kNNDM); sus resultados están en <code class="docutils literal notranslate"><span class="pre">datos/vecindad/</span></code> y se muestran en la pestaña «Más allá del modelo base» (5.7 a 5.12) y en las diapositivas 4.12 y 4.13.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/</span></code></p></td>
-<td><p>Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">assets/</span></code></p></td>
-<td><p>Hoja de estilos (tema Bootstrap Flatly y estilo propio), navegación con el teclado, la infografía de estratos y la imagen satelital de la portada (Copernicus Sentinel-2, 2021, procesada por la ESA).</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.python-version</span></code></p></td>
-<td><p>Dependencias con versiones fijadas y configuración de Render.</p></td>
+<tr class="row-odd"><td><p><strong>v3 (reorganizada)</strong></p></td>
+<td><p>El libro y el dashboard se ordenan como investigación: revisión → hipótesis → método → resultados</p></td>
+<td><p>El orden por versiones era confuso</p></td>
+<td><p>Mismas cifras, mejor contadas</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-</section>
-<section id="a-2-organizacion-e-interactividad">
-<h2>A.2 Organización e interactividad<a class="headerlink" href="#a-2-organizacion-e-interactividad" title="Link to this heading">#</a></h2>
-<p>El dashboard final reúne los dos entregables y los análisis posteriores. Tiene una portada y seis pestañas; cada
-pestaña es una secuencia de <strong>diapositivas</strong> con un menú lateral, botones de anterior y siguiente, y navegación con
-las flechas del teclado. Cada diapositiva tiene una gráfica o tabla interactiva, de dos a cuatro frases de lectura,
-una conclusión en una frase y <strong>fichas de lectura</strong> de las métricas que usa: qué mide cada una, su rango y una escala
-de colores con los umbrales habituales, con el valor del proyecto marcado. El botón «Glosario» reúne todas las fichas
-con un buscador, y el botón «Presentar» oculta la portada y el menú para proyectar.</p>
+<section id="a-1-replica-sin-scikit-learn-version-2">
+<h2>A.1 Réplica sin scikit-learn (versión 2)<a class="headerlink" href="#a-1-replica-sin-scikit-learn-version-2" title="Link to this heading">#</a></h2>
+<p>En el equipo donde se corrieron los primeros análisis de vecindad, una política de control de aplicaciones de Windows
+bloqueaba las librerías compiladas de scikit-learn. El preprocesamiento y la regresión logística se reimplementaron con
+numpy y scipy, con las mismas fórmulas del Entregable 1, y se verificó que la réplica reproduce el modelo base:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Pestaña</p></th>
-<th class="head"><p>Contenido y controles</p></th>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Réplica</p></th>
+<th class="head"><p>Entregable 1</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>1. Contexto</p></td>
-<td><p>La pregunta y la escala de estratos; cómo asigna el DANE el estrato; los datos y el número predial; la revisión bibliográfica; la ruta de trabajo.</p></td>
+<tr class="row-even"><td><p>F1 macro por fold (CV espacial)</p></td>
+<td><p>0.169, 0.375, 0.357, 0.409, 0.300</p></td>
+<td><p>0.168, 0.375, 0.357, 0.409, 0.300</p></td>
 </tr>
-<tr class="row-odd"><td><p>2. Datos y calidad</p></td>
-<td><p>Embudo de limpieza; ubicación por manzana (umbral ajustable y mapa); cobertura y modelo v1 frente a v2; faltantes e imposibles; outliers; dependencia y tamaño efectivo (ICC ajustable); partición espacial (train/test/buffer, folds o mezcla de estratos).</p></td>
+<tr class="row-odd"><td><p>F1 macro en test</p></td>
+<td><p>0.4919</p></td>
+<td><p>0.4921</p></td>
 </tr>
-<tr class="row-even"><td><p>3. Análisis exploratorio</p></td>
-<td><p>Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga.</p></td>
-</tr>
-<tr class="row-odd"><td><p>4. Modelo base</p></td>
-<td><p>Protocolo de validación; búsqueda de hiperparámetros; comparación con líneas base (métrica, gráfica o tabla); significancia; errores por estrato, ROC y calibración (modelo); coeficientes y odds; importancia por permutación; curva de aprendizaje; residuos; simulador (variables y clic en el mapa).</p></td>
-</tr>
-<tr class="row-even"><td><p>5. Más allá del modelo base</p></td>
-<td><p>Modelos de la revisión (métrica, tabla); criterio de selección (CV frente a test, por fold); errores y residuos por modelo; XGBoost geográfico; vecindad física (zonas nuevas, 15 folds, dónde ayuda); zonas conocidas (ocultando edificios o manzanas) y los dos escenarios.</p></td>
-</tr>
-<tr class="row-odd"><td><p>6. Conclusiones</p></td>
-<td><p>Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces.</p></td>
+<tr class="row-even"><td><p>Accuracy / MAE ordinal / kappa en test</p></td>
+<td><p>0.611 / 0.439 / 0.835</p></td>
+<td><p>0.611 / 0.439 / 0.835</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>Los análisis de la versión 3 (<code class="docutils literal notranslate"><span class="pre">07_vecindad_knn.py</span></code> y <code class="docutils literal notranslate"><span class="pre">08_arboles_knndm.py</span></code>) usan ya scikit-learn y el código del
+Entregable 1 versión 3, y reproducen el F1 de test del modelo base (0.4932).</p>
 </section>
-<section id="a-3-datos-que-se-publican">
-<h2>A.3 Datos que se publican<a class="headerlink" href="#a-3-datos-que-se-publican" title="Link to this heading">#</a></h2>
-<p>El dashboard usa el <strong>conjunto completo</strong> de 332 718 viviendas. Para reducir el riesgo de reidentificación se eliminó el número predial (se reemplazó por un identificador anónimo de edificio) y las coordenadas se redondearon a tres decimales (unos 110 m). Los mapas muestran promedios por celda, no viviendas individuales.</p>
+<section id="a-2-la-validacion-con-buffer-versiones-1-y-2">
+<h2>A.2 La validación con buffer (versiones 1 y 2)<a class="headerlink" href="#a-2-la-validacion-con-buffer-versiones-1-y-2" title="Link to this heading">#</a></h2>
+<p>Con el modelo base, el F1 de la validación cruzada dependía del tamaño del buffer: 0.41 sin buffer, 0.37 con 0.5 km,
+0.32 con 1 km y 0.15 con 2.6 km (el alcance del correlograma). A partir de cierto punto la caída mezclaba dos efectos:
+menos fuga por cercanía y menos datos de entrenamiento. La versión 3 mide directamente la distancia que importa (la del
+vecino conocido más cercano) y diseña los pliegues para reproducirla (capítulo 5).</p>
 </section>
-<section id="a-4-despliegue-en-render">
-<h2>A.4 Despliegue en Render<a class="headerlink" href="#a-4-despliegue-en-render" title="Link to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p>Subir la carpeta del dashboard a un repositorio de GitHub (con <code class="docutils literal notranslate"><span class="pre">datos/</span></code>, <code class="docutils literal notranslate"><span class="pre">src/</span></code>, <code class="docutils literal notranslate"><span class="pre">assets/</span></code> y los archivos de configuración).</p></li>
-<li><p>En Render, crear un <strong>Web Service</strong> conectado a ese repositorio.</p></li>
-<li><p>Build command: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>. Start command: <code class="docutils literal notranslate"><span class="pre">gunicorn</span> <span class="pre">app:server</span> <span class="pre">--workers</span> <span class="pre">1</span> <span class="pre">--threads</span> <span class="pre">2</span> <span class="pre">--timeout</span> <span class="pre">120</span></code>.</p></li>
-<li><p>Plan: Free. Render asigna una dirección del tipo <code class="docutils literal notranslate"><span class="pre">https://&lt;nombre&gt;.onrender.com</span></code>.</p></li>
-</ol>
-<p>En el plan gratuito el servicio se suspende tras unos minutos sin visitas; la primera carga después de eso tarda alrededor de un minuto.</p>
-</section>
-<section id="a-5-reproducibilidad">
-<h2>A.5 Reproducibilidad<a class="headerlink" href="#a-5-reproducibilidad" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Semilla 42 en todo el proyecto (<code class="docutils literal notranslate"><span class="pre">src/config.py</span></code>).</p></li>
-<li><p>Versiones fijadas en <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>. El modelo guardado con <code class="docutils literal notranslate"><span class="pre">joblib</span></code> requiere la misma versión de scikit-learn (1.8.0).</p></li>
-<li><p>Para regenerar los datos del dashboard: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">preparar_entregable1.py</span> <span class="pre">ruta/al/entregable1</span></code>, <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">preparar_datos.py</span> <span class="pre">ruta/al/entregable1</span></code> y luego <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">entrenar_avanzados.py</span> <span class="pre">ruta/al/entregable1</span></code>.</p></li>
-<li><p>Para reconstruir este libro: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">construir_libro.py</span></code> dentro de <code class="docutils literal notranslate"><span class="pre">libro/</span></code>.</p></li>
-</ul>
+<section id="a-3-que-cifras-cambiaron-entre-versiones">
+<h2>A.3 Qué cifras cambiaron entre versiones<a class="headerlink" href="#a-3-que-cifras-cambiaron-entre-versiones" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cifra</p></th>
+<th class="head"><p>v1</p></th>
+<th class="head"><p>v2</p></th>
+<th class="head"><p>v3</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Viviendas con coordenadas</p></td>
+<td><p>83.8 %</p></td>
+<td><p>96.9 %</p></td>
+<td><p>96.9 %</p></td>
+</tr>
+<tr class="row-odd"><td><p>F1 del modelo base, validación cruzada</p></td>
+<td><p>0.325</p></td>
+<td><p>0.322</p></td>
+<td><p>0.460 (kNNDM)</p></td>
+</tr>
+<tr class="row-even"><td><p>F1 del modelo base, test</p></td>
+<td><p>0.454</p></td>
+<td><p>0.492</p></td>
+<td><p>0.493</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mejor modelo en zonas nuevas, test</p></td>
+<td><p>Logística (0.454)</p></td>
+<td><p>Logística (0.492)</p></td>
+<td><p>XGBoost geográfico + vecindad (0.585)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>El test es el mismo conjunto de bloques desde la v2 (en la v1 la partición era distinta porque el universo de
+viviendas ubicadas era menor). El cambio de 0.32 a 0.46 en la validación cruzada no es una mejora del modelo: es que la
+validación con kNNDM ya no exige predecir a 1.4–1.5 km del dato más cercano.</p>
 </section>
 </section>
 
@@ -535,20 +542,20 @@ con un buscador, y el botón «Presentar» oculta la portada y el menú para pro
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="05_conclusiones.html"
+       href="09_conclusiones.html"
        title="página anterior">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">anterior</p>
-        <p class="prev-next-title">7. Conclusiones y próximos pasos</p>
+        <p class="prev-next-title">9. Conclusiones</p>
       </div>
     </a>
     <a class="right-next"
-       href="B_referencias.html"
+       href="B_dashboard.html"
        title="siguiente página">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">siguiente</p>
-        <p class="prev-next-title">B. Referencias</p>
+        <p class="prev-next-title">B. El dashboard y su despliegue</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -570,11 +577,9 @@ con un buscador, y el botón «Presentar» oculta la portada y el menú para pro
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-1-arquitectura">A.1 Arquitectura</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-2-organizacion-e-interactividad">A.2 Organización e interactividad</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-3-datos-que-se-publican">A.3 Datos que se publican</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-4-despliegue-en-render">A.4 Despliegue en Render</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-5-reproducibilidad">A.5 Reproducibilidad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-1-replica-sin-scikit-learn-version-2">A.1 Réplica sin scikit-learn (versión 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-2-la-validacion-con-buffer-versiones-1-y-2">A.2 La validación con buffer (versiones 1 y 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-3-que-cifras-cambiaron-entre-versiones">A.3 Qué cifras cambiaron entre versiones</a></li>
 </ul>
   </nav></div>
 
