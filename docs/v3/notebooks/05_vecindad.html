@@ -1,0 +1,1101 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. Variables de vecindad física y los dos escenarios de predicción &#8212; Estrato y catastro en Barranquilla — Entregable 2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Haz clic para mostrar';</script>
+    <script>let toggleHintHide = 'Haz clic para ocultar';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script src="../_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/05_vecindad';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="next" title="6. Versión 3: validación por vecinos más cercanos y vecindad con grafo KNN" href="06_validacion_vecinos.html" />
+    <link rel="prev" title="4. Más allá del modelo base: modelos de la revisión bibliográfica" href="04_modelos_avanzados.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Navegación del sitio">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="En esta página">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Estrato y catastro en Barranquilla — Entregable 2</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Búsqueda</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Estrato socioeconómico y catastro en Barranquilla — Entregable 2
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Informe del dashboard</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_contexto.html">1. Contexto del problema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_eda.html">2. Análisis exploratorio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_modelos.html">3. Modelos base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_validacion_vecinos.html">6. Versión 3: validación por vecinos más cercanos y vecindad con grafo KNN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_conclusiones.html">7. Conclusiones y próximos pasos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="A_dashboard_y_despliegue.html">A. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="B_referencias.html">B. Referencias</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/05_vecindad.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Tema" data-bs-title="Tema"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Claro"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Oscuro"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="Sistema"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>5. Variables de vecindad física y los dos escenarios de predicción</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-se-hizo-una-replica-verificada-del-protocolo">5.1 Cómo se hizo: una réplica verificada del protocolo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-variables-de-vecindad">5.2 Las variables de vecindad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zonas-nuevas-el-criterio-fijado-antes-de-ver-los-resultados">5.3 Zonas nuevas: el criterio, fijado antes de ver los resultados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zonas-nuevas-resultados">5.4 Zonas nuevas: resultados</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#controles">Controles</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#donde-ayuda-y-donde-perjudica-la-vecindad">5.5 ¿Dónde ayuda y dónde perjudica la vecindad?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#escenario-2-zonas-conocidas">5.6 Escenario 2: zonas conocidas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-la-ventaja-es-memorizar-la-manzana">5.7 Control: ¿la ventaja es memorizar la manzana?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-y-limitaciones">5.8 Conclusión y limitaciones</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="variables-de-vecindad-fisica-y-los-dos-escenarios-de-prediccion">
+<h1>5. Variables de vecindad física y los dos escenarios de predicción<a class="headerlink" href="#variables-de-vecindad-fisica-y-los-dos-escenarios-de-prediccion" title="Link to this heading">#</a></h1>
+<p><em>Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</em></p>
+<p>Este capítulo corresponde a las diapositivas 5.7 a 5.11 de la pestaña <strong>5. Más allá del modelo base</strong> del dashboard.</p>
+<div class="important admonition">
+<p class="admonition-title">Revisado en la versión 3</p>
+<p>Las cifras de este capítulo usan la validación con buffer de 1 km. El capítulo 6 muestra que ese buffer evaluaba a 1.4–1.5 km del dato más cercano, más lejos que el escenario declarado (0.45 km). Con una validación que reproduce esa distancia (kNNDM), la vecindad física <strong>sí</strong> mejora las zonas nuevas de forma significativa (F1 de test de 0.49 a 0.57–0.60), lo que corrige el «resultado mixto» de este capítulo.</p>
+</div>
+<p>Los capítulos 3 y 4 dejaron dos pistas. Los residuos de la logística siguen agrupados en el espacio (Moran = 0.56),
+así que al modelo le falta información de <strong>barrio</strong>. Y los modelos más flexibles no ayudan en <strong>zonas nuevas</strong>, lo
+que sugiere que el límite está en la información disponible y no en el algoritmo. Este capítulo pone a prueba esas
+dos ideas con dos experimentos:</p>
+<ol class="arabic simple">
+<li><p><strong>Variables de vecindad física</strong> en el escenario de siempre (zonas nuevas): ¿mejora la logística si, además de la
+vivienda, ve cómo son las viviendas que la rodean?</p></li>
+<li><p><strong>El escenario de zonas conocidas</strong>, que el capítulo 4 dejó pendiente: predecir viviendas ocultas dentro de zonas
+con datos, donde el XGBoost geográfico debería rendir mejor.</p></li>
+</ol>
+<div class="important admonition">
+<p class="admonition-title">Resumen del capítulo</p>
+<ul class="simple">
+<li><p><strong>Zonas nuevas.</strong> Las variables de vecindad física mejoran las métricas ordinales del test (MAE −0.11) y suben el
+F1 de 0.49 a 0.55, pero esa mejora de F1 no es significativa y la validación cruzada (con 5 y con 15 folds) no la
+confirma. Es un <strong>resultado mixto</strong>: la logística B sigue siendo la referencia.</p></li>
+<li><p><strong>Zonas conocidas.</strong> El orden se invierte: los árboles superan a la logística por +0.23 de F1 ocultando edificios y
+por +0.20 ocultando <strong>manzanas completas</strong>. Ocultando edificios, el voto de las 15 viviendas conocidas más cercanas
+empata con el XGBoost geográfico (0.79); ocultando manzanas, el voto cae a 0.71 y el XGBoost geográfico lo supera
+(0.75; IC de la diferencia [+0.001, +0.070]).</p></li>
+</ul>
+</div>
+<section id="como-se-hizo-una-replica-verificada-del-protocolo">
+<h2>5.1 Cómo se hizo: una réplica verificada del protocolo<a class="headerlink" href="#como-se-hizo-una-replica-verificada-del-protocolo" title="Link to this heading">#</a></h2>
+<p>El código está en la carpeta <code class="docutils literal notranslate"><span class="pre">vecindad/</span></code> del repositorio (ver su <code class="docutils literal notranslate"><span class="pre">README.md</span></code>). En el equipo donde se corrió, una
+política de control de aplicaciones de Windows bloquea las librerías compiladas de scikit-learn. Por eso el
+preprocesamiento y la regresión logística se <strong>reimplementaron con numpy y scipy</strong>, con las mismas fórmulas del
+Entregable 1. La limpieza, la partición y los folds se tomaron sin cambios del código del Entregable 1 (versión 2, con
+la recuperación por manzana).</p>
+<p>Antes de usar la réplica se comprobó que reproduce las cifras guardadas del modelo B:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Réplica</p></th>
+<th class="head"><p>Entregable 1</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Viviendas de entrenamiento / tras el buffer / de test</p></td>
+<td><p>257 273 / 144 586 / 65 145</p></td>
+<td><p>257 273 / 144 586 / 65 145</p></td>
+</tr>
+<tr class="row-odd"><td><p>F1 macro por fold (CV espacial)</p></td>
+<td><p>0.169, 0.375, 0.357, 0.409, 0.300</p></td>
+<td><p>0.168, 0.375, 0.357, 0.409, 0.300</p></td>
+</tr>
+<tr class="row-even"><td><p>F1 macro en CV (media)</p></td>
+<td><p>0.322</p></td>
+<td><p>0.322</p></td>
+</tr>
+<tr class="row-odd"><td><p>Combinación elegida por la regla 1-SE (B / A)</p></td>
+<td><p>C = 0.01 balanceado / C = 0.01 sin pesos</p></td>
+<td><p>igual</p></td>
+</tr>
+<tr class="row-even"><td><p>F1 macro en test</p></td>
+<td><p>0.4919</p></td>
+<td><p>0.4921</p></td>
+</tr>
+<tr class="row-odd"><td><p>Accuracy / MAE ordinal / kappa en test</p></td>
+<td><p>0.611 / 0.439 / 0.835</p></td>
+<td><p>0.611 / 0.439 / 0.835</p></td>
+</tr>
+<tr class="row-even"><td><p>Moran de los residuos</p></td>
+<td><p>0.559</p></td>
+<td><p>0.559</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Las diferencias son de menos de una milésima, así que las comparaciones de este capítulo usan el mismo protocolo que
+el modelo base.</p>
+</section>
+<section id="las-variables-de-vecindad">
+<h2>5.2 Las variables de vecindad<a class="headerlink" href="#las-variables-de-vecindad" title="Link to this heading">#</a></h2>
+<p>Para cada vivienda se resume cómo son las viviendas que la rodean, a dos escalas, <strong>300 m y 1 km</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Qué mide</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">area_log</span></code></p></td>
+<td><p>Área construida media de las vecinas (en logaritmo)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">banios</span></code></p></td>
+<td><p>Número medio de baños</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">antiguedad</span></code></p></td>
+<td><p>Antigüedad media</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">apto</span></code></p></td>
+<td><p>Proporción de apartamentos en edificios de cuatro pisos o más</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">informal</span></code></p></td>
+<td><p>Proporción de predios informales</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dens</span></code></p></td>
+<td><p>Densidad: logaritmo del número de viviendas vecinas</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Son 12 variables en total (6 por escala). Tres reglas evitan la fuga de datos:</p>
+<ul class="simple">
+<li><p><strong>Solo atributos físicos.</strong> Nunca se usa el estrato de los vecinos: en una zona nueva no se conoce. Estas variables
+están disponibles en cualquier lugar del catastro.</p></li>
+<li><p><strong>Se excluye el propio edificio.</strong> Sus otras unidades repetirían la información de la vivienda.</p></li>
+<li><p><strong>No se aprende nada de los datos.</strong> Es una regla geométrica fija. La imputación y el escalado siguen dentro del
+<code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> y se ajustan solo con el entrenamiento de cada fold.</p></li>
+</ul>
+<p>El cálculo agrupa las viviendas en una rejilla de 50 m y suma cada atributo dentro de un disco con una convolución.
+Se verificó contra un cálculo exacto por fuerza bruta (<code class="docutils literal notranslate"><span class="pre">prueba_variables_vecindad.py</span></code>), y coincide en el 100 % de
+las viviendas probadas. La mediana de viviendas vecinas es de 1 194 a 300 m y de 11 850 a 1 km, y solo el 0.4 % de
+las viviendas no tiene vecinas a 300 m.</p>
+</section>
+<section id="zonas-nuevas-el-criterio-fijado-antes-de-ver-los-resultados">
+<h2>5.3 Zonas nuevas: el criterio, fijado antes de ver los resultados<a class="headerlink" href="#zonas-nuevas-el-criterio-fijado-antes-de-ver-los-resultados" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Modelo principal:</strong> la logística B más las 12 variables de vecindad. Las demás variantes (una sola escala, o sin
+coordenadas) son <strong>exploratorias</strong>.</p></li>
+<li><p><strong>Mismo protocolo que B:</strong> los mismos 5 folds espaciales con buffer de 1 km, la misma rejilla de C y pesos de clase,
+la misma regla de una desviación estándar y el mismo test.</p></li>
+<li><p><strong>Criterio de reemplazo (el del capítulo 4):</strong> un modelo reemplaza a B solo si su F1 de CV la supera en más de un
+error estándar de la diferencia pareada por fold.</p></li>
+</ul>
+</section>
+<section id="zonas-nuevas-resultados">
+<h2>5.4 Zonas nuevas: resultados<a class="headerlink" href="#zonas-nuevas-resultados" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>F1 CV</p></th>
+<th class="head"><p>Δ CV (error est.)</p></th>
+<th class="head"><p>¿Reemplaza a B?</p></th>
+<th class="head"><p>F1 test</p></th>
+<th class="head"><p>Δ F1 test (IC 95 % por bloques)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Logística B (referencia)</p></td>
+<td><p>0.322</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>0.492</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>B + vecindad (300 m y 1 km)</strong></p></td>
+<td><p>0.359</p></td>
+<td><p>+0.038 (0.045)</p></td>
+<td><p>No</p></td>
+<td><p><strong>0.554</strong></p></td>
+<td><p>+0.062 [−0.027, +0.108]</p></td>
+</tr>
+<tr class="row-even"><td><p>B + vecindad, solo 300 m</p></td>
+<td><p>0.390</p></td>
+<td><p>+0.068 (0.027)</p></td>
+<td><p>Sí</p></td>
+<td><p>0.551</p></td>
+<td><p>+0.059 [−0.035, +0.112]</p></td>
+</tr>
+<tr class="row-odd"><td><p>B + vecindad, solo 1 km</p></td>
+<td><p>0.386</p></td>
+<td><p>+0.064 (0.042)</p></td>
+<td><p>Sí</p></td>
+<td><p>0.559</p></td>
+<td><p>+0.067 [−0.021, +0.108]</p></td>
+</tr>
+<tr class="row-even"><td><p>A: solo variables físicas</p></td>
+<td><p>0.286</p></td>
+<td><p>−0.036 (0.041)</p></td>
+<td><p>No</p></td>
+<td><p>0.370</p></td>
+<td><p>−0.122 [−0.146, −0.034]</p></td>
+</tr>
+<tr class="row-odd"><td><p>A + vecindad (sin coordenadas)</p></td>
+<td><p>0.384</p></td>
+<td><p>+0.062 (0.034)</p></td>
+<td><p>Sí</p></td>
+<td><p>0.527</p></td>
+<td><p>+0.035 [−0.025, +0.098]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>En <strong>test</strong>, el modelo principal sube el F1 de 0.492 a 0.554, pero el intervalo de la diferencia incluye el cero. Las
+métricas ordinales sí mejoran de forma significativa: el MAE ordinal baja de 0.439 a 0.334 (IC de la diferencia
+[−0.223, −0.031]) y el kappa cuadrático sube de 0.835 a 0.896 (IC [+0.036, +0.162]); la accuracy pasa de 0.611 a
+0.685. El cambio más visible está en los estratos <strong>4 y 6</strong>, que la logística acertaba poco: el recall del 4 pasa de
+0.28 a 0.65 y el del 6 de 0.21 a 0.70; el estrato 1 sube de 0.79 a 0.90. En cambio, el <strong>estrato 5 se desploma</strong> (de
+0.42 a 0.12) y el 2 y el 3 bajan un poco (de 0.60 a 0.53 y de 0.70 a 0.64). El Moran de los residuos no baja: pasa
+de 0.56 a 0.61.</p>
+<p>En <strong>validación cruzada</strong>, el modelo principal mejora en 3 de los 5 folds (+0.19 en el fold 1) y empeora en dos
+(−0.08 en el fold 4), y la diferencia media (+0.038) no supera un error estándar (0.045). <strong>Por el criterio fijado de
+antemano, no reemplaza a B.</strong></p>
+<p>Tres variantes exploratorias sí cumplen el criterio en CV: <strong>una sola escala</strong> (300 m o 1 km) y <strong>A + vecindad, sin
+coordenadas</strong> (+0.062, error estándar 0.034). Ninguna tiene un intervalo de test que excluya el cero, y se compararon
+cinco candidatos contra la misma referencia sin corrección por comparaciones múltiples. Aun así hay dos indicios
+interesantes: con una sola escala la mejora es más estable entre folds que con las dos juntas (las 12 variables son
+muy redundantes entre sí), y la vecindad física podría sustituir a la posición absoluta.</p>
+<section id="controles">
+<h3>Controles<a class="headerlink" href="#controles" title="Link to this heading">#</a></h3>
+<p><strong>¿Hay fuga por usar las viviendas de test para calcular la vecindad?</strong> No hay fuga de estrato, pero sí se usan los
+atributos físicos de viviendas de test para describir el entorno de las de entrenamiento. En una <strong>variante
+estricta</strong>, la vecindad se calcula solo dentro de cada partición (con los hiperparámetros de B, C = 0.01 balanceado,
+en ambas versiones). El F1 de test queda en 0.553, igual que con la vecindad calculada con todas las viviendas
+(0.551): la mejora no viene de esa información (Δ frente a B = +0.061, IC [−0.032, +0.088]; MAE −0.079, IC [−0.204,
+−0.005]).</p>
+<p><strong>¿Depende de un solo bloque?</strong> Sí, en buena parte. La mejora se concentra en el bloque de test más grande del norte
+(15 547 viviendas), cuya accuracy pasa de 0.35 a 0.46 (0.57 con la variante estricta). Al quitar ese bloque, la mejora
+de F1 baja de +0.06 a +0.004; al quitar cualquiera de los otros seis, se mantiene entre +0.059 y +0.067.</p>
+<p><strong>¿Se confirma con más folds?</strong> Con 5 folds hay pocas comparaciones por pares, así que se repitió la validación con
+<strong>15 folds</strong> dentro del entrenamiento (el test no interviene), con C = 0.01 y pesos balanceados, la combinación
+elegida para B:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>F1 agregado</p></th>
+<th class="head"><p>Δ F1 medio por fold (error est.)</p></th>
+<th class="head"><p>Folds en que mejora</p></th>
+<th class="head"><p>Δ F1 agregado (IC 95 %)</p></th>
+<th class="head"><p>Δ MAE (IC 95 %)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Logística B</p></td>
+<td><p>0.386</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>B + vecindad</p></td>
+<td><p>0.415</p></td>
+<td><p>+0.023 (0.025)</p></td>
+<td><p>10 de 15</p></td>
+<td><p>+0.029 [−0.063, +0.094]</p></td>
+<td><p>−0.113 [−0.311, +0.100]</p></td>
+</tr>
+<tr class="row-even"><td><p>A + vecindad (sin coordenadas)</p></td>
+<td><p>0.418</p></td>
+<td><p>+0.014 (0.023)</p></td>
+<td><p>9 de 15</p></td>
+<td><p>+0.032 [−0.038, +0.085]</p></td>
+<td><p>−0.077 [−0.254, +0.168]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>La CV más fina no confirma la mejora.</strong> Ningún modelo cumple el criterio y todos los intervalos incluyen el cero.
+Los dos modelos con vecindad mejoran y empeoran en los mismos folds (por ejemplo, +0.16 y +0.10 en el fold 1, −0.16
+y −0.17 en el fold 5), lo que apunta a una propiedad de esas zonas y no a ruido del modelo.</p>
+</section>
+</section>
+<section id="donde-ayuda-y-donde-perjudica-la-vecindad">
+<h2>5.5 ¿Dónde ayuda y dónde perjudica la vecindad?<a class="headerlink" href="#donde-ayuda-y-donde-perjudica-la-vecindad" title="Link to this heading">#</a></h2>
+<p>Este análisis es <strong>exploratorio y posterior a los resultados</strong>. Usa las predicciones fuera de muestra de la CV de 15
+folds y las de test. Para diagnosticar, y solo para eso, se calcula el <strong>estrato medio de las viviendas de otros
+edificios a 300 m</strong> y su dispersión. Esa información nunca entra a un modelo.</p>
+<p>La hipótesis era que la vecindad <strong>suaviza</strong>: empuja la predicción hacia lo típico del entorno.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Entorno de la vivienda (desviación del estrato a 300 m)</p></th>
+<th class="head"><p>% de viviendas (CV / test)</p></th>
+<th class="head"><p>Cambio en accuracy, CV</p></th>
+<th class="head"><p>Cambio en accuracy, test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Muy homogéneo (&lt; 0.3)</p></td>
+<td><p>30 % / 27 %</p></td>
+<td><p>−0.02</p></td>
+<td><p>+0.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.3 a 0.6</p></td>
+<td><p>51 % / 55 %</p></td>
+<td><p>+0.03</p></td>
+<td><p>+0.14</p></td>
+</tr>
+<tr class="row-even"><td><p>0.6 a 1.0</p></td>
+<td><p>17 % / 17 %</p></td>
+<td><p>+0.24</p></td>
+<td><p>−0.01</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Muy mezclado (&gt; 1.0)</strong></p></td>
+<td><p>2 % / 0.5 %</p></td>
+<td><p><strong>+0.16</strong></p></td>
+<td><p><strong>−0.23</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>En test el patrón es el del suavizado: la vecindad ayuda a las viviendas parecidas a su entorno (75 % del test, +0.14
+de accuracy) y perjudica a las atípicas y a las de entornos muy mezclados. Pero <strong>en la CV no se repite</strong>: ahí los
+entornos mezclados mejoran, y las viviendas de estrato mucho más bajo que su entorno pasan de 0.02 a 0.77 de
+accuracy. Con los datos de la versión 2, la hipótesis del suavizado no se sostiene como regla general.</p>
+<p>Lo que <strong>sí</strong> aparece de forma clara es la <strong>geografía</strong>: entre 29 bloques con al menos 1 000 viviendas, la vecindad
+ayuda más cuanto más al norte está el bloque (Spearman entre el cambio de MAE y la coordenada norte-sur ρ = −0.62,
+p &lt; 0.001). Las demás características del bloque tienen asociaciones débiles (estrato medio ρ = −0.31, p = 0.11;
+dispersión del estrato ρ = −0.33, p = 0.09).</p>
+<p>Lo que <strong>no</strong> se sostiene:</p>
+<ul class="simple">
+<li><p><strong>Los efectos por estrato cambian de signo entre CV y test.</strong> El estrato 4 mejora en test (+0.37 de recall) y
+empeora en la CV (−0.19), y con el 5 y el 6 pasa lo mismo en sentido contrario. No se pueden sacar conclusiones por
+estrato.</p></li>
+<li><p><strong>Hipótesis de la vivienda social en apartamentos.</strong> Se planteó que la vecindad fallaría en zonas de apartamentos
+de estrato bajo (VIS/VIP), donde «muchos apartamentos alrededor» no significa estrato alto como en el norte. De los
+cuatro bloques con ese perfil, solo uno empeora, y la correlación con el porcentaje de VIS/VIP del bloque es nula
+(ρ = +0.06). El caso más extremo de toda la tabla sí va en esa dirección (un bloque de 1 198 apartamentos de estrato
+1 cuya accuracy cae de 1.00 a 0.05), pero es un solo bloque.</p></li>
+</ul>
+<p><strong>Implicación:</strong> la vecindad física aporta información útil, sobre todo en el norte, pero el modelo no sabe cuándo no
+confiar en ella. Un paso natural es agregar medidas de <strong>qué tan variado es físicamente el entorno</strong> (por ejemplo, la
+dispersión del área o de los baños a 300 m), que no usan el estrato y le permitirían restarle peso a la vecindad en
+barrios mezclados.</p>
+</section>
+<section id="escenario-2-zonas-conocidas">
+<h2>5.6 Escenario 2: zonas conocidas<a class="headerlink" href="#escenario-2-zonas-conocidas" title="Link to this heading">#</a></h2>
+<p>El capítulo 4 concluyó que el XGBoost geográfico no aporta de forma estable en zonas nuevas porque sus modelos locales
+no tienen datos ahí, y dejó pendiente medirlo <strong>dentro de zonas conocidas</strong>. Así se hizo:</p>
+<ul class="simple">
+<li><p><strong>Datos:</strong> las 257 273 viviendas de los bloques de entrenamiento. El test del Entregable 1 no interviene.</p></li>
+<li><p><strong>Partición:</strong> se ocultan <strong>edificios completos</strong> al azar en 5 folds (semilla 42), sin buffer. El modelo ve a los
+vecinos de la vivienda, pero nunca otras unidades de su mismo edificio. Ocultar filas sueltas sería fuga, porque el
+estrato casi no varía dentro de un edificio o conjunto (ICC = 0.992).</p></li>
+<li><p><strong>Información legítima en este escenario:</strong> el estrato de las viviendas conocidas cercanas. En una zona ya
+estratificada esa información existe, así que aquí se usa. En zonas nuevas sería fuga.</p></li>
+<li><p><strong>Hiperparámetros:</strong> los elegidos por la validación espacial, sin una búsqueda nueva. El XGBoost geográfico usa la
+ventana del 15 % y <span class="math notranslate nohighlight">\(\alpha\)</span> = 0.75, con 34 o 35 anclas por fold, que cubren el 100 % de las viviendas ocultas.</p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>F1 macro</p></th>
+<th class="head"><p>Accuracy</p></th>
+<th class="head"><p>MAE ordinal</p></th>
+<th class="head"><p>Kappa cuadrático</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Vecinos más cercanos (voto de las 15 viviendas conocidas)</p></td>
+<td><p><strong>0.794</strong></p></td>
+<td><p><strong>0.822</strong></p></td>
+<td><p><strong>0.206</strong></p></td>
+<td><p><strong>0.935</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost geográfico</p></td>
+<td><p>0.793</p></td>
+<td><p>0.819</p></td>
+<td><p>0.213</p></td>
+<td><p>0.932</p></td>
+</tr>
+<tr class="row-even"><td><p>XGBoost</p></td>
+<td><p>0.787</p></td>
+<td><p>0.812</p></td>
+<td><p>0.220</p></td>
+<td><p>0.931</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B + vecindad + estrato de los vecinos</p></td>
+<td><p>0.741</p></td>
+<td><p>0.756</p></td>
+<td><p>0.268</p></td>
+<td><p>0.923</p></td>
+</tr>
+<tr class="row-even"><td><p>Logística B + vecindad</p></td>
+<td><p>0.701</p></td>
+<td><p>0.717</p></td>
+<td><p>0.313</p></td>
+<td><p>0.910</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B</p></td>
+<td><p>0.560</p></td>
+<td><p>0.602</p></td>
+<td><p>0.483</p></td>
+<td><p>0.845</p></td>
+</tr>
+<tr class="row-even"><td><p>Moda por zona (2 km)</p></td>
+<td><p>0.529</p></td>
+<td><p>0.656</p></td>
+<td><p>0.398</p></td>
+<td><p>0.859</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Diferencias pareadas, con IC 95 % por bootstrap de los 32 bloques:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Comparación</p></th>
+<th class="head"><p>Δ F1 macro</p></th>
+<th class="head"><p>Δ MAE ordinal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>XGBoost geográfico − XGBoost</strong></p></td>
+<td><p><strong>+0.006 [+0.003, +0.008]</strong></p></td>
+<td><p><strong>−0.006 [−0.011, −0.003]</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost − logística B</p></td>
+<td><p>+0.227 [+0.156, +0.291]</p></td>
+<td><p>−0.263 [−0.345, −0.194]</p></td>
+</tr>
+<tr class="row-even"><td><p>Logística B + vecindad − logística B</p></td>
+<td><p>+0.141 [+0.096, +0.187]</p></td>
+<td><p>−0.170 [−0.234, −0.111]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B + vecindad + estrato de vecinos − logística B</p></td>
+<td><p>+0.181 [+0.146, +0.241]</p></td>
+<td><p>−0.215 [−0.289, −0.143]</p></td>
+</tr>
+<tr class="row-even"><td><p>Logística B − moda por zona</p></td>
+<td><p>+0.031 [−0.081, +0.063]</p></td>
+<td><p>+0.085 [+0.024, +0.151]</p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost geográfico − vecinos más cercanos</p></td>
+<td><p>−0.001 [−0.071, +0.017]</p></td>
+<td><p>+0.008 [−0.018, +0.030]</p></td>
+</tr>
+<tr class="row-even"><td><p>Logística B + vecindad + estrato de vecinos − vecinos más cercanos</p></td>
+<td><p>−0.053 [−0.072, −0.026]</p></td>
+<td><p>+0.063 [+0.038, +0.092]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Cuatro lecturas:</p>
+<ol class="arabic simple">
+<li><p><strong>El mejor modelo depende del escenario.</strong> En zonas nuevas, XGBoost perdía frente a la logística (F1 de test 0.375
+frente a 0.492). En zonas conocidas la supera por +0.23. Los árboles aprenden bien la geografía donde hay datos y
+no saben extrapolarla a zonas sin datos. Por eso hay que reportar cada escenario por separado.</p></li>
+<li><p><strong>El XGBoost geográfico aporta poco, pero de forma consistente, en su escenario natural.</strong> Supera a su control en
+los 5 folds (entre +0.003 y +0.007) y los intervalos de F1 y de MAE excluyen el cero. La mejora es muy pequeña
+(+0.006).</p></li>
+<li><p><strong>Pero, ocultando solo edificios, empata con la regla más simple</strong> (ver 5.7). Votar con el estrato de las 15 viviendas conocidas más cercanas da F1
+0.794, frente a 0.793 del XGBoost geográfico, y la diferencia no es distinguible de cero. Donde ya se conocen los
+estratos del barrio, las variables catastrales añaden poco a la ubicación: XGBoost no es «más inteligente» que la
+logística, sino que <strong>memoriza el mapa</strong> con las coordenadas, algo que un modelo lineal no puede hacer.</p></li>
+<li><p><strong>La vecindad física también ayuda aquí</strong> (+0.141 sobre la logística B). Pero incluso con el estrato de los
+vecinos, la logística (0.741) queda por debajo del voto de los vecinos (0.794): un modelo lineal no aprovecha bien
+la información local.</p></li>
+</ol>
+</section>
+<section id="control-la-ventaja-es-memorizar-la-manzana">
+<h2>5.7 Control: ¿la ventaja es memorizar la manzana?<a class="headerlink" href="#control-la-ventaja-es-memorizar-la-manzana" title="Link to this heading">#</a></h2>
+<p>Ocultar edificios evita que el modelo vea otras unidades del mismo edificio, pero deja en el entrenamiento a sus
+<strong>vecinos de manzana</strong>. Eso puede inflar este escenario por dos razones: en Colombia el estrato se asigna por manzana
+(o lado de manzana), y en la versión 2 las viviendas ubicadas por el centroide de su manzana comparten exactamente la
+misma coordenada. Para medirlo se repitió el escenario ocultando <strong>manzanas completas</strong> (los 17 primeros dígitos del
+número predial; la manzana comodín «0000» se agrupa por edificio): 6 634 grupos en 5 folds, con la misma semilla y los
+mismos hiperparámetros (<code class="docutils literal notranslate"><span class="pre">AGRUPAR=manzana</span></code> en <code class="docutils literal notranslate"><span class="pre">vecindad/06_zonas_conocidas.py</span></code>).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>F1 ocultando edificios</p></th>
+<th class="head"><p>F1 ocultando manzanas</p></th>
+<th class="head"><p>Cambio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Vecinos más cercanos (voto de las 15 viviendas conocidas)</p></td>
+<td><p>0.794</p></td>
+<td><p>0.710</p></td>
+<td><p><strong>−0.084</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost geográfico</p></td>
+<td><p>0.793</p></td>
+<td><p><strong>0.754</strong></p></td>
+<td><p>−0.039</p></td>
+</tr>
+<tr class="row-even"><td><p>XGBoost</p></td>
+<td><p>0.787</p></td>
+<td><p>0.748</p></td>
+<td><p>−0.039</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B + vecindad + estrato de los vecinos</p></td>
+<td><p>0.741</p></td>
+<td><p>0.701</p></td>
+<td><p>−0.040</p></td>
+</tr>
+<tr class="row-even"><td><p>Logística B + vecindad</p></td>
+<td><p>0.701</p></td>
+<td><p>0.673</p></td>
+<td><p>−0.028</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B</p></td>
+<td><p>0.560</p></td>
+<td><p>0.547</p></td>
+<td><p>−0.013</p></td>
+</tr>
+<tr class="row-even"><td><p>Moda por zona (2 km)</p></td>
+<td><p>0.529</p></td>
+<td><p>0.517</p></td>
+<td><p>−0.012</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Diferencias pareadas ocultando manzanas, con IC 95 % por bootstrap de los 32 bloques:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Comparación</p></th>
+<th class="head"><p>Δ F1 macro</p></th>
+<th class="head"><p>Δ MAE ordinal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>XGBoost − logística B</p></td>
+<td><p>+0.201 [+0.156, +0.269]</p></td>
+<td><p>−0.250 [−0.327, −0.188]</p></td>
+</tr>
+<tr class="row-odd"><td><p>XGBoost geográfico − XGBoost</p></td>
+<td><p>+0.006 [+0.002, +0.015]</p></td>
+<td><p>−0.007 [−0.010, −0.004]</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>XGBoost geográfico − vecinos más cercanos</strong></p></td>
+<td><p><strong>+0.044 [+0.001, +0.070]</strong></p></td>
+<td><p><strong>−0.052 [−0.078, −0.028]</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Logística B + vecindad + estrato de vecinos − vecinos más cercanos</p></td>
+<td><p>−0.010 [−0.061, +0.020]</p></td>
+<td><p>+0.021 [−0.015, +0.068]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Tres lecturas:</p>
+<ol class="arabic simple">
+<li><p><strong>Sí había una parte de «copiar la manzana».</strong> El voto de los vecinos, que solo copia estratos, es el que más
+pierde (−0.08). Los modelos con variables pierden la mitad (−0.04), y la logística casi nada (−0.01), porque no
+puede memorizar el mapa.</p></li>
+<li><p><strong>La ventaja de los árboles no era fuga.</strong> Con manzanas completas ocultas, XGBoost sigue superando a la logística
+por +0.20, con un intervalo lejos del cero.</p></li>
+<li><p><strong>Con la prueba más estricta, la propuesta novedosa sí aporta frente a la regla simple.</strong> El XGBoost geográfico
+supera al voto de los vecinos (+0.044 de F1 y −0.05 de MAE, ambos con intervalos que excluyen el cero) y sigue
+mejorando a su control de forma pequeña pero consistente.</p></li>
+</ol>
+</section>
+<section id="conclusion-y-limitaciones">
+<h2>5.8 Conclusión y limitaciones<a class="headerlink" href="#conclusion-y-limitaciones" title="Link to this heading">#</a></h2>
+<p><strong>¿Son mejores los modelos nuevos? Depende del escenario, y esa es la conclusión principal del capítulo.</strong></p>
+<ul class="simple">
+<li><p><strong>En zonas nuevas,</strong> que es el escenario de este informe, la logística B sigue siendo la referencia. Las variables
+de vecindad física mejoran las métricas ordinales del test, pero la mejora de F1 no es significativa, la validación
+cruzada no la confirma y depende sobre todo de un bloque del norte. Es una línea prometedora, no una mejora
+demostrada.</p></li>
+<li><p><strong>En zonas conocidas,</strong> los árboles son claramente mejores que la logística, también cuando se ocultan manzanas
+completas (+0.20 de F1). Ocultando solo edificios, el XGBoost geográfico, la propuesta novedosa del proyecto,
+empata con copiar el estrato de los vecinos; ocultando manzanas, lo supera. Frente a su control, aporta poco pero
+de forma consistente en las dos pruebas.</p></li>
+</ul>
+<p><strong>Lectura a la luz de la metodología del DANE.</strong> Los dos escenarios se explican por cómo se asigna el estrato (sección 1.1.1): el DANE califica primero la zona y le da su estrato a todas sus viviendas, y solo corrige las viviendas atípicas. En zonas conocidas, los vecinos ya revelan la zona, y por eso votar con su estrato es tan difícil de superar cuando se conocen viviendas de la misma manzana: lo que aprende el modelo es, en esencia, la zona del DANE. Cuando la manzana entera está oculta, la zona hay que deducirla de las manzanas vecinas, y ahí los árboles con las variables catastrales le ganan a la copia. En zonas nuevas, la zona hay que deducirla de las viviendas, y el insumo que el DANE usa para eso (el puntaje de calificación de las edificaciones) no está en los datos abiertos. Las variables de vecindad física son un sustituto parcial de ese puntaje medio de la zona.</p>
+<p><strong>Implicación práctica.</strong> Para estimar el estrato de un predio en una zona ya estratificada, basta una regla de
+vecinos. Los modelos con variables catastrales solo son necesarios donde no hay estratos conocidos alrededor, y ahí
+el problema sigue abierto. Los siguientes pasos son medir la variedad física del entorno, para que el modelo sepa
+cuándo confiar en la vecindad, y evaluar con más bloques para poder distinguir mejoras pequeñas.</p>
+<p><strong>Limitaciones de este capítulo:</strong></p>
+<ul class="simple">
+<li><p><strong>Réplica sin scikit-learn.</strong> Reproduce el modelo B al milésimo, pero no es el código original.</p></li>
+<li><p><strong>Pocos bloques de test.</strong> Los 7 bloques de test hacen que los intervalos sean frágiles. La CV de 15 folds da más
+comparaciones, pero sigue usando solo 32 bloques.</p></li>
+<li><p><strong>Comparaciones múltiples.</strong> Se evaluaron cinco variantes contra la misma referencia, sin corrección. Por eso solo
+el modelo principal, fijado de antemano, se interpreta como prueba.</p></li>
+<li><p><strong>Análisis por zonas posterior.</strong> La sección 5.5 es exploratoria y sus explicaciones son hipótesis.</p></li>
+<li><p><strong>Hiperparámetros del escenario 2.</strong> En zonas conocidas no se volvieron a buscar: se usaron los elegidos por la
+validación espacial.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="04_modelos_avanzados.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">4. Más allá del modelo base: modelos de la revisión bibliográfica</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="06_validacion_vecinos.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">6. Versión 3: validación por vecinos más cercanos y vecindad con grafo KNN</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-se-hizo-una-replica-verificada-del-protocolo">5.1 Cómo se hizo: una réplica verificada del protocolo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-variables-de-vecindad">5.2 Las variables de vecindad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zonas-nuevas-el-criterio-fijado-antes-de-ver-los-resultados">5.3 Zonas nuevas: el criterio, fijado antes de ver los resultados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zonas-nuevas-resultados">5.4 Zonas nuevas: resultados</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#controles">Controles</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#donde-ayuda-y-donde-perjudica-la-vecindad">5.5 ¿Dónde ayuda y dónde perjudica la vecindad?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#escenario-2-zonas-conocidas">5.6 Escenario 2: zonas conocidas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-la-ventaja-es-memorizar-la-manzana">5.7 Control: ¿la ventaja es memorizar la manzana?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-y-limitaciones">5.8 Conclusión y limitaciones</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
