@@ -2,32 +2,53 @@
 
 **Machine Learning — Maestría, Universidad del Norte · Profesor Lihki Rubio**
 
-**Autores:** María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
+**Autores:** María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329) · Octubre de 2026 ·
+Versión 3
 
-Octubre de 2026
+```{admonition} En una página
+:class: tip
+**Pregunta.** ¿Se puede predecir el estrato socioeconómico (1 a 6) de una vivienda de Barranquilla con sus datos
+catastrales abiertos (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y su ubicación?
 
-## Qué contiene este informe
+**Revisión bibliográfica.** Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y el
+modelo con mejor respaldo para problemas espaciales, el **XGBoost geográfico** {cite}`grekousis2025`, solo existía
+para regresión.
 
-Este libro acompaña al **dashboard en Dash Plotly** del proyecto, que reúne los Entregables 1 y 2. El dashboard tiene seis pestañas, cada una como una secuencia de diapositivas interactivas: **Contexto**, **Datos y calidad**, **Análisis exploratorio**, **Modelo base**, **Más allá del modelo base** (modelos de la revisión, vecindad y escenarios) y **Conclusiones**, además de un glosario que explica qué mide cada métrica y cómo leer su valor. Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.
+**Objetivo.** Usar ese modelo, **adaptado por nosotros a clasificación**, y comprobar si supera al **modelo base**: una
+regresión logística multinomial con las variables de la vivienda y su ubicación.
 
-El dashboard está desplegado en Render: **https://entregable2-ml-barranquilla.onrender.com**. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.
+**Respuesta.** **Sí, con dos condiciones** (capítulo 8). Con la información del entorno de la vivienda (la vecindad
+física), el XGBoost geográfico supera al modelo base en zonas nuevas en validación y en test (F1 macro **0.585 frente
+a 0.493**, IC 95 % de la diferencia [+0.034, +0.199]), y en zonas con datos cerca lo supera por +0.19 a +0.23. En
+zonas nuevas, una logística con la misma información empata con él; en zonas conocidas, el modelo nuevo la supera.
+```
 
-## El problema en una frase
+## Cómo está organizado
 
-¿Se puede predecir el **estrato socioeconómico** (1 a 6) de una vivienda de Barranquilla a partir de sus **características catastrales** (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y de su **ubicación**?
+El libro sigue el orden de una investigación: la pregunta y la revisión, el método y los resultados.
 
-## Resumen de resultados
-
-Se trabajó con **332 718 viviendas** del catastro abierto (168 044 predios matriz: edificios, conjuntos o lotes). Con la versión 2 del Entregable 1, las viviendas sin coordenadas propias se ubican con el centroide de su manzana, y el modelo cubre el **96.9 %** de ellas. El estrato está desbalanceado (6.2 a 1 entre la clase más y la menos frecuente del entrenamiento), es ordinal y tiene una autocorrelación espacial muy fuerte (I de Moran = 0.92): la ciudad está segregada de sur a norte. Por eso la partición entrenamiento/prueba y la validación cruzada se hicieron por **bloques espaciales de 2 km con un buffer de 1 km**, y la incertidumbre se midió remuestreando bloques.
-
-El modelo base, una **regresión logística multinomial** con variables físicas y de ubicación y pesos de clase balanceados, obtiene un **F1 macro de 0.32 ± 0.08 en validación cruzada espacial y de 0.49 en test** (IC 95 % [0.28, 0.51]). Supera con claridad a las líneas base Dummy. También supera en todas las métricas a la línea base geográfica, la clase más frecuente por zona de 4 km, aunque esa diferencia de F1 no es significativa. Los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.96). Los residuos siguen autocorrelacionados en el espacio (Moran = 0.56).
-
-Además de lo que pide el enunciado, se evaluaron con el mismo protocolo los candidatos de la revisión bibliográfica: una **adaptación propia del XGBoost geográfico a clasificación** (la propuesta novedosa), XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con TPE. Ninguno supera a la logística en test. La SVM pasa el criterio de la validación cruzada, pero en test queda por debajo (F1 0.45 frente a 0.49) y con errores más grandes, así que se mantiene la logística como desviación declarada del criterio; Rotation Forest empata en F1 con un error ordinal menor; el XGBoost geográfico no aporta de forma estable porque sus modelos locales no tienen datos en las zonas que evalúa la validación espacial. El capítulo 5 mide por separado los dos escenarios de predicción. En **zonas conocidas** el orden se invierte: los árboles superan a la logística por más de 0.2 de F1, incluso ocultando manzanas completas, y en esa prueba estricta el XGBoost geográfico supera a votar con el estrato de las viviendas vecinas. En **zonas nuevas**, agregar variables de vecindad física da un resultado mixto: mejora las métricas ordinales del test, pero la validación cruzada no lo confirma. La **versión 3** (capítulo 6), a partir de la sugerencia del profesor de usar herramientas de vecinos más cercanos, reemplaza el buffer fijo por una validación que empareja distancias al vecino más cercano (kNNDM): con ella la validación cruzada anticipa el test y la vecindad física sí mejora las zonas nuevas (F1 de test de 0.49 a 0.57–0.60, significativo); en zonas conocidas, la logística con el estrato de los vecinos alcanza a los árboles (0.76).
-
-## Relación con el Entregable 1
-
-El EDA completo, la limpieza y el diseño de la validación se documentaron en el Entregable 1. Para el modelo base, el dashboard **no reentrena ni rehace decisiones**: usa la misma partición, los mismos hiperparámetros y las mismas semillas. Los modelos avanzados del capítulo 4 sí se ajustan en este entregable, con la misma partición y los mismos folds. El script `preparar_datos.py` reproduce las métricas del Entregable 1 (versión 2) al tercer decimal (F1 de test 0.492 para el modelo principal) antes de guardar los resultados que muestra el tablero.
+| Parte | Capítulo | Qué responde |
+|---|---|---|
+| **I. Problema** | 1. El problema y la revisión bibliográfica | ¿Qué se quiere resolver, qué hay en la literatura y qué modelo se propone? |
+| | 2. Datos y análisis exploratorio | ¿Qué rasgos de los datos condicionan los modelos y su evaluación? |
+| **II. Método** | 3. El modelo base | ¿Contra qué se mide la propuesta? |
+| | 4. El modelo propuesto | ¿En qué consiste el XGBoost geográfico adaptado a clasificación? |
+| | 5. El protocolo de evaluación | ¿Cómo se decide, sin hacerse trampa, si un modelo es mejor? |
+| **III. Resultados** | 6. Ronda 1 | Con las variables del modelo base, ¿supera algún candidato a la logística? |
+| | 7. Ronda 2 | ¿Ayuda describir el entorno de la vivienda? |
+| | **8. ¿Supera el modelo nuevo al modelo base?** | **La respuesta a la pregunta del proyecto** |
+| **Cierre** | 9. Conclusiones | Respuesta, limitaciones y próximos pasos |
+| **Apéndices** | A. Historia de las versiones · B. Dashboard · C. Referencias | Qué cambió de la v1 a la v3, cómo está hecho el tablero y la bibliografía |
 
 ```{note}
-**Cómo leer este libro.** El capítulo 1 corresponde a las pestañas Contexto y Datos y calidad, el 2 a Análisis exploratorio, el 3 a Modelo base y los capítulos 4 y 5 a Más allá del modelo base. Las figuras son las mismas, generadas por el mismo módulo (`figuras.py`), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.
+**El dashboard.** El libro acompaña un tablero en Dash Plotly con la misma historia, en siete pestañas: **Problema y
+revisión**, **Datos y calidad**, **Análisis exploratorio**, **Modelo base**, **Modelo propuesto y protocolo**,
+**Resultados** y **Conclusiones**. Está en **https://entregable2-ml-barranquilla.onrender.com** (el servicio gratuito
+se suspende sin visitas: la primera carga puede tardar un minuto). Las figuras de los dos son las mismas, generadas por
+los módulos `figuras.py` y `figuras_proyecto.py`. El código de cada figura está oculto; se despliega con el botón de
+cada celda.
 ```
+
+**Relación con el Entregable 1.** La limpieza, el EDA completo, la partición y el modelo base se documentaron en el
+Entregable 1 (versión 3: https://mcarocantillo.github.io/entregable1-ml-barranquilla/v3/). Este entregable usa la
+misma partición y las mismas semillas, y reproduce sus métricas antes de comparar.

@@ -1,16 +1,23 @@
 format: jb-book
 root: intro
 parts:
-  - caption: Informe del dashboard
+  - caption: "I. El problema"
     chapters:
-      - file: notebooks/01_contexto
-      - file: notebooks/02_eda
-      - file: notebooks/03_modelos
-      - file: notebooks/04_modelos_avanzados
-      - file: notebooks/05_vecindad
-      - file: notebooks/06_validacion_vecinos
-      - file: notebooks/05_conclusiones
+      - file: notebooks/01_revision
+      - file: notebooks/02_datos
+  - caption: "II. Método"
+    chapters:
+      - file: notebooks/03_modelo_base
+      - file: notebooks/04_modelo_propuesto
+      - file: notebooks/05_protocolo
+  - caption: "III. Resultados"
+    chapters:
+      - file: notebooks/06_ronda1
+      - file: notebooks/07_ronda2_vecindad
+      - file: notebooks/08_modelo_nuevo_vs_base
+      - file: notebooks/09_conclusiones
   - caption: Apéndices
     chapters:
-      - file: notebooks/A_dashboard_y_despliegue
-      - file: notebooks/B_referencias
+      - file: notebooks/A_versiones
+      - file: notebooks/B_dashboard
+      - file: notebooks/C_referencias

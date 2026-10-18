@@ -1,5 +1,0 @@
-# B. Referencias
-
-```{bibliography}
-:all:
-```

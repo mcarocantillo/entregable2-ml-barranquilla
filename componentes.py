@@ -143,8 +143,14 @@ def glosario_completo(filtro=""):
 # ---------------------------------------------------------------------------
 # Diapositiva
 # ---------------------------------------------------------------------------
+NUMERO_ACTUAL = None   # lo fija app.py según la posición de la diapositiva (numeración automática)
+
+
 def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=None, fuente=None, ancho_visual=8):
     """Una pantalla de la presentación: título, visual interactivo y panel lateral breve.
+
+    El número que se muestra es el de su posición (pestaña.diapositiva), que fija app.py en ``NUMERO_ACTUAL``;
+    el argumento ``numero`` solo se usa si la diapositiva se construye fuera de la app.
 
     puntos: 2 a 4 frases cortas ("Lo que se ve"); conclusion: una frase; metricas: lista de fichas
     (tuplas (clave, valor[, texto, absoluto]) o claves); fuente: capítulo del libro de donde sale.
@@ -169,6 +175,7 @@ def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=N
                 absoluto = resto[1] if len(resto) > 1 else False
                 fichas.append(ficha(clave, valor, texto, absoluto))
         panel.append(html.Div([html.Div("¿Cómo se lee?", className="panel-titulo")] + fichas, className="panel-bloque"))
+    numero = NUMERO_ACTUAL or numero
     cab = html.Div([html.Div([html.Span(numero, className="diapo-num"),
                               html.Span(fuente, className="diapo-fuente") if fuente else None], className="diapo-kicker"),
                     html.H2(titulo, className="diapo-titulo")], className="diapo-cab")

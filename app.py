@@ -4,7 +4,8 @@ Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
 Machine Learning — Maestría, Universidad del Norte. Profesor Lihki Rubio.
 
-Reúne los Entregables 1 y 2 y los desarrollos posteriores en seis pestañas. Cada pestaña es una secuencia de
+Reúne los Entregables 1 y 2 y los desarrollos posteriores en siete pestañas, ordenadas como la investigación
+(problema y revisión → datos → modelo base → modelo propuesto y protocolo → resultados → conclusiones). Cada pestaña es una secuencia de
 diapositivas (gráfica o tabla interactiva + lectura breve + fichas de cómo leer cada métrica); se navega con el menú
 lateral, con los botones o con las flechas del teclado. El contenido está en ``diapositivas.py``; las figuras, en
 ``figuras.py`` y ``figuras_proyecto.py``; el glosario de métricas, en ``glosario.py``.
@@ -14,6 +15,7 @@ import dash_bootstrap_components as dbc
 from dash import ALL, Dash, Input, Output, State, ctx, dcc, html
 from dash.exceptions import PreventUpdate
 
+import componentes as CMP
 import diapositivas as DP
 from componentes import fmt, glosario_completo, radio
 
@@ -32,6 +34,16 @@ def cifra(valor, etiqueta):
                     className="hero-cifra")
 
 
+def cifra_modelo_nuevo():
+    """F1 de test en zonas nuevas: modelo base → modelo nuevo (XGBoost geográfico con vecindad), si ya está calculado."""
+    ar = DP.FP.arboles_knndm()
+    if not ar:
+        return cifra(f"{T['f1_macro'][B]:.2f}", "F1 macro en zonas nuevas")
+    k = ar["xgb_geografico_vs_logistica"]["zonas nuevas"]["variantes"]["XGBoost geográfico | B + vecindad KNN (k = 8)"]
+    base = k["F1_test"] - k["vs Logística B v3 (sin vecindad)"]["test_F1"]["diferencia"]
+    return cifra(f"{base:.2f} → {k['F1_test']:.2f}", "F1 en zonas nuevas: modelo base → modelo nuevo")
+
+
 portada = html.Header(html.Div([
     html.Div("Machine Learning · Maestría · Universidad del Norte · Proyecto final", className="hero-kicker"),
     html.H1(["¿Se puede predecir el ", html.Span("estrato", className="resalte"), " de una vivienda con sus datos catastrales?"],
@@ -40,7 +52,7 @@ portada = html.Header(html.Div([
            "validación espacial y modelos de la revisión bibliográfica.", className="hero-sub"),
     html.Div([cifra(fmt(DP.E1["viviendas"]), "viviendas"), cifra("96.9 %", "ubicadas en el mapa"),
               cifra(f"{DP.D['moran_estrato']['I']:.2f}", "I de Moran del estrato"),
-              cifra(f"{T['f1_macro'][B]:.2f}", "F1 macro en zonas nuevas")], className="hero-cifras"),
+              cifra_modelo_nuevo()], className="hero-cifras"),
     html.Div([html.Div(AUTORES, className="hero-autores"), html.Div("Profesor Lihki Rubio · Octubre de 2026", className="hero-profesor")]),
     html.A("Comenzar  ↓", href="#navegacion", className="hero-boton"),
     html.Div("Imagen: desembocadura del río Magdalena y Barranquilla. Contains modified Copernicus Sentinel data (2021), "
@@ -91,12 +103,18 @@ def pie_navegacion(pid, i):
         className="pie-navegacion")
 
 
+ORDEN = {p["id"]: n + 1 for n, p in enumerate(DP.PESTANAS)}
+
+
 def construir(pid, i):
     titulo, funcion = PESTANAS[pid]["diapositivas"][i]
+    CMP.NUMERO_ACTUAL = f"{ORDEN[pid]}.{i + 1}"      # numeración automática según la posición
     try:
         return funcion()
     except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
         return dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
+    finally:
+        CMP.NUMERO_ACTUAL = None
 
 
 def cuerpo_diapositiva(pid, i):

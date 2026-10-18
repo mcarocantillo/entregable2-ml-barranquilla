@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="1. Contexto del problema" href="notebooks/01_contexto.html" />
+    <link rel="next" title="1. El problema y la revisión bibliográfica" href="notebooks/01_revision.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
   <meta name="docsearch:version" content="" />
@@ -217,20 +217,29 @@
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Informe del dashboard</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">I. El problema</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="notebooks/01_contexto.html">1. Contexto del problema</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/02_eda.html">2. Análisis exploratorio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/03_modelos.html">3. Modelos base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/04_modelos_avanzados.html">4. Más allá del modelo base: modelos de la revisión bibliográfica</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/05_vecindad.html">5. Variables de vecindad física y los dos escenarios de predicción</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/06_validacion_vecinos.html">6. Versión 3: validación por vecinos más cercanos y vecindad con grafo KNN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/05_conclusiones.html">7. Conclusiones y próximos pasos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/01_revision.html">1. El problema y la revisión bibliográfica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/02_datos.html">2. Datos y análisis exploratorio</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">II. Método</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/03_modelo_base.html">3. El modelo base: regresión logística</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/04_modelo_propuesto.html">4. El modelo propuesto: XGBoost geográfico adaptado a clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/05_protocolo.html">5. Cómo se compara: el protocolo de evaluación</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">III. Resultados</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/09_conclusiones.html">9. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="notebooks/A_dashboard_y_despliegue.html">A. El dashboard y su despliegue</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/B_referencias.html">B. Referencias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/A_versiones.html">A. Historia de las versiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/B_dashboard.html">B. El dashboard y su despliegue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/C_referencias.html">C. Referencias</a></li>
 </ul>
 
     </div>
@@ -376,10 +385,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-contiene-este-informe">Qué contiene este informe</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema-en-una-frase">El problema en una frase</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-de-resultados">Resumen de resultados</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relacion-con-el-entregable-1">Relación con el Entregable 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-esta-organizado">Cómo está organizado</a></li>
 </ul>
             </nav>
         </div>
@@ -394,31 +400,93 @@
   <section class="tex2jax_ignore mathjax_ignore" id="estrato-socioeconomico-y-catastro-en-barranquilla-entregable-2">
 <h1>Estrato socioeconómico y catastro en Barranquilla — Entregable 2<a class="headerlink" href="#estrato-socioeconomico-y-catastro-en-barranquilla-entregable-2" title="Link to this heading">#</a></h1>
 <p><strong>Machine Learning — Maestría, Universidad del Norte · Profesor Lihki Rubio</strong></p>
-<p><strong>Autores:</strong> María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)</p>
-<p>Octubre de 2026</p>
-<section id="que-contiene-este-informe">
-<h2>Qué contiene este informe<a class="headerlink" href="#que-contiene-este-informe" title="Link to this heading">#</a></h2>
-<p>Este libro acompaña al <strong>dashboard en Dash Plotly</strong> del proyecto, que reúne los Entregables 1 y 2. El dashboard tiene seis pestañas, cada una como una secuencia de diapositivas interactivas: <strong>Contexto</strong>, <strong>Datos y calidad</strong>, <strong>Análisis exploratorio</strong>, <strong>Modelo base</strong>, <strong>Más allá del modelo base</strong> (modelos de la revisión, vecindad y escenarios) y <strong>Conclusiones</strong>, además de un glosario que explica qué mide cada métrica y cómo leer su valor. Aquí se interpreta cada resultado que aparece en él y se agregan los detalles que no caben en un tablero: cómo se calculó cada cifra, qué decisiones se tomaron y por qué, y las limitaciones.</p>
-<p>El dashboard está desplegado en Render: <strong>https://entregable2-ml-barranquilla.onrender.com</strong>. El servicio gratuito se suspende cuando no tiene visitas, así que la primera carga puede tardar alrededor de un minuto.</p>
-</section>
-<section id="el-problema-en-una-frase">
-<h2>El problema en una frase<a class="headerlink" href="#el-problema-en-una-frase" title="Link to this heading">#</a></h2>
-<p>¿Se puede predecir el <strong>estrato socioeconómico</strong> (1 a 6) de una vivienda de Barranquilla a partir de sus <strong>características catastrales</strong> (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y de su <strong>ubicación</strong>?</p>
-</section>
-<section id="resumen-de-resultados">
-<h2>Resumen de resultados<a class="headerlink" href="#resumen-de-resultados" title="Link to this heading">#</a></h2>
-<p>Se trabajó con <strong>332 718 viviendas</strong> del catastro abierto (168 044 predios matriz: edificios, conjuntos o lotes). Con la versión 2 del Entregable 1, las viviendas sin coordenadas propias se ubican con el centroide de su manzana, y el modelo cubre el <strong>96.9 %</strong> de ellas. El estrato está desbalanceado (6.2 a 1 entre la clase más y la menos frecuente del entrenamiento), es ordinal y tiene una autocorrelación espacial muy fuerte (I de Moran = 0.92): la ciudad está segregada de sur a norte. Por eso la partición entrenamiento/prueba y la validación cruzada se hicieron por <strong>bloques espaciales de 2 km con un buffer de 1 km</strong>, y la incertidumbre se midió remuestreando bloques.</p>
-<p>El modelo base, una <strong>regresión logística multinomial</strong> con variables físicas y de ubicación y pesos de clase balanceados, obtiene un <strong>F1 macro de 0.32 ± 0.08 en validación cruzada espacial y de 0.49 en test</strong> (IC 95 % [0.28, 0.51]). Supera con claridad a las líneas base Dummy. También supera en todas las métricas a la línea base geográfica, la clase más frecuente por zona de 4 km, aunque esa diferencia de F1 no es significativa. Los errores son casi siempre entre estratos vecinos (accuracy ±1 = 0.96). Los residuos siguen autocorrelacionados en el espacio (Moran = 0.56).</p>
-<p>Además de lo que pide el enunciado, se evaluaron con el mismo protocolo los candidatos de la revisión bibliográfica: una <strong>adaptación propia del XGBoost geográfico a clasificación</strong> (la propuesta novedosa), XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con TPE. Ninguno supera a la logística en test. La SVM pasa el criterio de la validación cruzada, pero en test queda por debajo (F1 0.45 frente a 0.49) y con errores más grandes, así que se mantiene la logística como desviación declarada del criterio; Rotation Forest empata en F1 con un error ordinal menor; el XGBoost geográfico no aporta de forma estable porque sus modelos locales no tienen datos en las zonas que evalúa la validación espacial. El capítulo 5 mide por separado los dos escenarios de predicción. En <strong>zonas conocidas</strong> el orden se invierte: los árboles superan a la logística por más de 0.2 de F1, incluso ocultando manzanas completas, y en esa prueba estricta el XGBoost geográfico supera a votar con el estrato de las viviendas vecinas. En <strong>zonas nuevas</strong>, agregar variables de vecindad física da un resultado mixto: mejora las métricas ordinales del test, pero la validación cruzada no lo confirma. La <strong>versión 3</strong> (capítulo 6), a partir de la sugerencia del profesor de usar herramientas de vecinos más cercanos, reemplaza el buffer fijo por una validación que empareja distancias al vecino más cercano (kNNDM): con ella la validación cruzada anticipa el test y la vecindad física sí mejora las zonas nuevas (F1 de test de 0.49 a 0.57–0.60, significativo); en zonas conocidas, la logística con el estrato de los vecinos alcanza a los árboles (0.76).</p>
-</section>
-<section id="relacion-con-el-entregable-1">
-<h2>Relación con el Entregable 1<a class="headerlink" href="#relacion-con-el-entregable-1" title="Link to this heading">#</a></h2>
-<p>El EDA completo, la limpieza y el diseño de la validación se documentaron en el Entregable 1. Para el modelo base, el dashboard <strong>no reentrena ni rehace decisiones</strong>: usa la misma partición, los mismos hiperparámetros y las mismas semillas. Los modelos avanzados del capítulo 4 sí se ajustan en este entregable, con la misma partición y los mismos folds. El script <code class="docutils literal notranslate"><span class="pre">preparar_datos.py</span></code> reproduce las métricas del Entregable 1 (versión 2) al tercer decimal (F1 de test 0.492 para el modelo principal) antes de guardar los resultados que muestra el tablero.</p>
+<p><strong>Autores:</strong> María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329) · Octubre de 2026 ·
+Versión 3</p>
+<div class="tip admonition">
+<p class="admonition-title">En una página</p>
+<p><strong>Pregunta.</strong> ¿Se puede predecir el estrato socioeconómico (1 a 6) de una vivienda de Barranquilla con sus datos
+catastrales abiertos (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y su ubicación?</p>
+<p><strong>Revisión bibliográfica.</strong> Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y el
+modelo con mejor respaldo para problemas espaciales, el <strong>XGBoost geográfico</strong> <span class="bibtex-citation" id="id1">[<a class="reference internal" href="notebooks/C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span>, solo existía
+para regresión.</p>
+<p><strong>Objetivo.</strong> Usar ese modelo, <strong>adaptado por nosotros a clasificación</strong>, y comprobar si supera al <strong>modelo base</strong>: una
+regresión logística multinomial con las variables de la vivienda y su ubicación.</p>
+<p><strong>Respuesta.</strong> <strong>Sí, con dos condiciones</strong> (capítulo 8). Con la información del entorno de la vivienda (la vecindad
+física), el XGBoost geográfico supera al modelo base en zonas nuevas en validación y en test (F1 macro <strong>0.585 frente
+a 0.493</strong>, IC 95 % de la diferencia [+0.034, +0.199]), y en zonas con datos cerca lo supera por +0.19 a +0.23. En
+zonas nuevas, una logística con la misma información empata con él; en zonas conocidas, el modelo nuevo la supera.</p>
+</div>
+<section id="como-esta-organizado">
+<h2>Cómo está organizado<a class="headerlink" href="#como-esta-organizado" title="Link to this heading">#</a></h2>
+<p>El libro sigue el orden de una investigación: la pregunta y la revisión, el método y los resultados.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parte</p></th>
+<th class="head"><p>Capítulo</p></th>
+<th class="head"><p>Qué responde</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>I. Problema</strong></p></td>
+<td><p>1. El problema y la revisión bibliográfica</p></td>
+<td><p>¿Qué se quiere resolver, qué hay en la literatura y qué modelo se propone?</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>2. Datos y análisis exploratorio</p></td>
+<td><p>¿Qué rasgos de los datos condicionan los modelos y su evaluación?</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>II. Método</strong></p></td>
+<td><p>3. El modelo base</p></td>
+<td><p>¿Contra qué se mide la propuesta?</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>4. El modelo propuesto</p></td>
+<td><p>¿En qué consiste el XGBoost geográfico adaptado a clasificación?</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>5. El protocolo de evaluación</p></td>
+<td><p>¿Cómo se decide, sin hacerse trampa, si un modelo es mejor?</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>III. Resultados</strong></p></td>
+<td><p>6. Ronda 1</p></td>
+<td><p>Con las variables del modelo base, ¿supera algún candidato a la logística?</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p>7. Ronda 2</p></td>
+<td><p>¿Ayuda describir el entorno de la vivienda?</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><strong>8. ¿Supera el modelo nuevo al modelo base?</strong></p></td>
+<td><p><strong>La respuesta a la pregunta del proyecto</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cierre</strong></p></td>
+<td><p>9. Conclusiones</p></td>
+<td><p>Respuesta, limitaciones y próximos pasos</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Apéndices</strong></p></td>
+<td><p>A. Historia de las versiones · B. Dashboard · C. Referencias</p></td>
+<td><p>Qué cambió de la v1 a la v3, cómo está hecho el tablero y la bibliografía</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Nota</p>
-<p><strong>Cómo leer este libro.</strong> El capítulo 1 corresponde a las pestañas Contexto y Datos y calidad, el 2 a Análisis exploratorio, el 3 a Modelo base y los capítulos 4 y 5 a Más allá del modelo base. Las figuras son las mismas, generadas por el mismo módulo (<code class="docutils literal notranslate"><span class="pre">figuras.py</span></code>), así que lo que se ve en el tablero y lo que se interpreta aquí coincide exactamente. El código de cada figura está oculto; se puede desplegar con el botón de cada celda.</p>
+<p><strong>El dashboard.</strong> El libro acompaña un tablero en Dash Plotly con la misma historia, en siete pestañas: <strong>Problema y
+revisión</strong>, <strong>Datos y calidad</strong>, <strong>Análisis exploratorio</strong>, <strong>Modelo base</strong>, <strong>Modelo propuesto y protocolo</strong>,
+<strong>Resultados</strong> y <strong>Conclusiones</strong>. Está en <strong>https://entregable2-ml-barranquilla.onrender.com</strong> (el servicio gratuito
+se suspende sin visitas: la primera carga puede tardar un minuto). Las figuras de los dos son las mismas, generadas por
+los módulos <code class="docutils literal notranslate"><span class="pre">figuras.py</span></code> y <code class="docutils literal notranslate"><span class="pre">figuras_proyecto.py</span></code>. El código de cada figura está oculto; se despliega con el botón de
+cada celda.</p>
 </div>
+<p><strong>Relación con el Entregable 1.</strong> La limpieza, el EDA completo, la partición y el modelo base se documentaron en el
+Entregable 1 (versión 3: https://mcarocantillo.github.io/entregable1-ml-barranquilla/v3/). Este entregable usa la
+misma partición y las mismas semillas, y reproduce sus métricas antes de comparar.</p>
 </section>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -456,11 +524,11 @@
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="notebooks/01_contexto.html"
+       href="notebooks/01_revision.html"
        title="siguiente página">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">siguiente</p>
-        <p class="prev-next-title">1. Contexto del problema</p>
+        <p class="prev-next-title">1. El problema y la revisión bibliográfica</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -482,10 +550,7 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#que-contiene-este-informe">Qué contiene este informe</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-problema-en-una-frase">El problema en una frase</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-de-resultados">Resumen de resultados</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relacion-con-el-entregable-1">Relación con el Entregable 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-esta-organizado">Cómo está organizado</a></li>
 </ul>
   </nav></div>
 

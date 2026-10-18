@@ -1,0 +1,5 @@
+# C. Referencias
+
+```{bibliography}
+:all:
+```

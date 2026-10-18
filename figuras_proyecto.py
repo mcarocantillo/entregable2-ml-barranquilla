@@ -986,3 +986,85 @@ def fig_moran_k():
     fig.update_yaxes(title="I de Moran del estrato", range=[0, 1])
     fig.update_layout(title="¿Cuántos vecinos? El parecido cae despacio con k")
     return _estilo(fig, alto=400, leyenda=False)
+
+
+# ---------------------------------------------------------------------------
+# ¿Supera el modelo nuevo (XGBoost geográfico) al modelo base? (datos/vecindad/arboles_knndm.json)
+# ---------------------------------------------------------------------------
+def arboles_knndm():
+    return _json("arboles_knndm.json", "vecindad")
+
+
+def _variante_corta(v):
+    v = v.replace("XGBoost geográfico | ", "")
+    return {"B": "solo variables del modelo base"}.get(v, v.replace("B + ", "+ "))
+
+
+def tabla_nuevo_vs_base(escenario="zonas nuevas"):
+    """Una fila por variante del XGBoost geográfico: F1 propio, diferencia con el modelo base (logística B v3, sin
+    vecindad) y con la logística que recibe las mismas variables."""
+    a = arboles_knndm()
+    if not a:
+        return None
+    filas = []
+    for var, v in a["xgb_geografico_vs_logistica"][escenario]["variantes"].items():
+        base = v["vs Logística B v3 (sin vecindad)"]
+        corto = var.replace("XGBoost geográfico | ", "")
+        misma_clave = "vs Logística B v3 (sin vecindad)" if corto == "B" else next(
+            (k for k in v if k.startswith("vs ") and corto in k and "sin vecindad" not in k),
+            "vs Logística B v3 (sin vecindad)")
+        misma = v[misma_clave]
+        f = {"Variables del XGBoost geográfico": _variante_corta(var), "F1 CV": v["F1_cv"],
+             "Δ CV vs modelo base": base["cv_F1"]["media"], "SE": base["cv_F1"]["SE"],
+             "folds a favor": f"{base['cv_F1']['folds_a_favor']}/5",
+             "¿Supera al base (> 1 SE)?": "Sí" if base["cv_F1"]["supera_por_1SE"] else "No"}
+        if v.get("F1_test") is not None:
+            t = base["test_F1"]
+            f.update({"F1 test": v["F1_test"], "Δ test vs base": t["diferencia"],
+                      "IC 95 % test": f"[{t['IC95_inf']:+.3f}, {t['IC95_sup']:+.3f}]"})
+        f.update({"Δ CV vs logística con las mismas variables": misma["cv_F1"]["media"],
+                  "SE (misma)": misma["cv_F1"]["SE"]})
+        filas.append(f)
+    return pd.DataFrame(filas)
+
+
+def fig_nuevo_vs_base(escenario="zonas nuevas", referencia="base"):
+    """Diferencias de F1 del XGBoost geográfico frente al modelo base (o frente a la logística con las mismas
+    variables): CV kNNDM ± 1 SE y, en zonas nuevas, test con IC 95 % por bloques."""
+    a = arboles_knndm()
+    if not a:
+        return None
+    vs = a["xgb_geografico_vs_logistica"][escenario]["variantes"]
+    nombres, cv, se, te, lo, hi = [], [], [], [], [], []
+    for var, v in vs.items():
+        if referencia == "base":
+            c = v["vs Logística B v3 (sin vecindad)"]
+        else:
+            corto = var.replace("XGBoost geográfico | ", "")
+            c = v["vs Logística B v3 (sin vecindad)"] if corto == "B" else next(
+                (v[k] for k in v if k.startswith("vs ") and corto in k and "sin vecindad" not in k),
+                v["vs Logística B v3 (sin vecindad)"])
+        nombres.append(_variante_corta(var))
+        cv.append(c["cv_F1"]["media"])
+        se.append(c["cv_F1"]["SE"])
+        t = c.get("test_F1")
+        te.append(t["diferencia"] if t else np.nan)
+        lo.append(t["diferencia"] - t["IC95_inf"] if t else np.nan)
+        hi.append(t["IC95_sup"] - t["diferencia"] if t else np.nan)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=cv, y=nombres, mode="markers", name="validación cruzada kNNDM (± 1 SE)",
+                             marker=dict(size=14, color=AZUL), error_x=dict(type="data", array=se, color=AZUL, thickness=2),
+                             hovertemplate="%{y}<br>Δ F1 CV: %{x:+.3f}<extra></extra>"))
+    if not np.all(np.isnan(te)):
+        fig.add_trace(go.Scatter(x=te, y=nombres, mode="markers", name="test (IC 95 % por bloques)",
+                                 marker=dict(size=13, color=NARANJA, symbol="diamond"),
+                                 error_x=dict(type="data", symmetric=False, array=hi, arrayminus=lo, color=NARANJA,
+                                              thickness=2),
+                                 hovertemplate="%{y}<br>Δ F1 test: %{x:+.3f}<extra></extra>"))
+    fig.add_vline(x=0, line_color="#52514e", line_dash="dot")
+    ref = "el modelo base (logística B, sin vecindad)" if referencia == "base" else "la logística con las mismas variables"
+    fig.update_xaxes(title=f"diferencia de F1 macro: XGBoost geográfico − {ref}")
+    fig.update_layout(title=f"¿Supera el modelo nuevo? {escenario.capitalize()}")
+    _estilo(fig, alto=430)
+    fig.update_layout(legend=dict(orientation="h", yanchor="top", y=-0.25, xanchor="left", x=0), margin=dict(t=60, b=130))
+    return fig
