@@ -8,6 +8,7 @@ parts:
       - file: notebooks/03_modelos
       - file: notebooks/04_modelos_avanzados
       - file: notebooks/05_vecindad
+      - file: notebooks/06_validacion_vecinos
       - file: notebooks/05_conclusiones
   - caption: Apéndices
     chapters:

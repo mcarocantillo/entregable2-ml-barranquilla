@@ -1,0 +1,545 @@
+{
+ "hiperparametros_B": {
+  "C": 0.01,
+  "class_weight": null
+ },
+ "ks_vecindad": [
+  8,
+  30,
+  100
+ ],
+ "ks_estrato": [
+  8,
+  30,
+  100
+ ],
+ "moran_por_k": {
+  "k": [
+   2,
+   4,
+   8,
+   15,
+   30,
+   60,
+   100,
+   200
+  ],
+  "moran_I": [
+   0.929323,
+   0.92419,
+   0.917161,
+   0.911507,
+   0.903008,
+   0.892212,
+   0.88395,
+   0.870418
+  ]
+ },
+ "cv": {
+  "zonas nuevas": {
+   "q": 30,
+   "W_km": 0.178175,
+   "kx_elegido": 8,
+   "ky_elegido": 100,
+   "modelos": {
+    "Logística B": {
+     "F1_macro": 0.460106,
+     "MAE": 0.528158,
+     "recall_E4": 0.601192,
+     "dif_F1_vs_B": 0.0,
+     "SE_dif": 0.0,
+     "folds_F1": [
+      0.4493,
+      0.4836,
+      0.4407,
+      0.4355,
+      0.4914
+     ]
+    },
+    "Logística B + vecindad por radios (300 m y 1 km, cap. 5)": {
+     "F1_macro": 0.579958,
+     "MAE": 0.378206,
+     "recall_E4": 0.587042,
+     "dif_F1_vs_B": 0.119852,
+     "SE_dif": 0.014379,
+     "folds_F1": [
+      0.5352,
+      0.6513,
+      0.5545,
+      0.5226,
+      0.6361
+     ]
+    },
+    "Logística B + vecindad KNN (k = 8)": {
+     "F1_macro": 0.575105,
+     "MAE": 0.420457,
+     "recall_E4": 0.605342,
+     "dif_F1_vs_B": 0.114999,
+     "SE_dif": 0.015146,
+     "folds_F1": [
+      0.5228,
+      0.6503,
+      0.5228,
+      0.5623,
+      0.6173
+     ]
+    },
+    "Logística B + vecindad KNN (k = 30)": {
+     "F1_macro": 0.569319,
+     "MAE": 0.41454,
+     "recall_E4": 0.580002,
+     "dif_F1_vs_B": 0.109213,
+     "SE_dif": 0.029587,
+     "folds_F1": [
+      0.5205,
+      0.6873,
+      0.4482,
+      0.5588,
+      0.6319
+     ]
+    },
+    "Logística B + vecindad KNN (k = 100)": {
+     "F1_macro": 0.57404,
+     "MAE": 0.393375,
+     "recall_E4": 0.602075,
+     "dif_F1_vs_B": 0.113934,
+     "SE_dif": 0.021724,
+     "folds_F1": [
+      0.548,
+      0.6776,
+      0.4841,
+      0.5433,
+      0.6172
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 8)": {
+     "F1_macro": 0.525768,
+     "MAE": 0.454083,
+     "recall_E4": 0.631453,
+     "dif_F1_vs_B": 0.065662,
+     "SE_dif": 0.010312,
+     "folds_F1": [
+      0.5414,
+      0.571,
+      0.5043,
+      0.4927,
+      0.5195
+     ]
+    },
+    "Logística B + vecindad KNN (k = 8) + estrato de vecinos (k = 8)": {
+     "F1_macro": 0.598346,
+     "MAE": 0.393123,
+     "recall_E4": 0.630726,
+     "dif_F1_vs_B": 0.13824,
+     "SE_dif": 0.011726,
+     "folds_F1": [
+      0.5683,
+      0.6353,
+      0.5615,
+      0.6194,
+      0.6072
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 30)": {
+     "F1_macro": 0.520373,
+     "MAE": 0.449912,
+     "recall_E4": 0.609357,
+     "dif_F1_vs_B": 0.060267,
+     "SE_dif": 0.012041,
+     "folds_F1": [
+      0.5305,
+      0.5451,
+      0.5361,
+      0.4548,
+      0.5352
+     ]
+    },
+    "Logística B + vecindad KNN (k = 8) + estrato de vecinos (k = 30)": {
+     "F1_macro": 0.596319,
+     "MAE": 0.392111,
+     "recall_E4": 0.632319,
+     "dif_F1_vs_B": 0.136212,
+     "SE_dif": 0.008285,
+     "folds_F1": [
+      0.5695,
+      0.6188,
+      0.5869,
+      0.6012,
+      0.6054
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 100)": {
+     "F1_macro": 0.5284,
+     "MAE": 0.45641,
+     "recall_E4": 0.618,
+     "dif_F1_vs_B": 0.068293,
+     "SE_dif": 0.011831,
+     "folds_F1": [
+      0.5315,
+      0.572,
+      0.5346,
+      0.4587,
+      0.5453
+     ]
+    },
+    "Logística B + vecindad KNN (k = 8) + estrato de vecinos (k = 100)": {
+     "F1_macro": 0.599906,
+     "MAE": 0.396199,
+     "recall_E4": 0.646021,
+     "dif_F1_vs_B": 0.1398,
+     "SE_dif": 0.00494,
+     "folds_F1": [
+      0.5753,
+      0.6304,
+      0.5856,
+      0.5893,
+      0.6189
+     ]
+    }
+   },
+   "distancia_escenario_km": [
+    0.106546,
+    0.453387,
+    0.819427
+   ],
+   "distancia_cv_km": [
+    0.104424,
+    0.463962,
+    1.22732
+   ]
+  },
+  "zonas conocidas": {
+   "q": 6000,
+   "W_km": 0.016294,
+   "kx_elegido": 30,
+   "ky_elegido": 30,
+   "modelos": {
+    "Logística B": {
+     "F1_macro": 0.550681,
+     "MAE": 0.453161,
+     "recall_E4": 0.66747,
+     "dif_F1_vs_B": 0.0,
+     "SE_dif": 0.0,
+     "folds_F1": [
+      0.5575,
+      0.5319,
+      0.5563,
+      0.5562,
+      0.5514
+     ]
+    },
+    "Logística B + vecindad por radios (300 m y 1 km, cap. 5)": {
+     "F1_macro": 0.685569,
+     "MAE": 0.306791,
+     "recall_E4": 0.701875,
+     "dif_F1_vs_B": 0.134888,
+     "SE_dif": 0.008714,
+     "folds_F1": [
+      0.7143,
+      0.6692,
+      0.7111,
+      0.6648,
+      0.6684
+     ]
+    },
+    "Logística B + vecindad KNN (k = 8)": {
+     "F1_macro": 0.670387,
+     "MAE": 0.357037,
+     "recall_E4": 0.666602,
+     "dif_F1_vs_B": 0.119706,
+     "SE_dif": 0.006,
+     "folds_F1": [
+      0.6715,
+      0.6745,
+      0.6831,
+      0.6644,
+      0.6583
+     ]
+    },
+    "Logística B + vecindad KNN (k = 30)": {
+     "F1_macro": 0.693472,
+     "MAE": 0.337797,
+     "recall_E4": 0.679666,
+     "dif_F1_vs_B": 0.142791,
+     "SE_dif": 0.004477,
+     "folds_F1": [
+      0.7062,
+      0.6868,
+      0.6957,
+      0.7018,
+      0.6768
+     ]
+    },
+    "Logística B + vecindad KNN (k = 100)": {
+     "F1_macro": 0.683688,
+     "MAE": 0.354402,
+     "recall_E4": 0.702896,
+     "dif_F1_vs_B": 0.133006,
+     "SE_dif": 0.004516,
+     "folds_F1": [
+      0.6728,
+      0.6613,
+      0.693,
+      0.7005,
+      0.6908
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 8)": {
+     "F1_macro": 0.74163,
+     "MAE": 0.26896,
+     "recall_E4": 0.747852,
+     "dif_F1_vs_B": 0.190949,
+     "SE_dif": 0.008695,
+     "folds_F1": [
+      0.7407,
+      0.7015,
+      0.782,
+      0.7356,
+      0.7484
+     ]
+    },
+    "Logística B + vecindad KNN (k = 30) + estrato de vecinos (k = 8)": {
+     "F1_macro": 0.755979,
+     "MAE": 0.258271,
+     "recall_E4": 0.724878,
+     "dif_F1_vs_B": 0.205297,
+     "SE_dif": 0.00804,
+     "folds_F1": [
+      0.7382,
+      0.7441,
+      0.7914,
+      0.755,
+      0.7512
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 30)": {
+     "F1_macro": 0.741347,
+     "MAE": 0.273166,
+     "recall_E4": 0.739199,
+     "dif_F1_vs_B": 0.190666,
+     "SE_dif": 0.006717,
+     "folds_F1": [
+      0.7308,
+      0.7057,
+      0.7684,
+      0.754,
+      0.7478
+     ]
+    },
+    "Logística B + vecindad KNN (k = 30) + estrato de vecinos (k = 30)": {
+     "F1_macro": 0.756523,
+     "MAE": 0.276287,
+     "recall_E4": 0.740185,
+     "dif_F1_vs_B": 0.205842,
+     "SE_dif": 0.00891,
+     "folds_F1": [
+      0.7456,
+      0.7418,
+      0.7915,
+      0.7725,
+      0.7312
+     ]
+    },
+    "Logística B + estrato de vecinos (k = 100)": {
+     "F1_macro": 0.716263,
+     "MAE": 0.296102,
+     "recall_E4": 0.719486,
+     "dif_F1_vs_B": 0.165582,
+     "SE_dif": 0.007353,
+     "folds_F1": [
+      0.7036,
+      0.6867,
+      0.7408,
+      0.7422,
+      0.7079
+     ]
+    },
+    "Logística B + vecindad KNN (k = 30) + estrato de vecinos (k = 100)": {
+     "F1_macro": 0.746772,
+     "MAE": 0.277006,
+     "recall_E4": 0.738642,
+     "dif_F1_vs_B": 0.196091,
+     "SE_dif": 0.008419,
+     "folds_F1": [
+      0.7307,
+      0.7382,
+      0.7745,
+      0.7651,
+      0.7253
+     ]
+    }
+   },
+   "distancia_escenario_km": [
+    0.02086,
+    0.043669,
+    0.141995
+   ],
+   "distancia_cv_km": [
+    0.012934,
+    0.041289,
+    0.182481
+   ]
+  }
+ },
+ "test_zonas_nuevas": {
+  "Logística B": {
+   "F1_macro": 0.49318,
+   "accuracy": 0.661355,
+   "MAE": 0.384327,
+   "kappa": 0.854654,
+   "AUC": 0.907497,
+   "IC95_F1": [
+    0.295302,
+    0.51254
+   ],
+   "recall": {
+    "E1": 0.903902,
+    "E2": 0.40373,
+    "E3": 0.747591,
+    "E4": 0.57951,
+    "E5": 0.081972,
+    "E6": 0.254729
+   }
+  },
+  "Logística B + vecindad por radios (300 m y 1 km, cap. 5)": {
+   "F1_macro": 0.595378,
+   "accuracy": 0.707376,
+   "MAE": 0.29947,
+   "kappa": 0.910725,
+   "AUC": 0.920627,
+   "IC95_F1": [
+    0.426901,
+    0.616627
+   ],
+   "recall": {
+    "E1": 0.888615,
+    "E2": 0.539494,
+    "E3": 0.63275,
+    "E4": 0.773959,
+    "E5": 0.21681,
+    "E6": 0.448928
+   },
+   "dif_vs_B": {
+    "F1": {
+     "diferencia": 0.102197,
+     "IC95_inf": 0.02198,
+     "IC95_sup": 0.1779,
+     "p_bootstrap": 0.012
+    },
+    "MAE": {
+     "diferencia": -0.084857,
+     "IC95_inf": -0.195426,
+     "IC95_sup": -0.006048,
+     "p_bootstrap": 0.02
+    }
+   }
+  },
+  "Logística B + vecindad KNN (k = 8)": {
+   "F1_macro": 0.574173,
+   "accuracy": 0.698473,
+   "MAE": 0.317185,
+   "kappa": 0.905115,
+   "AUC": 0.930367,
+   "IC95_F1": [
+    0.434408,
+    0.594683
+   ],
+   "recall": {
+    "E1": 0.932268,
+    "E2": 0.405776,
+    "E3": 0.708882,
+    "E4": 0.688653,
+    "E5": 0.301158,
+    "E6": 0.435057
+   },
+   "dif_vs_B": {
+    "F1": {
+     "diferencia": 0.080993,
+     "IC95_inf": 0.015219,
+     "IC95_sup": 0.164836,
+     "p_bootstrap": 0.002
+    },
+    "MAE": {
+     "diferencia": -0.067143,
+     "IC95_inf": -0.147575,
+     "IC95_sup": -0.001097,
+     "p_bootstrap": 0.044
+    }
+   }
+  },
+  "Logística B + estrato de vecinos (k = 100)": {
+   "F1_macro": 0.541059,
+   "accuracy": 0.671349,
+   "MAE": 0.361609,
+   "kappa": 0.880224,
+   "AUC": 0.918859,
+   "IC95_F1": [
+    0.35317,
+    0.558668
+   ],
+   "recall": {
+    "E1": 0.86826,
+    "E2": 0.471953,
+    "E3": 0.633794,
+    "E4": 0.682857,
+    "E5": 0.27621,
+    "E6": 0.344262
+   },
+   "dif_vs_B": {
+    "F1": {
+     "diferencia": 0.047878,
+     "IC95_inf": 0.011599,
+     "IC95_sup": 0.16793,
+     "p_bootstrap": 0.002
+    },
+    "MAE": {
+     "diferencia": -0.022719,
+     "IC95_inf": -0.116177,
+     "IC95_sup": 0.045374,
+     "p_bootstrap": 0.58
+    }
+   }
+  },
+  "Logística B + vecindad KNN (k = 8) + estrato de vecinos (k = 100)": {
+   "F1_macro": 0.573853,
+   "accuracy": 0.685686,
+   "MAE": 0.324676,
+   "kappa": 0.906423,
+   "AUC": 0.931573,
+   "IC95_F1": [
+    0.435505,
+    0.59161
+   ],
+   "recall": {
+    "E1": 0.908666,
+    "E2": 0.474075,
+    "E3": 0.601108,
+    "E4": 0.681878,
+    "E5": 0.371844,
+    "E6": 0.432535
+   },
+   "dif_vs_B": {
+    "F1": {
+     "diferencia": 0.080673,
+     "IC95_inf": 0.032613,
+     "IC95_sup": 0.181,
+     "p_bootstrap": 0.002
+    },
+    "MAE": {
+     "diferencia": -0.059652,
+     "IC95_inf": -0.152676,
+     "IC95_sup": 0.004047,
+     "p_bootstrap": 0.076
+    }
+   }
+  }
+ },
+ "atributos_vecindad": [
+  "log_area",
+  "banios",
+  "habitaciones",
+  "antiguedad",
+  "piso",
+  "prop_PH"
+ ]
+}

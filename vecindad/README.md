@@ -33,6 +33,7 @@ Ejecutar desde esta carpeta:
 | `05a_predicciones_oof.py` | Guarda las predicciones fuera de muestra de los 15 folds | `oof15.pkl` | 10 min |
 | `05b_analisis_por_zonas.py` | Dónde ayuda y dónde perjudica la vecindad (exploratorio) | `zonas.json` | 1 min |
 | `06_zonas_conocidas.py` | Escenario 2: edificios ocultos dentro de zonas con datos (con `AGRUPAR=manzana`, manzanas completas ocultas) | `zonas_conocidas.json`, `zonas_conocidas_manzana.json` | 1 a 1.5 h cada una |
+| `07_vecindad_knn.py` | Versión 3 (cap. 6 del libro): vecindad física y estrato de vecinos con grafo KNN, en los dos escenarios, con validación kNNDM sin buffer; test. Usa scikit-learn y `src/vecinos.py` del Entregable 1 v3 (`ENTREGABLE1` debe apuntar a esa versión, ya ejecutado su capítulo 14) | `vecindad_knn.json` (y copia `datos/proyecto/v3_e1.json`) | 15 a 25 min |
 
 Los archivos `.pkl` son intermedios grandes y no se suben al repositorio (ver `.gitignore`).
 

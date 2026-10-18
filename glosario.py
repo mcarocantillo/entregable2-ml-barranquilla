@@ -316,6 +316,54 @@ GLOSARIO = {
         nombre="γ del kernel RBF (SVM)", grupo="Hiperparámetros",
         mide="Qué tan local es el kernel: γ grande = cada vivienda solo se parece a sus vecinas muy cercanas (fronteras más irregulares).",
         rango="> 0", mejor="", tramos=[]),
+    # ------------------------------------------------------------------ versión 3: vecinos más cercanos
+    "dist_vecino": dict(
+        nombre="Distancia al vecino conocido más cercano (km)", grupo="Validación",
+        mide="Para cada vivienda que se predice, la distancia a la vivienda más cercana cuyo estrato conoce el modelo. "
+             "Con un estrato tan autocorrelacionado (Moran 0.92), esta distancia decide qué tan difícil es predecir.",
+        rango="0 km en adelante", mejor="",
+        tramos=[(0, 0.15, "interpolar: vecino casi igual", V), (0.15, 0.8, "zona nueva con entorno conocido", A),
+                (0.8, 3, "extrapolar a otro barrio", R)],
+        nota="Los tramos salen de este proyecto: zonas conocidas (≈ 0–0.1 km), test de 2 km con su entorno (mediana "
+             "0.45 km) y el test con buffer de 1 km de la versión 2 (mediana 1.6 km).",
+        fuente="Milà et al. (2022); Linnenbrink et al. (2024)"),
+    "knndm": dict(
+        nombre="kNNDM (validación por emparejamiento de distancias)", grupo="Validación",
+        mide="Validación cruzada de k folds cuyos folds se arman (agrupando edificios con K-Means y repartiendo los "
+             "grupos) para que la distancia validación → entrenamiento se parezca a la del escenario de predicción. "
+             "Reemplaza el buffer fijo.",
+        rango="se elige el número de grupos q con menor distancia de Wasserstein", mejor="", tramos=[],
+        nota="q pequeño se parece a bloques grandes; q grande, a una validación aleatoria. Solo usa coordenadas del "
+             "escenario, nunca su estrato.",
+        fuente="Linnenbrink et al. (2024), Geoscientific Model Development"),
+    "wasserstein": dict(
+        nombre="Distancia de Wasserstein (km)", grupo="Validación",
+        mide="Área entre dos curvas de distribución acumulada: aquí, entre las distancias al vecino conocido de la "
+             "validación y las del escenario. 0 = la validación reproduce exactamente el escenario.",
+        rango="≥ 0 km", mejor="bajo",
+        tramos=[(0, 0.1, "casi igual al escenario", V), (0.1, 0.3, "parecido", G), (0.3, 0.7, "distinto", A),
+                (0.7, 2, "muy distinto", R)],
+        nota="Cortes de referencia de este proyecto (distancias típicas de 0.1–2 km), no una convención general."),
+    "ordinal": dict(
+        nombre="Logística ordinal (odds proporcionales)", grupo="Modelos",
+        mide="P(estrato ≤ j) = σ(θ_j − x·β): un solo vector de coeficientes y cinco umbrales ordenados. Respeta el "
+             "orden 1 < … < 6, así que los errores lejanos son menos probables.",
+        rango="5 umbrales + p coeficientes (la multinomial usa 6p)", mejor="", tramos=[],
+        fuente="McCullagh (1980)"),
+    "lag_espacial": dict(
+        nombre="Lag espacial (grafo KNN)", grupo="Espacial",
+        mide="Promedio de una variable en los k vecinos más cercanos (A·x con A normalizada por filas). Es una "
+             "convolución de grafo de un salto: lleva al modelo información del entorno de la vivienda.",
+        rango="mismas unidades que la variable", mejor="", tramos=[],
+        nota="El estrato de los vecinos solo se puede usar con vecinos de estrato CONOCIDO, y calculado a la misma "
+             "distancia a la que se predice; si no, es fuga.",
+        fuente="Rubio, Modelos Espacio-Temporales, cap. 2; Kipf y Welling (2017)"),
+    "sesgos_f1": dict(
+        nombre="Umbrales de decisión para el F1 macro", grupo="Modelos",
+        mide="Sesgo b_k por estrato sumado al log de la probabilidad antes de elegir: ŷ = argmax(log p_k + b_k). "
+             "Subir b_4 hace que el modelo elija el estrato 4 con menos evidencia.",
+        rango="b_k en log-odds (aquí entre −1.5 y 1.5)", mejor="", tramos=[],
+        nota="Se aprenden con predicciones fuera de muestra de la validación cruzada, nunca con el test."),
 }
 
 GRUPOS = ["Desempeño", "Validación", "Espacial", "Datos", "EDA", "Multivariado", "Modelos", "Hiperparámetros"]

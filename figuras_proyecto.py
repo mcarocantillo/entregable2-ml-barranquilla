@@ -844,3 +844,145 @@ def fig_recuperacion_umbral(umbral=250):
     tot = (c.v1.sum() + r["total"]) / c.total.sum()
     fig.update_layout(barmode="group", title=f"Umbral {umbral} m: se ubican {r['total']:,} viviendas más → cobertura {tot:.1%}".replace(",", " "))
     return _estilo_sub(fig, 450)
+
+
+# ---------------------------------------------------------------------------
+# Versión 3: validación por vecinos más cercanos (kNNDM) y vecindad con grafo KNN
+# (datos/proyecto/v3_e1.json: cap. 14 del Entregable 1; datos/vecindad/vecindad_knn.json: vecindad/07)
+# ---------------------------------------------------------------------------
+def v3_e1():
+    return _json("v3_e1.json")
+
+
+def vecindad_knn():
+    return _json("vecindad_knn.json", "vecindad")
+
+
+ESTILO_DIST = {"Escenario: zona nueva de 2 km (test → todo train)": ("#111111", "solid", 4, "Escenario: zona nueva de 2 km"),
+               "Test de la versión 2 (test → train tras buffer)": (ROJO, "dot", 3, "Test v2 (con buffer de 1 km)"),
+               "CV de la versión 2 (bloques + buffer de 1 km)": (ROJO, "dash", 3, "CV v2 (bloques + buffer)"),
+               "CV aleatoria por edificios": (GRIS, "dash", 3, "CV aleatoria por edificios"),
+               "CV kNNDM (versión 3)": (AZUL, "solid", 3, "CV kNNDM (v3)")}
+
+
+def fig_v3_distancias():
+    d = v3_e1()
+    if not d:
+        return None
+    x = d["distancias"]["ecdf_rejilla_km"]
+    q = d["distancias"]["cuantiles"]
+    fig = go.Figure()
+    for k, F_ in d["distancias"]["ecdf"].items():
+        col, dash, ancho, nombre = ESTILO_DIST.get(k, (GRIS, "solid", 2, k))
+        med = q[k]["mediana (km)"]
+        fig.add_trace(go.Scatter(x=x, y=F_, mode="lines", name=f"{nombre} (mediana {med:.2f} km)",
+                                 line=dict(color=col, dash=dash, width=ancho),
+                                 hovertemplate="%{x:.2f} km: %{y:.0%}<extra>" + nombre + "</extra>"))
+    fig.update_xaxes(title="distancia a la vivienda de estrato conocido más cercana (km)", range=[0, 2.5])
+    fig.update_yaxes(title="viviendas (acumulado)", tickformat=".0%", range=[0, 1.02])
+    fig.update_layout(title="¿A qué distancia se evalúa cada diseño?")
+    _estilo(fig, alto=540)
+    fig.update_layout(legend=dict(orientation="h", yanchor="top", y=-0.3, xanchor="left", x=0),
+                      margin=dict(t=60, b=190))
+    return fig
+
+
+def fig_v3_knndm_q():
+    d = v3_e1()
+    if not d:
+        return None
+    t = pd.DataFrame(d["knndm"]["tabla_q"])
+    q = d["knndm"]["q"]
+    fig = go.Figure(go.Scatter(x=t.q, y=t.W_km, mode="lines+markers", line=dict(color=AZUL, width=3), marker=dict(size=9),
+                               customdata=t.mediana_cv_km, showlegend=False,
+                               hovertemplate="q = %{x}: Wasserstein %{y:.3f} km<br>mediana de la CV %{customdata:.2f} km"
+                                             "<extra></extra>"))
+    fig.add_vline(x=q, line_color=ROJO, line_dash="dash")
+    fig.add_annotation(x=np.log10(q), xref="x", y=float(t.W_km.max()), text=f"q elegido = {q}", showarrow=False,
+                       xanchor="left", xshift=6, font=dict(color=ROJO))
+    fig.add_hline(y=d["knndm"]["W_cv_aleatoria_km"], line_color=GRIS, line_dash="dot")
+    fig.add_annotation(x=1, xref="paper", y=d["knndm"]["W_cv_aleatoria_km"], text="CV aleatoria", showarrow=False,
+                       xanchor="right", yshift=10, font=dict(color=GRIS))
+    fig.update_xaxes(title="número de grupos de K-Means (q): pocos = bloques grandes, muchos = casi aleatorio", type="log")
+    fig.update_yaxes(title="Wasserstein al escenario (km)", rangemode="tozero")
+    fig.update_layout(title="Elegir q: la validación más parecida al escenario")
+    return _estilo(fig, alto=430, leyenda=False)
+
+
+ORDEN_V3 = ["B v2 (con buffer)", "B v3 (kNNDM, sin buffer)", "B v3 + umbrales F1", "Ordinal v3 (kNNDM, sin buffer)",
+            "Ordinal v3 + umbrales F1"]
+NOMBRE_V3 = {"B v2 (con buffer)": "Logística B v2<br>(bloques + buffer)",
+             "B v3 (kNNDM, sin buffer)": "Logística B v3<br>(kNNDM, sin buffer)",
+             "B v3 + umbrales F1": "B v3<br>+ umbrales F1", "Ordinal v3 (kNNDM, sin buffer)": "Ordinal v3",
+             "Ordinal v3 + umbrales F1": "Ordinal v3<br>+ umbrales F1"}
+
+
+def fig_v3_modelos(metrica="f1"):
+    d = v3_e1()
+    if not d:
+        return None
+    r = d["resumen"]
+    mods = [m for m in ORDEN_V3 if m in r]
+    xs = [NOMBRE_V3[m] for m in mods]
+    fig = go.Figure()
+    if metrica == "f1":
+        test = [r[m]["F1 macro test"] for m in mods]
+        lo = [r[m]["F1 macro test"] - r[m]["IC95 inf"] for m in mods]
+        hi = [r[m]["IC95 sup"] - r[m]["F1 macro test"] for m in mods]
+        fig.add_trace(go.Bar(x=xs, y=test, name="test (IC 95 % por bloques)", marker_color=AZUL,
+                             error_y=dict(type="data", symmetric=False, array=hi, arrayminus=lo, color="#52514e"),
+                             text=[f"{v:.3f}" for v in test], textposition="inside", insidetextanchor="start",
+                             hovertemplate="%{x}: F1 test %{y:.3f}<extra></extra>"))
+        fig.add_trace(go.Scatter(x=xs, y=[r[m]["F1 macro CV"] for m in mods], mode="markers", name="validación cruzada",
+                                 marker=dict(size=16, color=NARANJA, symbol="diamond", line=dict(color="white", width=2)),
+                                 hovertemplate="%{x}: F1 CV %{y:.3f}<extra></extra>"))
+        fig.update_yaxes(title="F1 macro", range=[0, 0.7])
+        titulo = "F1 macro: validación cruzada frente a test (mismo test de siempre)"
+    else:
+        col = {"mae": ("MAE test", "MAE ordinal en test (menos es mejor)"), "e4": ("recall E4", "recall del estrato 4 en test"),
+               "kappa": ("kappa test", "kappa cuadrático en test")}[metrica]
+        vals = [r[m][col[0]] for m in mods]
+        fig.add_trace(go.Bar(x=xs, y=vals, marker_color=AZUL, text=[f"{v:.3f}" for v in vals], textposition="outside",
+                             showlegend=False, hovertemplate="%{x}: %{y:.3f}<extra></extra>"))
+        fig.update_yaxes(title=col[1], rangemode="tozero")
+        titulo = col[1][0].upper() + col[1][1:]
+    fig.update_layout(title=titulo)
+    return _estilo(fig, alto=470)
+
+
+def fig_vecindad_knn(escenario="zonas nuevas"):
+    vk = vecindad_knn()
+    if not vk:
+        return None
+    c = vk["cv"][escenario]
+    mods = c["modelos"]
+    kx, ky = c["kx_elegido"], c["ky_elegido"]
+    filas = [(n, m["dif_F1_vs_B"], m["SE_dif"], m["F1_macro"]) for n, m in mods.items() if n != "Logística B"]
+    filas.sort(key=lambda f: f[1])
+    elegidos = {f"Logística B + vecindad KNN (k = {kx})", f"Logística B + estrato de vecinos (k = {ky})",
+                f"Logística B + vecindad KNN (k = {kx}) + estrato de vecinos (k = {ky})"}
+    col = [NARANJA if "radios" in f[0] else (AZUL if f[0] in elegidos else AZUL_CLARO) for f in filas]
+    fig = go.Figure(go.Scatter(x=[f[1] for f in filas], y=[f[0].replace("Logística B + ", "B + ") for f in filas],
+                               mode="markers", marker=dict(size=13, color=col),
+                               error_x=dict(type="data", array=[f[2] for f in filas], color="#52514e", thickness=2),
+                               customdata=[f[3] for f in filas], showlegend=False,
+                               hovertemplate="%{y}<br>Δ F1 vs B: %{x:+.3f} (± 1 SE)<br>F1 CV: %{customdata:.3f}<extra></extra>"))
+    fig.add_vline(x=0, line_color="#52514e", line_dash="dot")
+    base = mods["Logística B"]["F1_macro"]
+    fig.update_xaxes(title="Δ F1 frente a B (CV kNNDM, ± 1 SE)")
+    fig.update_layout(title=f"{escenario.capitalize()}: F1 de la logística B = {base:.3f} (naranja: radios del cap. 5)")
+    return _estilo(fig, alto=470, leyenda=False)
+
+
+def fig_moran_k():
+    vk = vecindad_knn()
+    if not vk:
+        return None
+    m = pd.DataFrame(vk["moran_por_k"])
+    fig = go.Figure(go.Scatter(x=m.k, y=m.moran_I, mode="lines+markers+text", text=[f"{v:.2f}" for v in m.moran_I],
+                               textposition="top center", line=dict(color=AZUL, width=3), marker=dict(size=10),
+                               showlegend=False, hovertemplate="k = %{x}: I = %{y:.3f}<extra></extra>"))
+    fig.update_xaxes(title="vecinos del grafo (k)", type="log")
+    fig.update_yaxes(title="I de Moran del estrato", range=[0, 1])
+    fig.update_layout(title="¿Cuántos vecinos? El parecido cae despacio con k")
+    return _estilo(fig, alto=400, leyenda=False)

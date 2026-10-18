@@ -4,6 +4,11 @@
 
 Este capítulo corresponde a las diapositivas 5.7 a 5.11 de la pestaña **5. Más allá del modelo base** del dashboard.
 
+```{admonition} Revisado en la versión 3
+:class: important
+Las cifras de este capítulo usan la validación con buffer de 1 km. El capítulo 6 muestra que ese buffer evaluaba a 1.4–1.5 km del dato más cercano, más lejos que el escenario declarado (0.45 km). Con una validación que reproduce esa distancia (kNNDM), la vecindad física **sí** mejora las zonas nuevas de forma significativa (F1 de test de 0.49 a 0.57–0.60), lo que corrige el «resultado mixto» de este capítulo.
+```
+
 Los capítulos 3 y 4 dejaron dos pistas. Los residuos de la logística siguen agrupados en el espacio (Moran = 0.56),
 así que al modelo le falta información de **barrio**. Y los modelos más flexibles no ayudan en **zonas nuevas**, lo
 que sugiere que el límite está en la información disponible y no en el algoritmo. Este capítulo pone a prueba esas

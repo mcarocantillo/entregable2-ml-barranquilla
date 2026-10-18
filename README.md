@@ -21,7 +21,7 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 | `preparar_datos.py` | Genera `datos/` a partir del Entregable 1 (ya está ejecutado) |
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos de la revisión bibliográfica (XGBoost geográfico adaptado a clasificación, XGBoost, Rotation Forest, SVM RBF + TPE); ya están ejecutados. Para volver a correrlos se necesita además `requirements-entrenamiento.txt` |
 | `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial; el 96.9 % con coordenadas, incluidas las ubicadas por el centroide de su manzana); en `datos/vecindad/`, los resultados del capítulo 5 del libro |
-| `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas (ver su `README.md`) |
+| `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas; `07_vecindad_knn.py`: versión 3 (capítulo 6, grafo KNN y validación kNNDM). Ver su `README.md` |
 | `src/` | Módulos del Entregable 1 (necesarios para cargar el modelo) |
 | `assets/` | Estilos, navegación con el teclado e imágenes. La portada (`portada_satelite.jpg`) es una imagen de la ESA: *contains modified Copernicus Sentinel data (2021), processed by ESA* |
 | `requirements.txt`, `render.yaml`, `.python-version` | Configuración para Render |
@@ -51,7 +51,7 @@ Luego abre http://localhost:8050 en el navegador.
 
 Pulsa **Create Web Service** y espera a que el registro diga "Your service is live". La dirección será `https://entregable2-ml-barranquilla.onrender.com`. Si Render te asigna otra, cámbiala en `libro/intro.md` y en `docs/intro.html`.
 
-**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/`. La versión 2 del libro va en `docs/v2/` (se copia ahí `libro/_build/html/`) y queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/`; la raíz de `docs/` conserva el libro entregado (versión 1).
+**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/`. La versión 2 del libro va en `docs/v2/` (se copia ahí `libro/_build/html/`) y queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/`; la raíz de `docs/` conserva el libro entregado (versión 1). La versión 3 (validación por vecinos más cercanos, capítulo 6) va en `docs/v3/` y queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/v3/`.
 
 ## Reconstruir el libro (solo si cambias algo)
 

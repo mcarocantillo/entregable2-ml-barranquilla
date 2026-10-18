@@ -16,7 +16,7 @@ El proyecto separa el cálculo pesado de la visualización, para que el tablero 
 | `proyecto/` | Precalculan `datos/proyecto/`: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana. |
 | `app.py`, `diapositivas.py`, `componentes.py`, `glosario.py` | El dashboard final: portada, seis pestañas de diapositivas, glosario de métricas y modo presentación. No entrena nada. |
 | `generar_portada.py` | Genera la infografía de la escala de estratos. |
-| `vecindad/` | Código del capítulo 5 (variables de vecindad y escenario de zonas conocidas); sus resultados están en `datos/vecindad/` y se muestran en la pestaña «Más allá del modelo base». |
+| `vecindad/` | Código del capítulo 5 (variables de vecindad y escenario de zonas conocidas) y del capítulo 6 (`07_vecindad_knn.py`: grafo KNN y validación kNNDM); sus resultados están en `datos/vecindad/` y se muestran en la pestaña «Más allá del modelo base» (5.7 a 5.12) y en las diapositivas 4.12 y 4.13. |
 | `src/` | Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado. |
 | `assets/` | Hoja de estilos (tema Bootstrap Flatly y estilo propio), navegación con el teclado, la infografía de estratos y la imagen satelital de la portada (Copernicus Sentinel-2, 2021, procesada por la ESA). |
 | `requirements.txt`, `render.yaml`, `.python-version` | Dependencias con versiones fijadas y configuración de Render. |

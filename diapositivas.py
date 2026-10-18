@@ -29,9 +29,11 @@ MV = FP._json("multivariado.json")
 MZ = FP._json("manzanas.json")
 COB = pd.DataFrame(MZ["cobertura"]).T.astype(float)
 COB.index = COB.index.astype(int)
-LIBRO_E1 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/v2/"
+LIBRO_E1 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/v3/"
+LIBRO_E1_V2 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/v2/"
 LIBRO_E1_V1 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/"
-LIBRO_E2 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/"
+LIBRO_E2 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/v3/"
+LIBRO_E2_V2 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/"
 LIBRO_E2_V1 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/"
 E1C, E2C = "Entregable 1", "Entregable 2"
 OPC_NUM = [(k, v) for k, v in F.NUMERICAS.items()]
@@ -976,6 +978,119 @@ def d_escenarios():
 
 
 # ===========================================================================
+# VERSIÓN 3: validación por vecinos más cercanos (kNNDM) y vecindad con grafo KNN
+# ===========================================================================
+def _sin_v3(numero, titulo):
+    return diapositiva(numero, titulo, html.P("Los resultados de la versión 3 aún no se han calculado."))
+
+
+def d_v3_validacion():
+    d = FP.v3_e1()
+    if not d:
+        return _sin_v3("4.12", "Validar a la distancia a la que se predice")
+    q = d["distancias"]["cuantiles"]
+    esc = q["Escenario: zona nueva de 2 km (test → todo train)"]["mediana (km)"]
+    tv2 = q["Test de la versión 2 (test → train tras buffer)"]["mediana (km)"]
+    cv2 = q["CV de la versión 2 (bloques + buffer de 1 km)"]
+    kn = d["knndm"]
+    visual = html.Div([controles(control("Vista", radio("v3v-vista", [("dist", "Distancias"), ("q", "Elegir q")], "dist"))),
+                       grafico(FP.fig_v3_distancias(), "v3v-fig")])
+    return diapositiva("4.12", "Validar a la distancia a la que se predice", visual,
+                       puntos=[f"Una zona nueva de 2 km tiene su vecino conocido a {esc:.2f} km (mediana).",
+                               f"Con el buffer de 1 km, la v2 validaba a {cv2['mediana (km)']:.1f} km y probaba a {tv2:.1f} km: "
+                               "un escenario más difícil que el declarado.",
+                               f"kNNDM arma los folds para imitar el escenario: {kn['q']} grupos de K-Means, "
+                               f"Wasserstein {kn['W_km']:.2f} km (la CV de la v2: {cv2['Wasserstein al escenario (km)']:.2f} km).",
+                               "Solo usa las coordenadas del test, nunca su estrato."],
+                       conclusion="El tamaño de la zona excluida ya no se fija a mano: sale de la geometría del problema.",
+                       metricas=[("dist_vecino", esc, f"{esc:.2f} km (escenario)"),
+                                 ("wasserstein", kn["W_km"], f"{kn['W_km']:.2f} km (kNNDM)"), "knndm"],
+                       fuente=f"{E1C} v3 · cap. 14.1–14.2")
+
+
+@callback(Output("v3v-fig", "figure"), Input("v3v-vista", "value"))
+def _v3v(v):
+    return FP.fig_v3_knndm_q() if v == "q" else FP.fig_v3_distancias()
+
+
+def d_v3_mejoras():
+    d = FP.v3_e1()
+    if not d:
+        return _sin_v3("4.13", "Versión 3 del modelo base")
+    r = d["resumen"]
+    b2, b3 = r["B v2 (con buffer)"], r["B v3 (kNNDM, sin buffer)"]
+    o3, bu = r["Ordinal v3 (kNNDM, sin buffer)"], r["B v3 + umbrales F1"]
+    cvt = d["cv_vs_test"]
+    gap2 = cvt["v2: bloques + buffer de 1 km"]["test − CV"]
+    gap3 = cvt["v3: kNNDM sin buffer"]["test − CV"]
+    hp = d["hiperparametros"]["B v3"]
+
+    def veredicto(m):
+        return "supera" if m["Δ CV vs B v3"] > m["SE Δ"] else ("empata con" if m["Δ CV vs B v3"] > -m["SE Δ"] else "queda por debajo de")
+
+    visual = html.Div([controles(control("Métrica", radio("v3m-met", [("f1", "F1 (CV y test)"), ("mae", "MAE ordinal"),
+                                                                      ("kappa", "Kappa"), ("e4", "Recall E4")], "f1"))),
+                       grafico(FP.fig_v3_modelos(), "v3m-fig")])
+    return diapositiva("4.13", "Versión 3 del modelo base", visual,
+                       puntos=[f"Mismo test. Sin buffer, C = {hp['C']} y {'sin pesos' if hp['class_weight'] is None else 'pesos balanceados'}: "
+                               f"F1 {b3['F1 macro test']:.3f} (v2 {b2['F1 macro test']:.3f}), MAE {b3['MAE test']:.3f} "
+                               f"(v2 {b2['MAE test']:.3f}).",
+                               f"La CV ahora anticipa mejor el test: brecha {gap3:+.2f} frente a {gap2:+.2f} en la v2.",
+                               f"Logística ordinal: {veredicto(o3)} la multinomial en CV; MAE test {o3['MAE test']:.3f} "
+                               f"(multinomial {b3['MAE test']:.3f}).",
+                               f"Umbrales para el F1 macro: {veredicto(bu)} la multinomial en CV; recall del estrato 4 "
+                               f"{b3['recall E4']:.2f} → {bu['recall E4']:.2f}."],
+                       conclusion="La validación ahora mide el escenario declarado; el modelo se equivoca por menos, "
+                                  "pero el F1 no cambia.",
+                       metricas=[("f1_macro", b3["F1 macro test"], f"{b3['F1 macro test']:.3f} (B v3)"), "ordinal", "sesgos_f1"],
+                       fuente=f"{E1C} v3 · cap. 14.3–14.7")
+
+
+@callback(Output("v3m-fig", "figure"), Input("v3m-met", "value"))
+def _v3m(m):
+    return FP.fig_v3_modelos(m)
+
+
+def d_vecindad_knn():
+    vk = FP.vecindad_knn()
+    if not vk:
+        return _sin_v3("5.12", "Vecindad con grafo KNN")
+    zn, zc = vk["cv"]["zonas nuevas"], vk["cv"]["zonas conocidas"]
+    kx, ky = zn["kx_elegido"], zn["ky_elegido"]
+    n_x = f"Logística B + vecindad KNN (k = {kx})"
+    n_xy = f"Logística B + vecindad KNN (k = {kx}) + estrato de vecinos (k = {ky})"
+    t = vk["test_zonas_nuevas"]
+    kxc, kyc = zc["kx_elegido"], zc["ky_elegido"]
+    n_xyc = f"Logística B + vecindad KNN (k = {kxc}) + estrato de vecinos (k = {kyc})"
+
+    def dif(m):
+        return f"{m['dif_F1_vs_B']:+.3f} (SE {m['SE_dif']:.3f})"
+
+    radios = zn["modelos"]["Logística B + vecindad por radios (300 m y 1 km, cap. 5)"]
+
+    visual = html.Div([controles(control("Escenario", radio("vk-esc", [("zonas nuevas", "Zonas nuevas"),
+                                                                      ("zonas conocidas", "Zonas conocidas"),
+                                                                      ("moran", "Elegir k")], "zonas nuevas"))),
+                       grafico(FP.fig_vecindad_knn("zonas nuevas"), "vk-fig")])
+    return diapositiva("5.12", "Vecindad con grafo KNN (lag espacial)", visual,
+                       puntos=[f"Zonas nuevas, CV kNNDM: vecindad física KNN {dif(zn['modelos'][n_x])}; "
+                               f"con estrato de vecinos {dif(zn['modelos'][n_xy])}.",
+                               f"En test: F1 {t['Logística B']['F1_macro']:.3f} → {t[n_xy]['F1_macro']:.3f} "
+                               f"con vecindad y estrato de vecinos.",
+                               f"Zonas conocidas (manzanas ocultas): {dif(zc['modelos'][n_xyc])}.",
+                               f"Control: la vecindad por radios del cap. 5 da lo mismo ({dif(radios)}). La ganancia viene de "
+                               "validar en el escenario correcto, no del grafo.",
+                               "El estrato de los vecinos se calcula sin el propio grupo: misma distancia que al predecir."],
+                       conclusion="Con la validación correcta, describir el entorno sí ayuda: en zonas nuevas y, mucho más, "
+                                  "en zonas conocidas.",
+                       metricas=["lag_espacial", "se_pareado"], fuente=f"{E2C} v3 · cap. 6")
+
+
+@callback(Output("vk-fig", "figure"), Input("vk-esc", "value"))
+def _vk(e):
+    return FP.fig_moran_k() if e == "moran" else FP.fig_vecindad_knn(e)
+
+# ===========================================================================
 # 6. CONCLUSIONES
 # ===========================================================================
 def hallazgo(valor, titulo, texto, color="#2a78d6"):
@@ -995,6 +1110,15 @@ def d_hallazgos():
         hallazgo(f"{FP.zonas_conocidas('edificio')['modelos']['XGBoost']['F1_macro']:.2f}", "F1 de XGBoost en zonas conocidas",
                  "Con datos cerca, los árboles sí ganan: el escenario manda.", "#4a3aa7"),
     ]
+    v3 = FP.v3_e1()
+    if v3:
+        q = v3["distancias"]["cuantiles"]
+        cvt = v3["cv_vs_test"]["v3: kNNDM sin buffer"]
+        tarjetas.append(hallazgo(
+            f"{q['CV de la versión 2 (bloques + buffer de 1 km)']['mediana (km)']:.1f} → "
+            f"{q['Escenario: zona nueva de 2 km (test → todo train)']['mediana (km)']:.2f} km",
+            "Distancia al vecino conocido: validación v2 frente al escenario",
+            f"Con kNNDM (v3) la CV anticipa el test: {cvt['F1 macro CV']:.2f} frente a {cvt['F1 macro test']:.2f}.", "#2a78d6"))
     visual = dbc.Row([dbc.Col(t, md=4, className="mb-3") for t in tarjetas], className="g-3")
     return diapositiva("6.1", "Hallazgos principales", visual)
 
@@ -1040,8 +1164,10 @@ def d_pasos():
 
 
 def d_recursos():
-    enlaces = [("Libro del Entregable 1 (versión 2)", LIBRO_E1), ("Libro del Entregable 1 (versión 1, entregada)", LIBRO_E1_V1),
-               ("Libro del Entregable 2 (versión 2)", LIBRO_E2), ("Libro del Entregable 2 (versión 1, entregada)", LIBRO_E2_V1),
+    enlaces = [("Libro del Entregable 1 (versión 3)", LIBRO_E1), ("Libro del Entregable 1 (versión 2)", LIBRO_E1_V2),
+               ("Libro del Entregable 1 (versión 1, entregada)", LIBRO_E1_V1),
+               ("Libro del Entregable 2 (versión 3)", LIBRO_E2), ("Libro del Entregable 2 (versión 2)", LIBRO_E2_V2),
+               ("Libro del Entregable 2 (versión 1, entregada)", LIBRO_E2_V1),
                ("Repositorio del Entregable 1", "https://github.com/mcarocantillo/entregable1-ml-barranquilla"),
                ("Repositorio del Entregable 2", "https://github.com/mcarocantillo/entregable2-ml-barranquilla")]
     visual = html.Div([html.A([html.Span(t), html.Span("↗", className="enlace-flecha")], href=u, target="_blank", className="enlace-recurso")
@@ -1074,12 +1200,13 @@ PESTANAS = [
         ("Protocolo de validación", d_protocolo), ("Hiperparámetros", d_grid), ("Frente a líneas base", d_comparacion),
         ("¿Diferencias reales?", d_significancia), ("Errores por estrato", d_confusion), ("Probabilidades", d_roc),
         ("Coeficientes", d_coeficientes), ("Importancia", d_permutacion), ("Curva de aprendizaje", d_aprendizaje),
-        ("Residuos espaciales", d_residuos), ("Simulador", d_simulador)]},
+        ("Residuos espaciales", d_residuos), ("Simulador", d_simulador),
+        ("Validación por vecinos (v3)", d_v3_validacion), ("Modelo base v3", d_v3_mejoras)]},
     {"id": "mas", "titulo": "Más allá del modelo base", "diapositivas": [
         ("Candidatos y protocolo", d_candidatos), ("Resultados", d_avanzados), ("Criterio de selección", d_criterio),
         ("Errores por modelo", d_errores), ("XGBoost geográfico", d_geoxgb), ("Residuos por modelo", d_residuos_av),
         ("Vecindad física", d_vecindad), ("CV de 15 folds", d_vecindad15), ("¿Dónde ayuda?", d_donde),
-        ("Zonas conocidas", d_conocidas), ("Dos escenarios", d_escenarios)]},
+        ("Zonas conocidas", d_conocidas), ("Dos escenarios", d_escenarios), ("Vecindad KNN (v3)", d_vecindad_knn)]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
         ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
         ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
