@@ -111,7 +111,7 @@ for nombre in SPECS:
         r = c[k]
         print(f"   {k}: Δ={r['diferencia']:+.4f} IC95 [{r['IC95_inf']:+.4f}, {r['IC95_sup']:+.4f}] p={r['p_bootstrap']:.3f}")
 SALIDA["comparaciones_vs_B"] = cmp_
-json.dump(SALIDA, open(_os.path.join(VEC, "vecindad.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump(SALIDA, open(_os.path.join(VEC, "comparacion_zonas_nuevas.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 pickle.dump({"pred": pred_test, "proba": proba_test, "y": y_te, "bloque": bloques, "x_km": te["x_km"].to_numpy(),
              "y_km": te["y_km"].to_numpy(), "edificio": te["npn_edificio"].to_numpy()}, open(_os.path.join(VEC, "pred_test.pkl"), "wb"))
-print("\nguardado vecindad.json")
+print("\nguardado comparacion_zonas_nuevas.json")

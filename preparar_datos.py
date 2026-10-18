@@ -10,7 +10,8 @@ desplegada no tenga que reentrenar nada:
 
 - ``viviendas.pkl.gz``: las 332 718 viviendas limpias (con y sin
   coordenadas), sin el número predial (identificador) y con coordenadas
-  redondeadas a 3 decimales (~110 m).
+  redondeadas a 3 decimales (~110 m). ``ubicado_por_manzana`` marca las
+  viviendas ubicadas por el centroide de su manzana (Entregable 1, cap. 1.7.5).
 - ``test_predicciones.pkl.gz``: estrato real, predicción y probabilidades de
   cada modelo en el conjunto de prueba.
 - ``coeficientes.pkl.gz``: coeficientes de las regresiones logísticas.
@@ -67,7 +68,7 @@ todo["lon"] = todo["centroide_lon"].round(3)
 cols = ["estrato_num", "tipo_vivienda", "uso", "condicion_predio", "area_construida",
         "area_catastral_terreno", "total_habitaciones", "total_banios", "total_plantas",
         "planta_ubicacion", "altura", "anio_construccion", "antiguedad", "lat", "lon",
-        "dist_centro_km", "tiene_coordenadas", "particion", "edificio_id"]
+        "dist_centro_km", "tiene_coordenadas", "ubicado_por_manzana", "particion", "edificio_id"]
 viv = todo[cols].copy()
 for c in ["tipo_vivienda", "uso", "condicion_predio", "particion"]:
     viv[c] = viv[c].astype("category")
@@ -124,7 +125,8 @@ modelos = {
     "Dummy (mayoritaria)": (DummyClassifier(strategy="most_frequent"), ["x_km"]),
     "Dummy (estratificada)": (DummyClassifier(strategy="stratified", random_state=C.SEED), ["x_km"]),
     "Dummy (uniforme)": (DummyClassifier(strategy="uniform", random_state=C.SEED), ["x_km"]),
-    "Moda por zona": (M.BaselineModaZona(tam_km=2.0), ["x_km", "y_km"]),
+    # Tamaño de zona elegido por CV espacial en el capítulo 10 del Entregable 1.
+    "Moda por zona": (M.BaselineModaZona(tam_km=float(res_e1.get("tam_zona_moda_km", 2.0))), ["x_km", "y_km"]),
 }
 for nombre, conj in conjuntos.items():
     modelos[f"Logística {nombre}"] = (pipeline_logistica(conj, *leer_hp(nombre)), conj["num"] + conj["cat"])
@@ -176,7 +178,10 @@ joblib.dump(principal, SALIDA / "modelo_logistica_B.joblib", compress=3)
 # Rangos de referencia para los controles del simulador (percentiles de train).
 ref = {c: [float(train[c].quantile(q)) for q in (0.01, 0.5, 0.99)] for c in vm["numericas"]}
 ref["categorias"] = {c: sorted(map(str, train[c].dropna().unique())) for c in vm["categoricas"]}
-ref["moda_categorias"] = {c: str(train[c].mode().iloc[0]) for c in vm["categoricas"]}
+# Vivienda típica del simulador: la COMBINACIÓN más frecuente de las categóricas. La moda de cada columna por
+# separado daba una vivienda imposible (casa de hasta 3 pisos registrada como unidad en PH).
+combo = train[vm["categoricas"]].astype(str).value_counts().idxmax()
+ref["moda_categorias"] = dict(zip(vm["categoricas"], map(str, combo)))
 (SALIDA / "simulador_rangos.json").write_text(json.dumps(ref, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
@@ -199,7 +204,7 @@ diag["curva_aprendizaje"] = {"n": tam.tolist(), "train_media": sc_tr.mean(1).tol
 print("Curva de aprendizaje:", [round(v, 3) for v in sc_va.mean(1)])
 
 sens = []
-for b in [0.0, 0.5, 1.0, 2.875]:
+for b in [0.0, 0.5, 1.0, float(dec["alcance_correlograma_km"]["valor"])]:
     fb = P.folds_espaciales_con_buffer(train, b, verbose=False)
     r = cross_validate(principal, train[cols_b], y_tr, cv=fb, scoring="f1_macro", n_jobs=-1)
     sens.append({"buffer_km": b, "f1": float(r["test_score"].mean()), "desv": float(r["test_score"].std())})
@@ -209,7 +214,7 @@ print("Sensibilidad al buffer:", sens)
 # Correlograma y Moran global del estrato (una fila por edificio de train).
 # Igual que el cap. 8 del Entregable 1: muestra estratificada de train y una fila por edificio.
 muestra = S.muestra_estratificada(train_total, C.N_MUESTRA_ESPACIAL)
-edif = S.deduplicar_por_edificio(muestra[["npn_edificio", "x_km", "y_km", C.OBJETIVO]])
+edif = S.deduplicar_por_edificio(muestra[["npn_edificio", "x_km", "y_km", "ubicado_por_manzana", C.OBJETIVO]])
 xy = edif[["x_km", "y_km"]].to_numpy()
 corr = S.correlograma(xy, edif[C.OBJETIVO].to_numpy(), np.arange(0, 6.25, 0.25), n_max=4000, seed=C.SEED)
 diag["correlograma"] = corr.to_dict(orient="list")
@@ -226,7 +231,7 @@ for nombre in conjuntos:
     cm = conjuntos[nombre]["num"] + conjuntos[nombre]["cat"]
     esperado = est.predict_proba(test[cm]) @ est.classes_.astype(float)
     t = test.assign(residuo=y_te - esperado)
-    e = S.deduplicar_por_edificio(t[["npn_edificio", "x_km", "y_km", "residuo"]])
+    e = S.deduplicar_por_edificio(t[["npn_edificio", "x_km", "y_km", "ubicado_por_manzana", "residuo"]])
     Wt, _, _ = S.pesos_knn(e[["x_km", "y_km"]].to_numpy(), k=C.K_VECINOS)
     r = S.moran_global(e["residuo"].to_numpy(), Wt, n_perm=199, seed=C.SEED)
     diag["moran_residuos"][nombre] = {"I": float(r["I"]), "p": float(r["p_perm"]),

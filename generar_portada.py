@@ -3,11 +3,13 @@
 Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
 
-- assets/portada.svg: "Barranquilla de noche". Cada luz es una zona de unos 165 m con viviendas; el tamaño
-  crece con el número de viviendas y el brillo con el estrato medio (más brillante = estrato más alto).
 - assets/escala_estratos.svg: infografía de la escala de estratos y su efecto en las tarifas (Ley 142 de 1994).
+- (opcional, con --noche) assets/portada.svg: "Barranquilla de noche". Cada luz es una zona de unos 165 m con
+  viviendas; el tamaño crece con el número de viviendas y el brillo con el estrato medio. La usó el dashboard del
+  Entregable 2 y la usa el dashboard del Entregable 1; la portada del dashboard final es una imagen satelital
+  (assets/portada_satelite.jpg, Copernicus Sentinel-2 procesada por la ESA).
 
-Uso:  python generar_portada.py
+Uso:  python generar_portada.py [--noche]
 """
 from pathlib import Path
 
@@ -129,6 +131,8 @@ def escala_estratos(ancho=1100, alto=330):
 
 
 if __name__ == "__main__":
-    n = portada()
+    import sys
     escala_estratos()
-    print(f"portada.svg con {n} zonas; escala_estratos.svg generada")
+    print("escala_estratos.svg generada")
+    if "--noche" in sys.argv:
+        print(f"portada.svg con {portada()} zonas")

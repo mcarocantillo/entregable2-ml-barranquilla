@@ -1,13 +1,13 @@
 {
  "area_construida": [
-  22.0,
-  69.0,
-  298.0
+  21.0,
+  68.0,
+  308.0
  ],
  "area_catastral_terreno": [
-  12.78,
-  64.36,
-  450.56
+  0.0,
+  41.0,
+  493.0
  ],
  "total_habitaciones": [
   1.0,
@@ -26,7 +26,7 @@
  ],
  "antiguedad": [
   1.0,
-  13.0,
+  15.0,
   64.0
  ],
  "planta_ubicacion": [
@@ -51,10 +51,10 @@
    "Residencial_Apartamentos_4_y_mas_pisos_en_PH",
    "Residencial_Vivienda_Hasta_3_Pisos",
    "Residencial_Vivienda_Hasta_3_Pisos_En_PH",
-   "Residencial_Vivienda_Recreacional",
-   "Residencial_Vivienda_Recreacional_En_PH"
+   "Residencial_Vivienda_Recreacional"
   ],
   "condicion_predio": [
+   "Condominio_Unidad_Predial",
    "Informal",
    "NPH",
    "PH_Matriz",
@@ -64,6 +64,6 @@
  "moda_categorias": {
   "tipo_vivienda": "tv_4",
   "uso": "Residencial_Vivienda_Hasta_3_Pisos",
-  "condicion_predio": "PH_Unidad_Predial"
+  "condicion_predio": "NPH"
  }
 }

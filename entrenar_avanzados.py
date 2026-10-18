@@ -293,7 +293,7 @@ for nombre, est in finales.items():
     # Moran de los residuos ordinales por edificio de test.
     esperado = proba @ np.asarray(C.CLASES, float)
     t = test.assign(residuo=y_te - esperado)
-    e = S.deduplicar_por_edificio(t[["npn_edificio", "x_km", "y_km", "residuo"]])
+    e = S.deduplicar_por_edificio(t[["npn_edificio", "x_km", "y_km", "ubicado_por_manzana", "residuo"]])
     Wt, _, _ = S.pesos_knn(e[["x_km", "y_km"]].to_numpy(), k=C.K_VECINOS)
     r = S.moran_global(e["residuo"].to_numpy(), Wt, n_perm=199, seed=C.SEED)
     diag["moran_residuos"][nombre] = {"I": float(r["I"]), "p": float(r["p_perm"]),

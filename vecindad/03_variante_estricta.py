@@ -9,6 +9,7 @@ import pickle, sys, numpy as np, pandas as pd
 import replica_sin_sklearn as B
 from variables_vecindad import calcular_vecindad
 C = B.C
+C_B, CW_B = B.hiperparametros_B()   # lo que eligió 02_comparar_modelos.py para el modelo B
 d = pickle.load(open(_os.path.join(VEC, "datos.pkl"), "rb")); con, train, test = d["con"], d["train"], d["test"]
 dec = C.leer_decisiones(); vm = dec["variables_modelo"]["valor"]; num_log = dec["num_log"]["valor"]; cats = vm["categoricas"]
 NB = vm["numericas"] + vm["espaciales"]
@@ -26,9 +27,9 @@ trA, teA = train.merge(V, on="id_fila", how="left"), test.merge(V, on="id_fila",
 # (b) ESTRICTA: train solo con viviendas de train_total (sin test) y test solo con viviendas de test
 tt = con[con["particion"] == "train"]; ts = con[con["particion"] == "test"]
 trB, teB, _ = con_vec(tt, ts)
-pB, _, _, _ = B.ajustar_y_evaluar(train, y_tr, test, y_te, nl, nn, cats, dec, 0.01, None)
-pA, _, _, _ = B.ajustar_y_evaluar(trA, y_tr, teA, y_te, nl, nn + VALL, cats, dec, 0.01, None)
-pS, prS, mS, _ = B.ajustar_y_evaluar(trB, y_tr, teB, y_te, nl, nn + VALL, cats, dec, 0.01, None)
+pB, _, _, _ = B.ajustar_y_evaluar(train, y_tr, test, y_te, nl, nn, cats, dec, C_B, CW_B)
+pA, _, _, _ = B.ajustar_y_evaluar(trA, y_tr, teA, y_te, nl, nn + VALL, cats, dec, C_B, CW_B)
+pS, prS, mS, _ = B.ajustar_y_evaluar(trB, y_tr, teB, y_te, nl, nn + VALL, cats, dec, C_B, CW_B)
 acc = lambda y, p: float(np.mean(y == p)); mae = lambda y, p: float(np.mean(np.abs(y - p)))
 for nombre, p in [("B", pB), ("B+vec (vecindad con todas las viviendas)", pA), ("B+vec ESTRICTA (solo dentro de cada partición)", pS)]:
     print(f"{nombre:50s} F1 {B.f1_macro(y_te, p):.4f} | acc {acc(y_te, p):.4f} | MAE {mae(y_te, p):.4f} | kappa {B.kappa_cuadratico(y_te, p):.4f}")

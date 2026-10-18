@@ -11,6 +11,7 @@ import numpy as np
 import replica_sin_sklearn as B
 from variables_vecindad import calcular_vecindad
 C = B.C; P = B.P
+C_B, CW_B = B.hiperparametros_B()   # lo que eligió 02_comparar_modelos.py para el modelo B
 d = pickle.load(open(_os.path.join(VEC, "datos.pkl"), "rb")); con, train = d["con"], d["train"]
 dec = C.leer_decisiones(); vm = dec["variables_modelo"]["valor"]; num_log = dec["num_log"]["valor"]; cats = vm["categoricas"]
 NB = vm["numericas"] + vm["espaciales"]
@@ -27,7 +28,7 @@ for i, (itr, iva) in enumerate(folds):
     for nombre, (a, b) in SPECS.items():
         cols = a + b + cats
         prep = B.Prep(a, b, cats, q_inf, q_sup, mf).fit(tr.iloc[itr][cols])
-        m = B.LogisticaMultinomial(C=0.01).fit(prep.transform(tr.iloc[itr][cols]), y[itr])
+        m = B.LogisticaMultinomial(C=C_B, class_weight=CW_B).fit(prep.transform(tr.iloc[itr][cols]), y[itr])
         oof[nombre][iva] = m.predict(prep.transform(tr.iloc[iva][cols]))
     print(f"fold {i + 1}/15 listo ({time.time() - t0:.0f}s)", flush=True)
 cols_guardar = ["id_fila", "bloque", "x_km", "y_km", "dist_centro_km", C.OBJETIVO, "condicion_predio", "uso", "area_construida", "total_banios", "antiguedad"] + VALL

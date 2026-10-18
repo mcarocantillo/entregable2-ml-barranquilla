@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **sub-pestaña «Modelos de la revisión» de la pestaña ML models del dashboard**. El enunciado del Entregable 2 pide
+# Este capítulo corresponde a las diapositivas 5.1 a 5.6 de la pestaña **5. Más allá del modelo base** del dashboard. El enunciado del Entregable 2 pide
 # modelos base; este capítulo va un paso más allá y pone a prueba los candidatos de la revisión bibliográfica
 # (capítulo 1.2) contra la referencia del capítulo 3, con exactamente el mismo protocolo.
 
@@ -45,7 +45,7 @@ B = A["busqueda"]
 #
 # | Modelo | Papel en la comparación | Problema que ataca |
 # |---|---|---|
-# | **XGBoost geográfico (adaptado a clasificación)** | Propuesta novedosa | Relaciones que cambian según la zona (residuos con Moran 0.70) |
+# | **XGBoost geográfico (adaptado a clasificación)** | Propuesta novedosa | Relaciones que cambian según la zona (residuos con Moran 0.56) |
 # | **XGBoost** | Control del anterior: mismo algoritmo sin la parte geográfica | No linealidades e interacciones |
 # | **Rotation Forest** | Ensemble de árboles de la revisión | Variables de tamaño correlacionadas |
 # | **SVM RBF (Nyström) + TPE** | SVM no lineal con optimización bayesiana de hiperparámetros | Fronteras no lineales; conecta con el "SVR lineal" del enunciado |
@@ -99,22 +99,23 @@ print("Fracción de viviendas de validación cubiertas por al menos un modelo lo
 cob
 
 # %% [markdown]
-# **Resultado de la búsqueda.** En la validación cruzada, ninguna combinación supera al XGBoost global (0.296). En
-# general, el F1 mejora al dar más peso al global: con $\alpha = 0$ (solo modelos locales) es 0.277 con la ventana del
-# 5 % y 0.271 con la del 15 %. La regla de una desviación estándar eligió la ventana del 15 % y $\alpha$ = 0.75, la
-# combinación más cercana al global.
+# **Resultado de la búsqueda.** En la validación cruzada, ninguna combinación supera al XGBoost global (0.352). El
+# F1 tiende a mejorar al dar más peso al global: con $\alpha = 0$ (solo modelos locales) es 0.312 con la ventana del
+# 5 % y 0.306 con la del 15 %; la mejor combinación (ventana del 5 %, $\alpha$ = 0.5) llega a 0.324. La regla de una
+# desviación estándar eligió la ventana del 15 % y $\alpha$ = 0.75 (F1 de CV 0.320), la combinación más cercana al
+# global.
 #
-# La tabla de cobertura muestra que el problema **no es solo de cobertura**. Con la ventana del 15 %, en promedio el
-# 85 % de las viviendas de validación queda dentro de algún modelo local, y aun así los modelos locales solos predicen
-# peor que el global. Las viviendas de validación están a más de 1 km de cualquier vivienda de entrenamiento (el
-# buffer): los modelos locales se entrenaron con los barrios vecinos, no con el de la vivienda, y como el estrato cambia
-# de forma brusca entre barrios, esos vecinos informan peor que un modelo de toda la ciudad. En el test final la
-# ventana usa 20 735 viviendas y cubre el 56 % del test.
+# La tabla de cobertura muestra que el problema **no es de cobertura**. Con la ventana del 15 %, en promedio el 86 % de
+# las viviendas de validación queda dentro de algún modelo local, y aun así los modelos locales solos predicen peor que
+# el global. Las viviendas de validación están a más de 1 km de cualquier vivienda de entrenamiento (el buffer): los
+# modelos locales se entrenaron con los barrios vecinos, no con el de la vivienda, y como el estrato cambia de forma
+# brusca entre barrios, esos vecinos informan peor que un modelo de toda la ciudad. En el test final la ventana usa
+# unas 21 700 viviendas (el 15 % del entrenamiento) y cubre el 94 % del test.
 #
-# **Frente a su control,** el XGBoost geográfico mejora el F1 de test en apenas +0.003 (IC [+0.001, +0.006]): una
-# diferencia estadísticamente distinguible de cero pero sin importancia práctica. Es lo esperable por diseño: con
-# $\alpha$ = 0.75, el 44 % del test no cubierto recibe exactamente la predicción global, y en el 56 % cubierto el global
-# pesa el 75 %.
+# **Frente a su control,** el XGBoost geográfico sube el F1 de test de 0.375 a 0.418 (+0.043, IC [−0.002, +0.058],
+# p = 0.10), una diferencia que no alcanza a ser significativa, y baja el MAE ordinal en 0.04 (IC [−0.088, −0.002]).
+# En la CV ocurrió lo contrario (0.320 frente a 0.352), así que la ventaja en test no es estable: depende de qué zonas
+# caen en la partición.
 #
 # Es un hallazgo de fondo: los **efectos locales** que el XGBoost geográfico busca capturar se aprenden con datos de la
 # misma zona, y la validación espacial pregunta precisamente qué tan bien se predice en **zonas sin datos**. El modelo
@@ -132,7 +133,7 @@ cob
 # Así los cortes del árbol son oblicuos respecto a las variables originales, lo que ayuda con variables
 # correlacionadas. Se buscó la profundidad (8 o 14) y los pesos de clase. Implementación propia (`avanzados.py`).
 #
-# **SVM RBF (Nyström) + TPE** {cite}`rizkallah2025`. Una SVM con kernel RBF exacto sobre 138 000 viviendas es
+# **SVM RBF (Nyström) + TPE** {cite}`rizkallah2025`. Una SVM con kernel RBF exacto sobre 145 000 viviendas es
 # inviable en tiempo. La aproximación de Nyström proyecta los datos a unos cientos de dimensiones donde el producto
 # interno aproxima el kernel RBF, y sobre esa proyección se entrena una SVM lineal (pérdida hinge) por descenso de
 # gradiente estocástico. Los hiperparámetros ($\gamma$ del kernel, número de componentes, regularización y pesos de
@@ -155,8 +156,9 @@ ens = pd.DataFrame([{**e["params"], "F1 CV (submuestra)": e["f1_submuestra"]} fo
 ens.sort_values("F1 CV (submuestra)", ascending=False).head(6).reset_index(drop=True)
 
 # %% [markdown]
-# La búsqueda favoreció pesos de clase balanceados, regularización baja y un $\gamma$ pequeño (≈ 0.006), es decir, un
-# kernel suave. Con el entrenamiento completo de cada fold, la SVM elegida obtuvo un F1 de CV de 0.322.
+# La búsqueda favoreció pesos de clase balanceados, regularización baja ($\alpha$ ≈ 0.0001), 400 componentes de
+# Nyström y un $\gamma$ intermedio (≈ 0.13). Con el entrenamiento completo de cada fold, la SVM elegida obtuvo un F1 de
+# CV de 0.352, el mismo nivel que el XGBoost.
 
 # %% [markdown]
 # ## 4.4 Resultados
@@ -174,9 +176,15 @@ print("Criterio de selección (solo validación cruzada):")
 cvp
 
 # %% [markdown]
-# **Selección (solo con la CV).** Ningún modelo cumple el criterio. La SVM RBF es la única con una diferencia media
-# positiva frente a la logística (+0.024), pero su error estándar pareado es 0.048: la diferencia depende de un solo
-# fold (+0.20 en el fold 4 y cercana a 0 o negativa en los demás). **La logística B sigue siendo el modelo principal.**
+# **Selección (solo con la CV).** La **SVM RBF cumple el criterio**: supera a la logística en +0.030 de F1 con un
+# error estándar pareado de 0.015, y gana en 4 de los 5 folds (en el quinto empata). XGBoost tiene la misma ventaja
+# media (+0.030), pero con un error estándar de 0.044 no lo cumple; Rotation Forest y el XGBoost geográfico empatan con
+# la logística.
+#
+# Esa ventaja de la SVM hay que leerla con cautela. Sus cuatro hiperparámetros se buscaron con 12 ensayos de Optuna en
+# **los mismos folds** con que se mide la CV, mientras que la logística solo eligió entre una rejilla corta de $C$ y
+# pesos de clase: la cifra de CV de la SVM es la más optimista de todas (es la limitación que se declara al final del
+# capítulo). El test, que se mira una sola vez, dice si la ventaja se sostiene.
 
 # %% tags=["hide-input"]
 F.fig_diferencias()
@@ -194,16 +202,24 @@ print("Diferencia de MAE ordinal (negativo = mejor que la referencia):")
 display(tabla_comp("comparaciones_mae"))
 
 # %% [markdown]
-# **El test confirma la elección.** Ningún modelo supera a la logística B (F1 0.450):
+# **El test no confirma la ventaja de la SVM.** Ningún modelo supera a la logística B (F1 0.492):
 #
-# - La **SVM RBF** queda en 0.428 (diferencia −0.022, IC [−0.033, +0.003]) y su MAE ordinal es peor de forma
-#   significativa (+0.08, IC [+0.02, +0.12]).
-# - **XGBoost** queda en 0.304, muy por debajo de la logística, aunque esa diferencia de F1 no alcanza a ser
-#   significativa (−0.146, IC [−0.16, +0.006], p = 0.06). Su MAE ordinal sí es peor de forma significativa (+0.19,
-#   IC [+0.04, +0.38]). Llama la atención porque en la CV empataba con la logística (0.296).
-# - El **XGBoost geográfico** queda en 0.307, prácticamente igual a su control (sección 4.2).
-# - **Rotation Forest** se acerca a la logística en las métricas ordinales (kappa 0.82, accuracy ±1 0.94), pero queda
-#   por debajo en F1 (−0.042, IC [−0.058, −0.002]).
+# - La **SVM RBF** queda en 0.453 (diferencia −0.039, IC [−0.079, +0.012], no significativa) y su MAE ordinal es
+#   peor de forma significativa (+0.08, IC [+0.02, +0.14]). También es peor como clasificador probabilístico: AUC 0.82
+#   frente a 0.90 y log loss 1.17 frente a 0.91.
+# - **XGBoost** queda en 0.375 (−0.117, IC [−0.172, +0.030], p = 0.12), lejos de la logística aunque la diferencia no
+#   alcance a ser significativa. Llama la atención porque en la CV estaba arriba (0.352).
+# - El **XGBoost geográfico** queda en 0.418, algo por encima de su control (sección 4.2).
+# - **Rotation Forest** queda por debajo en F1 (0.450; −0.042, IC [−0.071, +0.019]), pero es el **mejor en las
+#   métricas ordinales**: su MAE es menor que el de la logística de forma significativa (−0.05, IC [−0.070, −0.019]),
+#   con kappa 0.85 y accuracy ±1 0.96. Se equivoca de clase con una frecuencia parecida, pero por menos estratos.
+#
+# **Decisión.** Con el criterio fijado de antemano, la SVM reemplazaría a la logística. **Mantenemos la logística B
+# como modelo principal** y lo declaramos como una desviación del criterio: (1) la ventaja de la SVM en CV es la más
+# expuesta al sobreajuste de la búsqueda; (2) en test no se sostiene, y sus errores ordinales y sus probabilidades
+# son peores, que es lo que se usa en el simulador y en el mapa de incertidumbre del dashboard; y (3) la logística es
+# interpretable. Una CV anidada (la búsqueda de la SVM repetida dentro de cada fold) resolvería el empate sin mirar el
+# test.
 
 # %% [markdown]
 # ## 4.5 Por qué los árboles pierden en zonas nuevas
@@ -212,21 +228,21 @@ display(tabla_comp("comparaciones_mae"))
 F.fig_confusion("XGBoost", normalizar=True)
 
 # %% [markdown]
-# El XGBoost casi nunca predice el estrato 5 (3 viviendas en todo el test) y clasifica como 4 el 99 % del estrato 6.
-# Los árboles dividen el mapa en rectángulos con cortes en x e y: dentro de las zonas de entrenamiento eso describe bien
-# la segregación, pero en una zona nueva el modelo no puede "prolongar" la tendencia y asigna el estrato de la región de
-# entrenamiento más parecida. La logística, con un efecto lineal y continuo de la posición, extrapola el gradiente
-# sur-norte. Una explicación probable de que XGBoost empate en la CV y pierda en test es que los bloques de test forman
-# zonas grandes y continuas, más lejos de los datos de entrenamiento que la mayoría de los bloques de validación; la
-# caída de cobertura del XGBoost geográfico entre la CV (85 %) y el test (56 %) apunta en la misma dirección. Sus
-# residuos son los más agrupados en el espacio (Moran 0.87).
+# El XGBoost colapsa la escala en dos bloques: casi no predice el estrato 3 (acierta solo el 5 % de las viviendas de
+# estrato 3; el 76 % va al 2) y manda al estrato 4 el 80 % del estrato 5 y el 86 % del 6. Los árboles dividen el mapa
+# en rectángulos con cortes en x e y: dentro de las zonas de entrenamiento eso describe bien la segregación, pero en
+# una zona nueva el modelo no puede "prolongar" la tendencia y asigna el estrato de la región de entrenamiento más
+# parecida. La logística, con un efecto lineal y continuo de la posición, extrapola el gradiente sur-norte. Una
+# explicación probable de que XGBoost gane en la CV y pierda en test es que los bloques de test forman zonas grandes y
+# continuas, más lejos de los datos de entrenamiento que la mayoría de los bloques de validación. Sus residuos están
+# más agrupados en el espacio que los de la logística (Moran 0.72 frente a 0.56).
 
 # %% tags=["hide-input"]
 F.fig_importancia_xgb()
 
 # %% [markdown]
-# En el XGBoost, las dos variables más importantes son de **tipología** (apartamento en edificio de cuatro pisos o más
-# frente a vivienda de hasta tres pisos); luego vienen la posición norte-sur, el tipo de vivienda y el régimen PH. Es
+# En el XGBoost, las dos variables más importantes son de **tipología** (vivienda de hasta tres pisos y unidad predial
+# en PH); luego vienen la posición norte-sur y este-oeste y el uso de apartamento en edificio de cuatro pisos o más. Es
 # coherente con el EDA, donde el eje de tipología del PCA era el más asociado al estrato.
 
 # %% [markdown]
@@ -236,11 +252,11 @@ F.fig_importancia_xgb()
 F.fig_confusion("SVM RBF (Nyström) + TPE", normalizar=True)
 
 # %% [markdown]
-# La SVM RBF reconoce mejor el **estrato 5** que la logística (recall 0.59 frente a 0.19), pero a costa del 4: el 35 %
-# del estrato 4 lo clasifica como 5, y el F1 del 4 baja. Comparte con la logística el problema del **estrato 2**, que
-# casi nunca predice (recall 0.01; el 90 % lo clasifica como 3). Con un F1 macro parecido, los dos modelos aciertan
-# estratos distintos en la parte alta de la escala, lo que sugiere que combinarlos (*stacking*) podría ayudar con los
-# estratos 4 a 6. El estrato 2 parece requerir otra cosa: un modelo ordinal o un ajuste de umbrales.
+# La SVM RBF reconoce mejor los extremos que la logística: el **estrato 5** (recall 0.58 frente a 0.42), el 6 (0.27
+# frente a 0.21) y el 1 (0.87 frente a 0.79). Lo paga en el **estrato 2** (recall 0.30 frente a 0.60: el 38 % lo
+# manda al 1 y el 30 % al 3) y en el 4, del que clasifica como 5 el 40 %. Con un F1 macro parecido, los dos modelos
+# aciertan estratos distintos, lo que sugiere que combinarlos (*stacking*) podría ayudar, sobre todo con los estratos
+# 4 a 6. El estrato 4 sigue siendo el más difícil para ambos (recall 0.28 en los dos).
 
 # %% [markdown]
 # ## 4.7 Residuos espaciales
@@ -256,22 +272,23 @@ F.fig_mapa_residuos_modelo("XGBoost geográfico")
 
 # %% [markdown]
 # Ninguno de los modelos elimina la autocorrelación de los residuos, y todos los modelos nuevos la aumentan frente a la
-# logística B (0.70): Rotation Forest y la SVM 0.77, XGBoost y su versión geográfica 0.87. La información de barrio
-# que le falta al modelo no está en las variables del catastro de la propia vivienda, y los modelos locales no pueden
-# aprenderla en zonas sin datos.
+# logística B (0.56): Rotation Forest 0.66, el XGBoost geográfico 0.69, XGBoost 0.72 y la SVM 0.76. La información de
+# barrio que le falta al modelo no está en las variables del catastro de la propia vivienda, y los modelos locales no
+# pueden aprenderla en zonas sin datos.
 
 # %% [markdown]
 # ## 4.8 Conclusión del capítulo
 #
-# - Con el protocolo de validación espacial, **la regresión logística sigue siendo la mejor referencia**: ningún
-#   modelo más complejo la supera ni en la CV (con el criterio fijado de antemano) ni en test, y los modelos de árboles
-#   empeoran en zonas nuevas.
-# - La adaptación del **XGBoost geográfico a clasificación** funciona, pero no aporta cuando se predice en zonas sin
-#   datos de entrenamiento. Es un resultado útil: el beneficio de los efectos locales depende del escenario de
-#   predicción. Para evaluarlo en su escenario natural habría que medirlo también **dentro de zonas conocidas** (por
-#   ejemplo, ocultando viviendas al azar dentro de los bloques de entrenamiento), y reportar los dos esquemas por
-#   separado.
-# - La SVM RBF reconoce mejor los estratos altos y la logística los medios: combinarlos es una línea a explorar.
+# - Con el protocolo de validación espacial, **la regresión logística sigue siendo la mejor referencia en test**:
+#   ningún modelo más complejo la supera. La SVM RBF pasa el criterio de CV, pero su ventaja no se sostiene en test y
+#   sus errores son más grandes; mantener la logística es una desviación declarada del criterio.
+# - **Rotation Forest** es la alternativa más interesante si importa el error ordinal: F1 parecido y errores más
+#   cortos.
+# - La adaptación del **XGBoost geográfico a clasificación** funciona, pero no aporta de forma estable cuando se
+#   predice en zonas sin datos de entrenamiento. El beneficio de los efectos locales depende del escenario de
+#   predicción; el capítulo 5 lo mide también **dentro de zonas conocidas**.
+# - La SVM RBF reconoce mejor los extremos de la escala y la logística el estrato 2: combinarlos es una línea a
+#   explorar.
 #
 # **Limitaciones de este capítulo.** La búsqueda de hiperparámetros fue acotada por el costo de cómputo (rejillas
 # pequeñas, 12 ensayos de Optuna en submuestras, 30 árboles en Rotation Forest). La adaptación del XGBoost geográfico

@@ -6,13 +6,14 @@ VEC = str(AQUI.parent / "datos" / "vecindad")   # resultados (JSON) e intermedio
 _os.makedirs(VEC, exist_ok=True)
 sys.path.insert(0, str(AQUI))
 """Validación cruzada espacial más fina (15 folds de bloques con buffer de 1 km, dentro del entrenamiento; el test no interviene).
-Modelos con hiperparámetros FIJOS en lo que eligió la búsqueda anterior (C=0.01, sin pesos), el mismo para todos.
+Modelos con hiperparámetros FIJOS en lo que eligió para B la búsqueda de 02_comparar_modelos.py, el mismo para todos.
 Se acumulan las predicciones fuera de muestra de TODAS las viviendas de entrenamiento y se comparan por pares con bootstrap de bloques."""
 import json, pickle, sys, time
 import numpy as np
 import replica_sin_sklearn as B
 from variables_vecindad import calcular_vecindad
 C = B.C; P = B.P
+C_B, CW_B = B.hiperparametros_B()   # lo que eligió 02_comparar_modelos.py para el modelo B
 d = pickle.load(open(_os.path.join(VEC, "datos.pkl"), "rb")); con, train, test = d["con"], d["train"], d["test"]
 dec = C.leer_decisiones(); vm = dec["variables_modelo"]["valor"]; num_log = dec["num_log"]["valor"]; cats = vm["categoricas"]
 NB = vm["numericas"] + vm["espaciales"]; NA = vm["numericas"]
@@ -31,7 +32,7 @@ for i, (itr, iva) in enumerate(folds):
     for nombre, (nl, nn) in SPECS.items():
         cols = nl + nn + cats
         prep = B.Prep(nl, nn, cats, q_inf, q_sup, mf).fit(tr.iloc[itr][cols])
-        m = B.LogisticaMultinomial(C=0.01).fit(prep.transform(tr.iloc[itr][cols]), y[itr])
+        m = B.LogisticaMultinomial(C=C_B, class_weight=CW_B).fit(prep.transform(tr.iloc[itr][cols]), y[itr])
         p = m.predict(prep.transform(tr.iloc[iva][cols])); oof[nombre][iva] = p
         f1fold[nombre].append(B.f1_macro(y[iva], p))
     print(f"fold {i + 1}/{K} listo ({time.time() - t0:.0f}s) | F1 por fold " + " | ".join(f"{k[:12]}: {f1fold[k][-1]:.3f}" for k in SPECS), flush=True)
@@ -53,5 +54,5 @@ for k in list(SPECS)[1:]:
     for nom in ("F1_pooled", "MAE", "kappa"):
         r = c[nom]; print(f"   {nom:9s} Δ={r['diferencia']:+.4f} IC95 [{r['IC95_inf']:+.4f}, {r['IC95_sup']:+.4f}] p={r['p_bootstrap']:.3f}")
     print("   Δ F1 por fold:", np.round(dif, 3).tolist())
-json.dump(out, open(_os.path.join(VEC, "cv15.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print("guardado cv15.json")
+json.dump(out, open(_os.path.join(VEC, "cv_15_folds.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+print("guardado cv_15_folds.json")

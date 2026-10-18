@@ -15,7 +15,7 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **pestaña Contexto del dashboard**.
+# Este capítulo corresponde a las pestañas **1. Contexto** y **2. Datos y calidad** del dashboard.
 
 # %% tags=["hide-input"]
 # Preparación: el módulo figuras.py (en la carpeta del dashboard) genera las mismas
@@ -125,7 +125,7 @@ insumos_dane
 
 # %% tags=["hide-input"]
 candidatos = pd.DataFrame([
-    ["Geographical XGBoost (G-XGBoost)", "Pesos espaciales locales sobre XGBoost; mejora R² y MAE ≈ 17 % frente a XGBoost, GWR y RF geográfico", "El estrato cambia de forma local por barrios (residuos con Moran 0.70)", "grekousis2025"],
+    ["Geographical XGBoost (G-XGBoost)", "Pesos espaciales locales sobre XGBoost; mejora R² y MAE ≈ 17 % frente a XGBoost, GWR y RF geográfico", "El estrato cambia de forma local por barrios (residuos con Moran 0.56)", "grekousis2025"],
     ["GWO-XGBoost / TPE-SVM", "Optimización metaheurística o bayesiana de hiperparámetros", "Espacio de hiperparámetros amplio en XGBoost y SVM", "ojekemi2026,rizkallah2025"],
     ["Ensemble RF + SVM", "RF selecciona variables y SVM clasifica", "Variables catastrales correlacionadas (área, baños, habitaciones)", "zhai2026"],
     ["Bagged TAO Trees", "Árboles oblicuos optimizados; superan a RF, AdaBoost y GB", "Datos tabulares heterogéneos", "carreira2020"],
@@ -154,7 +154,8 @@ candidatos.drop(columns="Ref.")
 #
 # El año de construcción es un **atributo** de la vivienda, no una marca temporal de la observación: por eso el
 # problema es transversal. Las coordenadas son las del centroide del terreno; los apartamentos en propiedad horizontal
-# heredan el centroide de su edificio.
+# heredan el centroide de su edificio, y las viviendas informales sin terreno propio, el centroide de su manzana
+# (sección 1.4).
 
 # %% [markdown]
 # ## 1.4 De los datos descargados a las viviendas analizadas
@@ -177,15 +178,23 @@ F.fig_embudo()
 # Además, los valores imposibles (por ejemplo, el año 2500 o el piso 99, que son códigos de "sin dato") y las
 # incoherencias dentro de la fila (más baños que habitaciones + 3, o menos de 6 m² por habitación) se convierten en
 # faltantes, con una bandera, sin eliminar la fila. El resultado son **332 718 viviendas**, el 87 % de lo descargado.
+#
+# El 16.2 % de esas viviendas (53 894, casi todas mejoras informales en terreno ajeno, de estratos 1 y 2) no tiene
+# terreno propio ni edificio matriz de donde tomar coordenadas. Su número predial sí dice en qué **manzana** están, y
+# casi todas comparten manzana con viviendas ubicadas. A 43 594 de ellas se les asigna el **centroide de su manzana**,
+# solo en manzanas compactas (código de manzana distinto de `0000` y todos sus puntos a menos de 250 m del centroide).
+# El error de esa aproximación, medido con los edificios que sí están ubicados, es de 31 m en la mediana, muy poco
+# frente a los bloques de 2 km de la validación. Así, el **96.9 %** de las viviendas entra al modelo; quedan fuera
+# 10 300 (3.1 %), casi todas de estrato 1. Usa la posición de otras viviendas, nunca su estrato.
 
 # %% tags=["hide-input"]
 F.fig_distribucion_estrato("todas")
 
 # %% [markdown]
 # En el conjunto completo el estrato 1 es el más frecuente (33 %) y los estratos 5 y 6 suman menos del 10 %. La razón
-# entre la clase mayor y la menor es de 8.3:1 en la ciudad completa y de 4.6:1 en el entrenamiento. La diferencia se
-# debe en buena parte a que casi todas las viviendas sin coordenadas son predios informales de estratos 1 y 2, que no
-# entran al modelo.
+# entre la clase mayor y la menor es de 8.3:1 en la ciudad completa y de 6.2:1 en el entrenamiento. La diferencia se
+# debe a que el entrenamiento excluye las zonas de prueba y las 10 300 viviendas que siguen sin coordenadas, casi
+# todas de estrato 1.
 #
 # **Consecuencia para la evaluación.** Con este desbalance, la accuracy es engañosa: un modelo que solo predijera las
 # clases grandes tendría una accuracy aceptable y no serviría para los estratos altos. Por eso la métrica principal es
@@ -205,7 +214,7 @@ pd.DataFrame({
 # %% [markdown]
 # ## 1.6 Flujo de trabajo
 #
-# El dashboard muestra el flujo en siete pasos. El orden no es decorativo: es lo que evita la **fuga de datos**.
+# El dashboard muestra el flujo en siete pasos (diapositiva 1.5). El orden no es decorativo: es lo que evita la **fuga de datos**.
 #
 # 1. **Descarga** del catastro abierto.
 # 2. **Limpieza** con reglas por fila (sección 1.4).

@@ -32,7 +32,7 @@ Ejecutar desde esta carpeta:
 | `04_cv_15_folds.py` | CV espacial de 15 folds (solo entrenamiento) | `cv_15_folds.json` | 15 min |
 | `05a_predicciones_oof.py` | Guarda las predicciones fuera de muestra de los 15 folds | `oof15.pkl` | 10 min |
 | `05b_analisis_por_zonas.py` | Dónde ayuda y dónde perjudica la vecindad (exploratorio) | `zonas.json` | 1 min |
-| `06_zonas_conocidas.py` | Escenario 2: edificios ocultos dentro de zonas con datos | `zonas_conocidas.json` | 20 min |
+| `06_zonas_conocidas.py` | Escenario 2: edificios ocultos dentro de zonas con datos (con `AGRUPAR=manzana`, manzanas completas ocultas) | `zonas_conocidas.json`, `zonas_conocidas_manzana.json` | 1 a 1.5 h cada una |
 
 Los archivos `.pkl` son intermedios grandes y no se suben al repositorio (ver `.gitignore`).
 

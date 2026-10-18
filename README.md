@@ -1,4 +1,4 @@
-# Entregable 2 — Dashboard y Jupyter Book
+# Proyecto final — Dashboard y Jupyter Book (Entregable 2 y versión final)
 
 **Estrato socioeconómico de las viviendas de Barranquilla a partir del catastro**
 
@@ -10,15 +10,20 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 
 | Ruta | Contenido |
 |---|---|
-| `app.py` | Dashboard en Dash Plotly con 3 pestañas: Contexto, EDA y ML models (protocolo, modelo base, diagnóstico, modelos de la revisión, vecindad y escenarios, simulador y conclusiones) |
-| `generar_portada.py` | Genera las imágenes de `assets/` a partir de los datos (portada y escala de estratos) |
-| `figuras.py` | Todas las figuras (las usan el dashboard y el libro) |
+| `app.py` | Dashboard final en Dash Plotly: portada, 6 pestañas (Contexto, Datos y calidad, Análisis exploratorio, Modelo base, Más allá del modelo base, Conclusiones) y glosario de métricas. Cada pestaña es una secuencia de diapositivas con gráficas interactivas; se navega con el menú, los botones o las flechas del teclado, y tiene un modo presentación |
+| `diapositivas.py` | Contenido de las diapositivas (visual, lectura breve, conclusión y fichas de métricas) y sus controles |
+| `componentes.py`, `glosario.py` | Componentes visuales y el glosario: qué mide cada métrica y cómo saber si su valor es bueno (escala de colores con los umbrales) |
+| `figuras.py`, `figuras_proyecto.py` | Todas las figuras: las del Entregable 2 (las usa también el libro) y las de los capítulos del Entregable 1, la vecindad y los escenarios |
+| `proyecto/` | Preparan `datos/proyecto/`: tablas de los cuadernos del Entregable 1 (`extraer_tablas_e1.py`), PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición y búsqueda de C (`preparar_proyecto.py`) y recuperación por manzana (`preparar_manzanas.py`); ya están ejecutados |
+| `generar_portada.py` | Genera la infografía de la escala de estratos (`assets/escala_estratos.svg`) |
+| `correr_local.py` | Arranca el dashboard en local en el puerto indicado |
+| `preparar_entregable1.py` | Genera `datos/entregable1.json` (resumen del capítulo 1 del Entregable 1 para la pestaña Base de datos; ya está ejecutado) |
 | `preparar_datos.py` | Genera `datos/` a partir del Entregable 1 (ya está ejecutado) |
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos de la revisión bibliográfica (XGBoost geográfico adaptado a clasificación, XGBoost, Rotation Forest, SVM RBF + TPE); ya están ejecutados. Para volver a correrlos se necesita además `requirements-entrenamiento.txt` |
-| `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial); en `datos/vecindad/`, los resultados del capítulo 5 |
+| `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial; el 96.9 % con coordenadas, incluidas las ubicadas por el centroide de su manzana); en `datos/vecindad/`, los resultados del capítulo 5 del libro |
 | `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas (ver su `README.md`) |
 | `src/` | Módulos del Entregable 1 (necesarios para cargar el modelo) |
-| `assets/` | Estilos e imágenes del dashboard |
+| `assets/` | Estilos, navegación con el teclado e imágenes. La portada (`portada_satelite.jpg`) es una imagen de la ESA: *contains modified Copernicus Sentinel data (2021), processed by ESA* |
 | `requirements.txt`, `render.yaml`, `.python-version` | Configuración para Render |
 | `libro/` | Fuentes del Jupyter Book (cuadernos, referencias, configuración) |
 | `docs/` | El Jupyter Book ya construido (HTML), listo para GitHub Pages |
@@ -46,7 +51,7 @@ Luego abre http://localhost:8050 en el navegador.
 
 Pulsa **Create Web Service** y espera a que el registro diga "Your service is live". La dirección será `https://entregable2-ml-barranquilla.onrender.com`. Si Render te asigna otra, cámbiala en `libro/intro.md` y en `docs/intro.html`.
 
-**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/`.
+**Paso 3. Publicar el libro.** En el repositorio de GitHub ve a **Settings → Pages**. En "Branch" elige `main` y la carpeta `/docs`, y guarda. En uno o dos minutos el libro queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/`. La versión 2 del libro va en `docs/v2/` (se copia ahí `libro/_build/html/`) y queda en `https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/`; la raíz de `docs/` conserva el libro entregado (versión 1).
 
 ## Reconstruir el libro (solo si cambias algo)
 
@@ -62,4 +67,5 @@ Después copia `libro/_build/html/` sobre `docs/` (conservando `docs/.nojekyll`)
 
 - Semilla 42 en todo el proyecto (`src/config.py`).
 - Versiones fijadas en `requirements.txt`; el modelo guardado necesita scikit-learn 1.8.0.
-- `preparar_datos.py` reproduce las métricas del Entregable 1 (F1 de test 0.450 del modelo principal) antes de guardar los resultados.
+- `preparar_datos.py` reproduce las métricas del Entregable 1 (F1 de test 0.492 del modelo principal, igual a cuatro decimales) antes de guardar los resultados.
+- Orden para regenerar todo: `preparar_entregable1.py`, `preparar_datos.py`, `entrenar_avanzados.py`, los scripts de `vecindad/` (ver su README), los de `proyecto/` (con la ruta al Entregable 1; `extraer_tablas_e1.py` necesita sus cuadernos ejecutados), `generar_portada.py` y `libro/construir_libro.py`.

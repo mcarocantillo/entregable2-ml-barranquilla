@@ -3,6 +3,10 @@
 Se usan solo las viviendas de los bloques de entrenamiento (el test del Entregable 1 no interviene).
 Se ocultan EDIFICIOS completos al azar (5 folds, semilla 42, sin buffer): el modelo ve a los vecinos de la vivienda,
 pero nunca a otras unidades de su mismo edificio (ICC = 0.992, ocultar filas sueltas sería fuga).
+Con AGRUPAR=manzana se ocultan MANZANAS completas (los 17 primeros dígitos del NPN; la manzana comodín "0000"
+se agrupa por edificio). Es la variante estricta: en Colombia el estrato se asigna por manzana, así que ocultar
+solo el edificio deja en el entrenamiento a sus vecinos de manzana, con casi el mismo estrato (y, en la v2, a las
+casas ubicadas por el centroide de la manzana, con la misma coordenada exacta).
 Hiperparámetros FIJOS en los que eligió la validación espacial (no se re-buscan para este escenario).
 En este escenario el estrato de los vecinos (de edificios con estrato conocido) es información legítima;
 en el escenario de zonas nuevas sería fuga.
@@ -26,12 +30,13 @@ import replica_sin_sklearn as B  # noqa: E402
 from variables_vecindad import CELDA_KM, _disco, _suma_en_disco, calcular_vecindad  # noqa: E402
 
 C = B.C
+C_B, CW_B = B.hiperparametros_B()   # lo que eligió 02_comparar_modelos.py para el modelo B
 CLASES = B.CLASES
 NTHREAD = 3
 t00 = time.time()
 dec, df, con = B.construir_datos()
 tt = con[con["particion"] == "train"].reset_index(drop=True)
-print(f"viviendas de bloques de entrenamiento: {len(tt):,} (esperado 218 870)", flush=True)
+print(f"viviendas de bloques de entrenamiento: {len(tt):,}", flush=True)
 V = calcular_vecindad(con)
 V["id_fila"] = con["id_fila"].to_numpy()
 VALL = [c for c in V.columns if c.startswith("vec")]
@@ -44,8 +49,15 @@ NB = vm["numericas"] + vm["espaciales"]
 q_inf, q_sup = dec["winsorizacion_cuantiles"]["valor"]
 mf = dec["onehot_min_frecuencia"]["valor"]
 
-# --- folds por edificio (aleatorios, deterministas)
-edif = tt["npn_edificio"].astype(str).to_numpy()
+# --- folds por edificio o por manzana (aleatorios, deterministas)
+AGRUPAR = _os.environ.get("AGRUPAR", "edificio")
+assert AGRUPAR in ("edificio", "manzana"), AGRUPAR
+edif = tt["npn_edificio"].astype("string").fillna("fila_" + tt["id_fila"].astype(str)).astype(str).to_numpy()
+if AGRUPAR == "manzana":
+    manz = tt["npn_manzana"].astype("string")
+    generica = manz.isna() | (manz.str[13:17] == C.CODIGO_MANZANA_GENERICA)
+    edif = np.where(generica.to_numpy(), edif, "manzana_" + manz.fillna("").to_numpy())
+print(f"folds agrupados por {AGRUPAR}: {len(np.unique(edif)):,} grupos", flush=True)
 ued, inv = np.unique(edif, return_inverse=True)
 fold_ed = np.random.default_rng(C.SEED).permutation(len(ued)) % 5
 fold = fold_ed[inv]
@@ -53,7 +65,7 @@ print("viviendas por fold:", np.bincount(fold).tolist(), flush=True)
 
 
 def estrato_vecinos(xy, yv, edif_, conocido, radio_km):
-    """Estrato medio de las viviendas CONOCIDAS de otros edificios a <= radio_km (rejilla de 50 m, como vecindad.py)."""
+    """Estrato medio de las viviendas CONOCIDAS de otros grupos (edificio o manzana) a <= radio_km (rejilla de 50 m, como vecindad.py)."""
     x, yy = xy[:, 0], xy[:, 1]
     pad = int(np.ceil(radio_km / CELDA_KM)) + 2
     cx = np.floor((x - x.min()) / CELDA_KM).astype(int) + pad
@@ -157,13 +169,13 @@ for f in range(5):
     tt["est300"] = estrato_vecinos(xy_all, y, edif, conocido, 0.3)
     tt["est1000"] = estrato_vecinos(xy_all, y, edif, conocido, 1.0)
     Ttr, Tva = tt.iloc[itr], tt.iloc[iva]
-    # 3-5) logísticas (C = 0.01, sin pesos)
+    # 3-5) logísticas (hiperparámetros elegidos para B en 02_comparar_modelos.py)
     nl = [c for c in NB if c in num_log]
     for nombre, extra in [(nombres[2], []), (nombres[3], VALL), (nombres[4], VALL + ["est300", "est1000"])]:
         nn = [c for c in NB if c not in num_log] + extra
         cols = nl + nn + cats
         prep = B.Prep(nl, nn, cats, q_inf, q_sup, mf).fit(Ttr[cols])
-        m = B.LogisticaMultinomial(C=0.01).fit(prep.transform(Ttr[cols]), ytr)
+        m = B.LogisticaMultinomial(C=C_B, class_weight=CW_B).fit(prep.transform(Ttr[cols]), ytr)
         pr[nombre] = m.predict(prep.transform(Tva[cols]))
     # 6-7) XGBoost y XGBoost geográfico (variables B, mismo preprocesador)
     nn = [c for c in NB if c not in num_log]
@@ -186,8 +198,8 @@ for f in range(5):
 acc = lambda a, p: float(np.mean(a == p))  # noqa: E731
 mae = lambda a, p: float(np.mean(np.abs(a - p)))  # noqa: E731
 bl = tt["bloque"].to_numpy()
-out = {"n": int(len(tt)), "info": info, "modelos": {}, "comparaciones": {}}
-print("\n=== Zonas conocidas: resultados agregados (predicciones fuera de muestra de las 218 870 viviendas) ===")
+out = {"n": int(len(tt)), "agrupar": AGRUPAR, "info": info, "modelos": {}, "comparaciones": {}}
+print(f"\n=== Zonas conocidas ({AGRUPAR}): resultados agregados (predicciones fuera de muestra de {len(tt):,} viviendas) ===")
 for n in nombres:
     p = oof[n]
     out["modelos"][n] = {"F1_macro": B.f1_macro(y, p), "accuracy": acc(y, p), "MAE": mae(y, p), "kappa": B.kappa_cuadratico(y, p),
@@ -202,5 +214,6 @@ for a, b in [("XGBoost geográfico", "XGBoost"), ("XGBoost", "Logística B"), ("
     out["comparaciones"][f"{a} − {b}"] = c
     print(f"{a} − {b}: F1 Δ={c['F1']['diferencia']:+.4f} IC95 [{c['F1']['IC95_inf']:+.4f}, {c['F1']['IC95_sup']:+.4f}] | "
           f"MAE Δ={c['MAE']['diferencia']:+.4f} IC95 [{c['MAE']['IC95_inf']:+.4f}, {c['MAE']['IC95_sup']:+.4f}]")
-json.dump(out, open(_os.path.join(VEC, "zonas_conocidas.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(f"guardado zonas_conocidas.json ({time.time() - t00:.0f}s en total)")
+NOMBRE = "zonas_conocidas.json" if AGRUPAR == "edificio" else "zonas_conocidas_manzana.json"
+json.dump(out, open(_os.path.join(VEC, NOMBRE), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+print(f"guardado {NOMBRE} ({time.time() - t00:.0f}s en total)")

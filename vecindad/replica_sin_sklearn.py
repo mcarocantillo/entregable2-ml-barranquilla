@@ -298,6 +298,18 @@ def regla_1se(res):
     return claves[fin[int(np.argmax(media[fin]))]]
 
 
+def hiperparametros_B():
+    """(C, class_weight) que eligió para el modelo B la búsqueda de 02_comparar_modelos.py (CV espacial + regla 1-SE).
+
+    Los scripts 03 a 06 usan los mismos hiperparámetros para todos sus modelos, así que dependen de que 02 se haya
+    ejecutado antes.
+    """
+    import json
+    ruta = Path(__file__).resolve().parent.parent / "datos" / "vecindad" / "comparacion_zonas_nuevas.json"
+    el = json.loads(ruta.read_text(encoding="utf-8"))["modelos"]["B"]["elegido"]
+    return float(el["C"]), el["class_weight"]
+
+
 def ajustar_y_evaluar(train, y_tr, test, y_te, num_log_cols, num_lin_cols, cats, dec, C_, cw):
     q_inf, q_sup = dec["winsorizacion_cuantiles"]["valor"]
     cols = num_log_cols + num_lin_cols + cats
@@ -324,11 +336,17 @@ def nombres_columnas(prep):
 
 def moran_residuos(test, proba, k=8):
     """I de Moran de los residuos ordinales y - E[y], un punto por edificio, k vecinos, W estandarizada por filas
-    (mismo procedimiento que preparar_datos.py del Entregable 2)."""
+    (mismo procedimiento que preparar_datos.py del Entregable 2). Las viviendas ubicadas por el centroide de su
+    manzana cuentan como un solo punto por manzana, igual que en espacial.deduplicar_por_edificio."""
     esperado = proba @ CLASES.astype(float)
     t = test[["npn_edificio", "x_km", "y_km"]].copy()
     t["residuo"] = test[C.OBJETIVO].to_numpy() - esperado
-    e = t.groupby("npn_edificio", as_index=False).agg(x_km=("x_km", "mean"), y_km=("y_km", "mean"), residuo=("residuo", "mean"))
+    punto = t["x_km"].round(4).astype(str) + "_" + t["y_km"].round(4).astype(str)
+    clave = t["npn_edificio"].astype("string").fillna(punto)
+    if "ubicado_por_manzana" in test:
+        clave = clave.where(~test["ubicado_por_manzana"].fillna(False).astype(bool).to_numpy(), "manzana_" + punto)
+    e = t.assign(_clave=clave).groupby("_clave", as_index=False).agg(
+        x_km=("x_km", "mean"), y_km=("y_km", "mean"), residuo=("residuo", "mean"))
     xy = e[["x_km", "y_km"]].to_numpy()
     _, idx = cKDTree(xy).query(xy, k=k + 1)
     idx = idx[:, 1:]

@@ -15,8 +15,9 @@
 #
 # *Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)*
 #
-# Este capítulo corresponde a la **pestaña EDA del dashboard**. Como en el Entregable 1, el EDA se hace **solo con el
-# conjunto de entrenamiento** (218 870 viviendas con coordenadas en los bloques de entrenamiento). El dashboard permite
+# Este capítulo corresponde a la pestaña **3. Análisis exploratorio** del dashboard. Como en el Entregable 1, el EDA se hace **solo con el
+# conjunto de entrenamiento** (257 273 viviendas con coordenadas en los bloques de entrenamiento, de ellas 34 892
+# ubicadas por el centroide de su manzana). El dashboard permite
 # cambiar a "todas las viviendas" para describir la ciudad completa; aquí se usa entrenamiento salvo que se diga otra
 # cosa.
 
@@ -47,9 +48,9 @@ print(f"Viviendas de entrenamiento: {len(train):,}".replace(",", " "))
 F.fig_distribucion_estrato("train")
 
 # %% [markdown]
-# En entrenamiento, los estratos 1 (25.5 %) y 3 (26.0 %) son los más frecuentes, seguidos del 2 (19.9 %) y el 4
-# (16.9 %). Los estratos altos son escasos: 6.1 % el 5 y 5.7 % el 6. La razón entre la clase mayor y la menor es de
-# **4.6:1**: un desbalance moderado. La clase minoritaria tiene aun así más de 12 000 viviendas, así que no hace falta
+# En entrenamiento, el estrato 1 es el más frecuente (30.0 %), seguido del 3 (22.9 %), el 2 (22.7 %) y el 4
+# (14.4 %). Los estratos altos son escasos: 5.2 % el 5 y 4.8 % el 6. La razón entre la clase mayor y la menor es de
+# **6.2:1**: un desbalance moderado. La clase minoritaria tiene aun así más de 12 000 viviendas, así que no hace falta
 # sobremuestrear; basta con una métrica que no premie solo a las clases grandes (F1 macro) y con probar pesos de clase
 # como hiperparámetro.
 
@@ -57,14 +58,14 @@ F.fig_distribucion_estrato("train")
 F.fig_gradiente_norte_sur("train")
 
 # %% [markdown]
-# Al dividir las viviendas en diez franjas de latitud con el mismo número de viviendas, la composición cambia de sur a
-# norte: en las dos franjas más al sur casi todo es estrato 1 y 2 (estrato medio 1.5), el estrato medio sube de forma
-# casi continua hasta 4.9 en la penúltima franja, donde dominan los estratos 4 a 6, y **baja a 3.3 en la franja más al
-# norte**, donde vuelven a aparecer barrios de estratos 1 a 3. El gradiente es fuerte, pero no es una línea recta: hay
-# segregación también en sentido este-oeste y por barrios. (En el Entregable 1, con cinco franjas de entrenamiento, el
-# estrato medio iba de 1.5 a 4.1.)
+# Al dividir las viviendas de entrenamiento en diez franjas de latitud con el mismo número de viviendas, la
+# composición cambia de sur a norte: en las dos franjas más al sur casi todo es estrato 1 y 2 (estrato medio 1.5), el
+# estrato medio sube de forma casi continua hasta 4.8 en la penúltima franja, donde dominan los estratos 4 a 6, y
+# **baja a 3.0 en la franja más al norte**, donde vuelven a aparecer barrios de estratos 1 a 3. El gradiente es
+# fuerte, pero no es una línea recta: hay segregación también en sentido este-oeste y por barrios. (En el Entregable 1,
+# con cinco franjas de entrenamiento, el estrato medio iba de 1.5 a 3.9.)
 #
-# **Implicaciones.** La posición norte-sur será, con diferencia, la predictora más fuerte (η² = 0.50 en el
+# **Implicaciones.** La posición norte-sur será, con diferencia, la predictora más fuerte (η² = 0.46 en el
 # Entregable 1). Y como viviendas cercanas comparten estrato, una validación que mezcle filas al azar dejaría vecinos
 # casi idénticos en entrenamiento y validación: el desempeño medido sería optimista. Esto justifica la validación por
 # bloques espaciales.
@@ -80,7 +81,7 @@ F.tabla_resumen_numericas("train").round(2)
 
 # %% [markdown]
 # **Forma de las distribuciones.** Las variables de tamaño son muy asimétricas a la derecha: área construida
-# (asimetría 4.0), área de terreno (52) y pisos del edificio (10). La mediana es mucho menor que la media y el p99 está
+# (asimetría 4.0), área de terreno (56) y pisos del edificio (11). La mediana es mucho menor que la media y el p99 está
 # muy lejos de la mediana. Por eso todas se transforman con log(1 + x) dentro del Pipeline, y antes se recortan
 # (winsorizan) los percentiles 0.1 y 99.9 aprendidos en entrenamiento. La **altura** es casi constante (mediana 3 m,
 # desviación 0.11): aporta muy poca información.
@@ -102,9 +103,9 @@ tabla_eta
 # Todas las diferencias entre estratos son "significativas" (p < 0.001): con tantos datos, eso no dice nada. Lo que
 # importa es el **tamaño del efecto** η², la fracción de la variación (en rangos) que explica el estrato, con los cortes
 # habituales de 0.01, 0.06 y 0.14 para efecto pequeño, moderado y grande {cite}`tomczak2014`. La asociación más fuerte
-# es la de la **distancia al centro** (η² = 0.32), una variable de ubicación. Las variables físicas
-# más asociadas al estrato son el número de **baños**, el **piso de ubicación** (los apartamentos en pisos altos son de
-# estratos medios y altos) y el **área construida**. Antigüedad, pisos del edificio y altura tienen efectos débiles.
+# es la del número de **baños** (η² = 0.33), seguida de la **distancia al centro** (0.28), una variable de ubicación,
+# del **piso de ubicación** (0.25; los apartamentos en pisos altos son de estratos medios y altos) y del **área
+# construida** (0.17). Antigüedad, pisos del edificio y altura tienen efectos débiles.
 
 # %% tags=["hide-input"]
 F.fig_numerica("total_banios", log=True)
@@ -137,15 +138,15 @@ pd.DataFrame(filas).sort_values("V de Cramér", ascending=False).reset_index(dro
 F.fig_categorica("condicion_predio")
 
 # %% [markdown]
-# **Régimen de propiedad** (V = 0.33, asociación moderada). Los predios informales son casi en su totalidad de estratos
-# 1 y 2; las unidades en propiedad horizontal (PH) cubren todos los estratos, con más peso en los medios y altos; los
+# **Régimen de propiedad** (V = 0.33, asociación moderada). Los predios informales (que ahora incluyen las viviendas
+# ubicadas por su manzana) son casi en su totalidad de estratos 1 y 2 (98 %); las unidades en propiedad horizontal (PH) cubren todos los estratos, con más peso en los medios y altos; los
 # predios no sometidos a propiedad horizontal (NPH, casas) se concentran en los estratos 1 a 3.
 
 # %% tags=["hide-input"]
 F.fig_categorica("uso")
 
 # %% [markdown]
-# **Uso** (V = 0.24). Distingue casas de hasta tres pisos de apartamentos en edificios de cuatro pisos o más. Es
+# **Uso** (V = 0.26). Distingue casas de hasta tres pisos de apartamentos en edificios de cuatro pisos o más. Es
 # redundante con el régimen: los apartamentos en PH y las unidades PH son en gran parte las mismas viviendas. Las
 # categorías con menos del 1 % (vivienda recreacional) se agrupan como "infrecuentes" dentro del one-hot.
 #
@@ -167,12 +168,13 @@ F.fig_correlacion("train")
 # colas largas. Tres patrones:
 #
 # - Las variables de **tamaño** están correlacionadas entre sí (área construida con habitaciones ρ = 0.61; habitaciones
-#   con baños ρ = 0.52), pero ninguna pareja supera 0.8. En el Entregable 1 los factores de inflación de la varianza
+#   con baños ρ = 0.53), pero ninguna pareja supera 0.8. En el Entregable 1 los factores de inflación de la varianza
 #   (VIF) quedaron por debajo del umbral, así que no se excluyó ninguna variable por multicolinealidad.
-# - El **área de terreno** se correlaciona negativamente con el **piso de ubicación** (ρ = −0.69): en propiedad
+# - El **área de terreno** se correlaciona negativamente con el **piso de ubicación** (ρ = −0.36): en propiedad
 #   horizontal, cada apartamento registra solo su cuota del lote común, que es más pequeña cuanto más alto y más
-#   grande es el edificio.
-# - La **distancia al centro** se correlaciona negativamente con el estrato (ρ = −0.43): los estratos altos están al
+#   grande es el edificio. La relación es más débil que sin la ubicación por manzana (−0.69), porque las mejoras
+#   informales en terreno ajeno tienen terreno 0 y están en el primer piso.
+# - La **distancia al centro** se correlaciona negativamente con el estrato (ρ = −0.41): los estratos altos están al
 #   norte, relativamente cerca del centro histórico, y la periferia sur es de estratos bajos.
 
 # %% tags=["hide-input"]
@@ -183,7 +185,7 @@ F.fig_faltantes("train")
 # Con cientos de miles de filas, la prueba de Little rechaza MCAR ante cualquier diferencia, así que se combinaron tres
 # evidencias: la asociación del faltante con el estrato, la diferencia estandarizada de medias (SMD) entre filas
 # completas e incompletas y un clasificador que intenta predecir el faltante. El resultado fue **MAR** para piso de
-# ubicación (AUC 0.96), antigüedad (AUC 0.97) y habitaciones (AUC 0.997, por construcción de la regla de coherencia).
+# ubicación (AUC 0.97), antigüedad (AUC 0.98) y habitaciones (AUC 0.997, por construcción de la regla de coherencia).
 # El faltante depende de variables observadas, por ejemplo de una zona concreta de la ciudad, y no del propio valor.
 #
 # **Decisión.** Imputación por la **mediana** de entrenamiento más un **indicador de faltante**, dentro del Pipeline.
@@ -208,12 +210,13 @@ F.fig_correlograma()
 
 # %% [markdown]
 # **Autocorrelación espacial.** Con una fila por edificio (en una muestra estratificada de entrenamiento) y una matriz
-# de pesos de 8 vecinos más cercanos, el **I de Moran global del estrato es 0.913** (p = 0.001 con 999 permutaciones).
+# de pesos de 8 vecinos más cercanos, el **I de Moran global del estrato es 0.918** (p = 0.001 con 999 permutaciones).
+# Las viviendas ubicadas por el centroide de su manzana cuentan como un solo punto por manzana.
 # Se eligieron k vecinos y no una banda de distancia porque la densidad de edificios es muy desigual: con una banda
 # fija, los edificios de la periferia quedarían sin vecinos. El correlograma muestra cómo se pierde el parecido con la
-# distancia: I baja de 0.7 a 250 m hasta cruzar 0.3 hacia los 2.9 km, y se vuelve negativo hacia los 4 km.
+# distancia: I baja de 0.74 a menos de 250 m hasta cruzar 0.3 hacia los 2.6 km, y se vuelve negativo más lejos.
 #
-# **Decisión.** El buffer entre entrenamiento y validación se fijó en **1 km**. El alcance completo (2.9 km) dejaría
+# **Decisión.** El buffer entre entrenamiento y validación se fijó en **1 km**. El alcance completo (2.6 km) dejaría
 # fuera demasiado entrenamiento (capítulo 3 muestra el efecto), así que se aceptó un buffer parcial y se declara como
 # limitación: la validación sigue siendo algo optimista.
 
@@ -269,25 +272,29 @@ print(f"Tamaño efectivo ≈ {len(v):,} ÷ {deff:.1f} ≈ {len(v) / deff:,.0f}".
 # «edificio» más grande sería un lote con 3 045 viviendas informales y el tamaño efectivo bajaría a ≈ 1 870.)
 
 # %% [markdown]
-# **Cobertura.** El 16.2 % de las viviendas no tiene coordenadas; el 99.5 % de ellas son predios informales y el
-# 96.5 % son de estratos 1 y 2. Es un **sesgo de muestreo espacial**: el modelo solo ve la ciudad formal, y sus
-# conclusiones aplican a ella.
+# **Cobertura.** El 16.2 % de las viviendas llega sin coordenadas (casi todas informales de estratos 1 y 2). El 80.9 %
+# de ellas se ubica con el centroide de su manzana (capítulo 1), y quedan sin ubicar 10 300 viviendas (3.1 %), el
+# 98 % informales y el 84 % de estrato 1. El sesgo de muestreo espacial se reduce mucho (la V de Cramér entre tener
+# coordenadas y el estrato baja de 0.42 a 0.22), pero no desaparece: las conclusiones sobre los asentamientos que no
+# se pudieron ubicar deben leerse con cautela.
 
 # %% [markdown]
-# ## 2.6 Lo que no aparece en el dashboard
+# ## 2.6 Otros análisis del Entregable 1
 #
-# El EDA del Entregable 1 incluye análisis que no se llevaron al tablero porque no cambian las decisiones del modelo
-# base, pero que lo sustentan:
+# El EDA del Entregable 1 incluye análisis que no cambian las decisiones del modelo base, pero que lo sustentan. El
+# dashboard final los muestra como diapositivas interactivas (pestañas 2 y 3); aquí se resumen:
 #
-# - **Outliers univariados (Tukey, 1.5·IQR).** Marcan entre el 3 % y el 6 % de las filas en áreas, habitaciones y
+# - **Outliers univariados (Tukey, 1.5·IQR).** Marcan entre el 3 % y el 7 % de las filas en áreas, habitaciones y
 #   baños, pero son viviendas grandes, no errores; en pisos y altura la regla es inservible porque el IQR es 0. Se
 #   decidió **no eliminar filas** por esta regla y tratar las colas con log(1 + x) y winsorización al p99.9.
-# - **Outliers multivariados** (Mahalanobis robusta e Isolation Forest): ambos marcan alrededor del 0.6 % de las
+# - **Outliers multivariados** (Mahalanobis robusta e Isolation Forest): ambos a la vez marcan el 0.4 % de las
 #   viviendas, con estratos 5 y 6 sobrerrepresentados. Se conservan: son viviendas reales y grandes.
-# - **PCA**: PC1 (29 % de la varianza) es un eje de "tamaño" y PC2 (23 %) un eje de tipología, apartamento moderno en
-#   altura frente a casa antigua con lote. Es PC2, no PC1, la más asociada al estrato. La dimensionalidad efectiva es
-#   5.4 de 8 variables y los VIF son menores que 3: hay redundancia moderada, insuficiente para reducir dimensiones en
-#   el modelo base. K-Means sobre las variables físicas forma grupos que siguen la tipología, no el estrato.
+# - **PCA**: PC1 (29 % de la varianza) es un eje de "tamaño" y PC2 (18 %) un eje de tipología, apartamento moderno en
+#   altura frente a casa antigua con lote. Es PC1 la más asociada al estrato (Spearman 0.51): las viviendas informales
+#   ubicadas por su manzana son pequeñas y casi todas de estratos 1 y 2. La dimensionalidad efectiva es 5.9 de 8
+#   variables y los VIF son menores que 2: hay redundancia moderada, insuficiente para reducir dimensiones en el modelo
+#   base. K-Means sobre las variables físicas forma grupos que siguen la tipología (incluido uno de viviendas
+#   informales sin terreno propio), no el estrato.
 # - **Patrón de puntos**: el índice de Clark-Evans (R = 0.56), la función L de Ripley y DBSCAN con distancia
 #   haversine confirman que las viviendas están agrupadas, no distribuidas al azar.
 # - **Hotspots**: LISA y Getis-Ord Gi* (con corrección de Benjamini-Hochberg) ubican casi la mitad de los edificios en
@@ -296,4 +303,4 @@ print(f"Tamaño efectivo ≈ {len(v):,} ÷ {deff:.1f} ≈ {len(v) / deff:,.0f}".
 #   se hizo a nivel de edificio.
 # - **Auditoría de fuga**: se excluyeron el número predial (identificador y proxy de manzana) y cualquier rezago
 #   espacial del estrato. Ninguna variable individual tiene un AUC univariado sospechoso (el máximo es la posición
-#   norte-sur, 0.76).
+#   norte-sur, 0.75).

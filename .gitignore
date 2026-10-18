@@ -8,3 +8,6 @@ figuras/
 # Intermedios de vecindad/ (se regeneran con los scripts; pesan cientos de MB)
 datos/vecindad/*.pkl
 datos/vecindad/log_*.txt
+
+# Puntos de control de entrenar_avanzados.py (intermedio)
+datos/avanzados_cv.json

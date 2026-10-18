@@ -47,8 +47,8 @@ TINTA, TINTA_2, REJILLA = "#0b0b0b", "#52514e", "#e6e5e1"
 
 NUMERICAS = {
     "area_construida": "Área construida (m²)", "area_catastral_terreno": "Área de terreno (m²)",
-    "total_habitaciones": "Habitaciones", "total_banios": "Baños", "total_plantas": "Pisos del edificio",
-    "planta_ubicacion": "Piso de ubicación", "altura": "Altura", "antiguedad": "Antigüedad (años)",
+    "total_habitaciones": "Habitaciones", "total_banios": "Baños", "total_plantas": "Pisos de la vivienda",
+    "planta_ubicacion": "Piso de ubicación", "altura": "Altura (casi siempre 3 m)", "antiguedad": "Antigüedad (años)",
     "dist_centro_km": "Distancia al centro (km)",
 }
 CATEGORICAS = {"condicion_predio": "Condición del predio (régimen)", "uso": "Uso", "tipo_vivienda": "Tipo de vivienda"}
@@ -108,6 +108,18 @@ def base_eda(particion="train"):
 
 
 MODELOS = list(COLOR_MODELO)
+
+
+class _NombresCortos(dict):
+    """Nombre corto de cada modelo; el de la moda por zona lleva el tamaño de zona elegido por CV (Entregable 1)."""
+
+    def __getitem__(self, modelo):
+        if modelo == "Moda por zona":
+            return f"Moda por zona ({float(resultados().get('tam_zona_moda_km', 2.0)):g} km)"
+        return dict.__getitem__(self, modelo)
+
+
+NOMBRE_CORTO = _NombresCortos(NOMBRE_CORTO)
 
 # Modelos avanzados (entrenar_avanzados.py). Colores fijos por modelo, distintos de los del modelo base.
 COLOR_MODELO.update({"XGBoost": "#e87ba4", "XGBoost geográfico": "#4a3aa7", "Rotation Forest": "#eda100",
@@ -322,22 +334,32 @@ def fig_correlograma():
     return _estilo(fig, alto=420, leyenda=False)
 
 
+def grupos_predio(v):
+    """Grupo de cada vivienda: su predio matriz (edificio, conjunto o lote). Las viviendas informales sin
+    coordenadas propias son mejoras en terreno ajeno (condición de propiedad 5): el catastro cuelga muchas viviendas
+    independientes del mismo lote, así que cada una es su propio grupo. En la versión 2 esas viviendas pueden estar
+    ubicadas por el centroide de su manzana, pero siguen sin coordenadas propias."""
+    propia = (v["tiene_coordenadas"] & ~v["ubicado_por_manzana"]) if "ubicado_por_manzana" in v else v["tiene_coordenadas"]
+    mejora = ((v["condicion_predio"] == "Informal") & ~propia).to_numpy()
+    return pd.Series(np.where(mejora, -1 - np.arange(len(v)), v["edificio_id"].to_numpy()), index=v.index)
+
+
 def fig_tamano_edificios():
     v = viviendas()
-    t = v.groupby("edificio_id").size()
+    t = v.groupby(grupos_predio(v)).size()
     bins = [0, 1, 5, 20, 100, 500, 4000]
     et = ["1 (casa)", "2–5", "6–20", "21–100", "101–500", "> 500"]
     c = pd.cut(t, bins, labels=et)
     edif = c.value_counts().reindex(et) / len(t)
     unid = t.groupby(c, observed=False).sum().reindex(et) / t.sum()
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=et, y=edif.values, name="% de edificios", marker_color="#86b6ef",
-                         hovertemplate="%{x}: %{y:.1%} de los edificios<extra></extra>"))
+    fig.add_trace(go.Bar(x=et, y=edif.values, name="% de predios matriz", marker_color="#86b6ef",
+                         hovertemplate="%{x}: %{y:.1%} de los predios matriz<extra></extra>"))
     fig.add_trace(go.Bar(x=et, y=unid.values, name="% de viviendas", marker_color="#1c5cab",
                          hovertemplate="%{x}: %{y:.1%} de las viviendas<extra></extra>"))
-    fig.update_layout(barmode="group", title=f"Unidades por edificio: mediana {int(t.median())}, máximo {t.max():,}".replace(",", " ").replace("  ", ", "))
+    fig.update_layout(barmode="group", title=f"Viviendas por predio matriz: mediana {int(t.median())}, máximo {t.max():,}".replace(",", " ").replace("  ", ", "))
     fig.update_yaxes(tickformat=".0%", title="proporción")
-    fig.update_xaxes(title="viviendas en el edificio")
+    fig.update_xaxes(title="viviendas en el predio matriz")
     return _estilo(fig, alto=420)
 
 
