@@ -13,8 +13,9 @@ El proyecto separa el cálculo pesado de la visualización, para que el tablero 
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los candidatos de la ronda 1 (capítulos 4 y 6: XGBoost, XGBoost geográfico, Rotation Forest, SVM RBF + TPE) con el mismo protocolo, y agregan sus resultados a `datos/`. Necesitan además `requirements-entrenamiento.txt` (xgboost y optuna); el dashboard no. |
 | `figuras.py` | Figuras del Entregable 2 (Plotly). Las usan el dashboard y este libro. |
 | `figuras_proyecto.py` | Figuras de los capítulos del Entregable 1, la vecindad y los escenarios, para el dashboard final. |
-| `proyecto/` | Precalculan `datos/proyecto/`: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana. |
-| `app.py`, `diapositivas.py`, `componentes.py`, `glosario.py` | El dashboard final: portada, siete pestañas de diapositivas (vista continua o por diapositiva), glosario de métricas y modo presentación. No entrena nada. |
+| `figuras_mejoras.py` | Figuras de lo agregado el 19-oct-2026: EDA mejorado (Entregable 1, cap. 15), todos los modelos originales de la revisión y su significancia (capítulo 9) y resultados del Entregable 3 (`datos/e3/`). |
+| `proyecto/` | Precalculan `datos/proyecto/`: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana; `extraer_eda_mejorado.py` toma las cifras del capítulo 15 del Entregable 1 (versión 3). |
+| `app.py`, `diapositivas.py`, `componentes.py`, `glosario.py` | El dashboard final: portada, ocho pestañas de diapositivas (vista continua o por diapositiva), glosario de métricas y modo presentación. No entrena nada. |
 | `generar_portada.py` | Genera la infografía de la escala de estratos. |
 | `vecindad/` | Ronda 2 (capítulos 7 y 8): variables de vecindad, escenario de zonas conocidas, `07_vecindad_knn.py` (grafo KNN y validación kNNDM) y `08_arboles_knndm.py` (XGBoost y XGBoost geográfico con vecindad y kNNDM). Resultados en `datos/vecindad/`, en la pestaña «Resultados». |
 | `src/` | Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado. |
@@ -23,9 +24,9 @@ El proyecto separa el cálculo pesado de la visualización, para que el tablero 
 
 ## B.2 Organización e interactividad
 
-El dashboard final reúne los dos entregables y los análisis posteriores con la misma historia de este libro. Tiene una
-portada y siete pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelo propuesto y
-protocolo, Resultados y Conclusiones); en la **vista continua** cada pestaña muestra todas sus diapositivas una debajo
+El dashboard final reúne los tres entregables y los análisis posteriores con la misma historia de este libro. Tiene una
+portada y ocho pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelo propuesto y
+protocolo, Resultados, Optimización del Entregable 3 y Conclusiones); en la **vista continua** cada pestaña muestra todas sus diapositivas una debajo
 de otra, con un menú lateral que salta a cada una y flechas del teclado, y en la vista **por diapositiva** se pasan de
 a una. Cada diapositiva tiene una gráfica o tabla interactiva, de dos a cuatro frases de lectura,
 una conclusión en una frase y **fichas de lectura** de las métricas que usa: qué mide cada una, su rango y una escala
@@ -34,12 +35,14 @@ con un buscador, y el botón «Presentar» oculta la portada y el menú para pro
 
 | Pestaña | Contenido y controles |
 |---|---|
-| 1. Contexto | La pregunta y la escala de estratos; cómo asigna el DANE el estrato; los datos y el número predial; la revisión bibliográfica; la ruta de trabajo. |
+| 1. Problema y revisión | La pregunta y la escala de estratos; cómo asigna el DANE el estrato; la revisión bibliográfica (qué modelos usaron los trabajos cercanos y los nueve candidatos originales); objetivo e hipótesis; la ruta de trabajo. |
 | 2. Datos y calidad | Embudo de limpieza; ubicación por manzana (umbral ajustable y mapa); cobertura y modelo v1 frente a v2; faltantes e imposibles; outliers; dependencia y tamaño efectivo (ICC ajustable); partición espacial (train/test/buffer, folds o mezcla de estratos). |
-| 3. Análisis exploratorio | Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga. |
+| 3. Análisis exploratorio | Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga; EDA mejorado (el entorno frente a la vivienda, las fronteras entre estratos y la composición del test). |
 | 4. Modelo base | Protocolo de validación; búsqueda de hiperparámetros; comparación con líneas base (métrica, gráfica o tabla); significancia; errores por estrato, ROC y calibración (modelo); coeficientes y odds; importancia por permutación; curva de aprendizaje; residuos; simulador (variables y clic en el mapa). |
-| 5. Más allá del modelo base | Modelos de la revisión (métrica, tabla); criterio de selección (CV frente a test, por fold); errores y residuos por modelo; XGBoost geográfico; vecindad física (zonas nuevas, 15 folds, dónde ayuda); zonas conocidas (ocultando edificios o manzanas) y los dos escenarios. |
-| 6. Conclusiones | Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces. |
+| 5. Modelo propuesto y protocolo | El XGBoost geográfico y los demás candidatos; por qué separar zonas; validar a la distancia correcta (kNNDM); el modelo base con kNNDM. |
+| 6. Resultados | Ronda 1 (modelos de la revisión, criterio, errores, residuos); ronda 2 (vecindad física, dónde ayuda, grafo KNN); zonas conocidas y los dos escenarios; ¿supera el modelo nuevo al base?; todos los modelos originales (test o validación, frente al base o a la logística con vecindad); significancia (δ de Cliff, Holm y Friedman); búsqueda del XGBoost geográfico con todos los datos. |
+| 7. Optimización (Entregable 3) | Pipeline combinatorio; optimizadores (curva de desempeño en cualquier momento); balanceo (F1, rango, calibración o tiempo); costo computacional (tiempo frente a n por familia); test de los finalistas (submuestra o todos los datos); SHAP por modelo. |
+| 8. Conclusiones | Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces a los tres libros. |
 
 ## B.3 Datos que se publican
 

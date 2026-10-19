@@ -230,7 +230,11 @@
 <li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modelos_revision.html">9. Todos los modelos originales de la revisión frente al modelo base</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">10. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="current nav bd-sidenav">
@@ -426,25 +430,28 @@
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">figuras_proyecto.py</span></code></p></td>
 <td><p>Figuras de los capítulos del Entregable 1, la vecindad y los escenarios, para el dashboard final.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">proyecto/</span></code></p></td>
-<td><p>Precalculan <code class="docutils literal notranslate"><span class="pre">datos/proyecto/</span></code>: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">figuras_mejoras.py</span></code></p></td>
+<td><p>Figuras de lo agregado el 19-oct-2026: EDA mejorado (Entregable 1, cap. 15), todos los modelos originales de la revisión y su significancia (capítulo 9) y resultados del Entregable 3 (<code class="docutils literal notranslate"><span class="pre">datos/e3/</span></code>).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">diapositivas.py</span></code>, <code class="docutils literal notranslate"><span class="pre">componentes.py</span></code>, <code class="docutils literal notranslate"><span class="pre">glosario.py</span></code></p></td>
-<td><p>El dashboard final: portada, siete pestañas de diapositivas (vista continua o por diapositiva), glosario de métricas y modo presentación. No entrena nada.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">proyecto/</span></code></p></td>
+<td><p>Precalculan <code class="docutils literal notranslate"><span class="pre">datos/proyecto/</span></code>: tablas de los cuadernos del Entregable 1, PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición, búsqueda de C y recuperación por manzana; <code class="docutils literal notranslate"><span class="pre">extraer_eda_mejorado.py</span></code> toma las cifras del capítulo 15 del Entregable 1 (versión 3).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">generar_portada.py</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">diapositivas.py</span></code>, <code class="docutils literal notranslate"><span class="pre">componentes.py</span></code>, <code class="docutils literal notranslate"><span class="pre">glosario.py</span></code></p></td>
+<td><p>El dashboard final: portada, ocho pestañas de diapositivas (vista continua o por diapositiva), glosario de métricas y modo presentación. No entrena nada.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">generar_portada.py</span></code></p></td>
 <td><p>Genera la infografía de la escala de estratos.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vecindad/</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vecindad/</span></code></p></td>
 <td><p>Ronda 2 (capítulos 7 y 8): variables de vecindad, escenario de zonas conocidas, <code class="docutils literal notranslate"><span class="pre">07_vecindad_knn.py</span></code> (grafo KNN y validación kNNDM) y <code class="docutils literal notranslate"><span class="pre">08_arboles_knndm.py</span></code> (XGBoost y XGBoost geográfico con vecindad y kNNDM). Resultados en <code class="docutils literal notranslate"><span class="pre">datos/vecindad/</span></code>, en la pestaña «Resultados».</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">src/</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">src/</span></code></p></td>
 <td><p>Módulos del Entregable 1 (preprocesamiento, partición, métricas). La app los necesita para cargar el modelo guardado.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">assets/</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">assets/</span></code></p></td>
 <td><p>Hoja de estilos (tema Bootstrap Flatly y estilo propio), navegación con el teclado, la infografía de estratos y la imagen satelital de la portada (Copernicus Sentinel-2, 2021, procesada por la ESA).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.python-version</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">render.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.python-version</span></code></p></td>
 <td><p>Dependencias con versiones fijadas y configuración de Render.</p></td>
 </tr>
 </tbody>
@@ -453,9 +460,9 @@
 </section>
 <section id="b-2-organizacion-e-interactividad">
 <h2>B.2 Organización e interactividad<a class="headerlink" href="#b-2-organizacion-e-interactividad" title="Link to this heading">#</a></h2>
-<p>El dashboard final reúne los dos entregables y los análisis posteriores con la misma historia de este libro. Tiene una
-portada y siete pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelo propuesto y
-protocolo, Resultados y Conclusiones); en la <strong>vista continua</strong> cada pestaña muestra todas sus diapositivas una debajo
+<p>El dashboard final reúne los tres entregables y los análisis posteriores con la misma historia de este libro. Tiene una
+portada y ocho pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelo propuesto y
+protocolo, Resultados, Optimización del Entregable 3 y Conclusiones); en la <strong>vista continua</strong> cada pestaña muestra todas sus diapositivas una debajo
 de otra, con un menú lateral que salta a cada una y flechas del teclado, y en la vista <strong>por diapositiva</strong> se pasan de
 a una. Cada diapositiva tiene una gráfica o tabla interactiva, de dos a cuatro frases de lectura,
 una conclusión en una frase y <strong>fichas de lectura</strong> de las métricas que usa: qué mide cada una, su rango y una escala
@@ -468,23 +475,29 @@ con un buscador, y el botón «Presentar» oculta la portada y el menú para pro
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>1. Contexto</p></td>
-<td><p>La pregunta y la escala de estratos; cómo asigna el DANE el estrato; los datos y el número predial; la revisión bibliográfica; la ruta de trabajo.</p></td>
+<tr class="row-even"><td><p>1. Problema y revisión</p></td>
+<td><p>La pregunta y la escala de estratos; cómo asigna el DANE el estrato; la revisión bibliográfica (qué modelos usaron los trabajos cercanos y los nueve candidatos originales); objetivo e hipótesis; la ruta de trabajo.</p></td>
 </tr>
 <tr class="row-odd"><td><p>2. Datos y calidad</p></td>
 <td><p>Embudo de limpieza; ubicación por manzana (umbral ajustable y mapa); cobertura y modelo v1 frente a v2; faltantes e imposibles; outliers; dependencia y tamaño efectivo (ICC ajustable); partición espacial (train/test/buffer, folds o mezcla de estratos).</p></td>
 </tr>
 <tr class="row-even"><td><p>3. Análisis exploratorio</p></td>
-<td><p>Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga.</p></td>
+<td><p>Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga; EDA mejorado (el entorno frente a la vivienda, las fronteras entre estratos y la composición del test).</p></td>
 </tr>
 <tr class="row-odd"><td><p>4. Modelo base</p></td>
 <td><p>Protocolo de validación; búsqueda de hiperparámetros; comparación con líneas base (métrica, gráfica o tabla); significancia; errores por estrato, ROC y calibración (modelo); coeficientes y odds; importancia por permutación; curva de aprendizaje; residuos; simulador (variables y clic en el mapa).</p></td>
 </tr>
-<tr class="row-even"><td><p>5. Más allá del modelo base</p></td>
-<td><p>Modelos de la revisión (métrica, tabla); criterio de selección (CV frente a test, por fold); errores y residuos por modelo; XGBoost geográfico; vecindad física (zonas nuevas, 15 folds, dónde ayuda); zonas conocidas (ocultando edificios o manzanas) y los dos escenarios.</p></td>
+<tr class="row-even"><td><p>5. Modelo propuesto y protocolo</p></td>
+<td><p>El XGBoost geográfico y los demás candidatos; por qué separar zonas; validar a la distancia correcta (kNNDM); el modelo base con kNNDM.</p></td>
 </tr>
-<tr class="row-odd"><td><p>6. Conclusiones</p></td>
-<td><p>Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces.</p></td>
+<tr class="row-odd"><td><p>6. Resultados</p></td>
+<td><p>Ronda 1 (modelos de la revisión, criterio, errores, residuos); ronda 2 (vecindad física, dónde ayuda, grafo KNN); zonas conocidas y los dos escenarios; ¿supera el modelo nuevo al base?; todos los modelos originales (test o validación, frente al base o a la logística con vecindad); significancia (δ de Cliff, Holm y Friedman); búsqueda del XGBoost geográfico con todos los datos.</p></td>
+</tr>
+<tr class="row-even"><td><p>7. Optimización (Entregable 3)</p></td>
+<td><p>Pipeline combinatorio; optimizadores (curva de desempeño en cualquier momento); balanceo (F1, rango, calibración o tiempo); costo computacional (tiempo frente a n por familia); test de los finalistas (submuestra o todos los datos); SHAP por modelo.</p></td>
+</tr>
+<tr class="row-odd"><td><p>8. Conclusiones</p></td>
+<td><p>Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces a los tres libros.</p></td>
 </tr>
 </tbody>
 </table>
