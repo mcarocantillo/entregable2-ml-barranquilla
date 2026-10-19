@@ -3,7 +3,7 @@
 Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
 
 Cada diapositiva es una función sin argumentos que devuelve el componente (se construye solo cuando se abre, para que
-la app cargue rápido). Los textos son breves a propósito: el detalle está en los libros de los Entregables 1 y 2.
+la app cargue rápido). Los textos son breves a propósito: el detalle está en los libros de los Entregables 1, 2 y 3.
 """
 import json
 
@@ -14,6 +14,7 @@ import plotly.graph_objects as go
 from dash import Input, Output, callback, dcc, html
 
 import figuras as F
+import figuras_mejoras as FM
 import figuras_proyecto as FP
 from componentes import (control, controles, desplegable, diapositiva, fmt, grafico, interruptor, kpi, radio, tabla)
 
@@ -35,8 +36,21 @@ LIBRO_E1_V1 = "https://mcarocantillo.github.io/entregable1-ml-barranquilla/"
 LIBRO_E2 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/v3/"
 LIBRO_E2_V2 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/v2/"
 LIBRO_E2_V1 = "https://mcarocantillo.github.io/entregable2-ml-barranquilla/"
-E1C, E2C = "Entregable 1", "Entregable 2"
+LIBRO_E3 = "https://mcarocantillo.github.io/entregable3-ml-barranquilla/"
+E1C, E2C, E3C = "Entregable 1", "Entregable 2", "Entregable 3"
 OPC_NUM = [(k, v) for k, v in F.NUMERICAS.items()]
+
+
+def cientifico(x, dec=1):
+    """2.6e-05 → «2.6·10⁻⁵» (p-valores muy pequeños)."""
+    m, e = f"{x:.{dec}e}".split("e")
+    sup = str(int(e)).translate(str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹"))
+    return f"{m}·10{sup}"
+
+
+def piso(x, dec=2):
+    """Redondea hacia abajo, para cotas «≥» que no exageren (0.548 → 0.54)."""
+    return np.floor(x * 10 ** dec) / 10 ** dec
 
 
 def pct(a, b=1, dec=1):
@@ -114,24 +128,38 @@ def d_datos():
 
 
 def d_bibliografia():
+    usados = pd.DataFrame([
+        ["Precio de la vivienda (regresión)", "XGBoost, Random Forest, SVR, árbol, Gradient Boosting, lineal"],
+        ["Submercados y valorización de vivienda", "XGBoost + SHAP"],
+        ["Pobreza por zona (México)", "XGBoost con datos censales"],
+        ["Elección residencial con datos por sector censal (1998)", "Regresión logística"],
+        ["Nivel socioeconómico como predictor (salud, PISA)", "Logística; RF, XGBoost, LASSO, stacking"],
+    ], columns=["Qué predicen los trabajos cercanos (Tabla II)", "Modelos usados"])
     t = pd.DataFrame([
-        ["XGBoost geográfico", "Modelos locales ponderados por distancia", "El estrato cambia por barrios"],
-        ["SVM + TPE", "Optimización bayesiana de hiperparámetros", "Fronteras no lineales"],
-        ["Rotation Forest", "Rotación PCA antes de cada árbol", "Variables de tamaño correlacionadas"],
-        ["Bagged TAO Trees", "Árboles oblicuos optimizados", "Datos tabulares heterogéneos (no implementado)"],
-        ["Ensemble RF + SVM", "RF selecciona, SVM clasifica", "Variables redundantes"],
-    ], columns=["Modelo", "Idea", "Por qué encaja"])
+        ["1", "XGBoost geográfico", "Modelos locales ponderados por distancia", "Sí: modelo principal"],
+        ["2", "GWO-XGBoost", "Optimizador metaheurístico de hiperparámetros", "Como idea: E3 compara 4 optimizadores"],
+        ["3", "Bagged TAO Trees", "Árboles oblicuos optimizados", "No: sin implementación abierta"],
+        ["4", "RF + SVM", "RF selecciona variables, SVM clasifica", "Sí"],
+        ["5", "Rotation Forest", "Rotación PCA antes de cada árbol", "Sí"],
+        ["6", "EFSHB", "Selección de variables por ensambles", "No: selector de variables"],
+        ["7", "TPE-SVM", "SVM con optimización bayesiana", "Sí (ronda 1)"],
+        ["8", "Stacking", "Un metamodelo combina varios modelos", "Sí"],
+        ["9", "NSGA-II", "Hiperparámetros y variables a la vez", "No: selector de variables"],
+    ], columns=["#", "Candidato original (Tabla III)", "Idea", "¿Se probó?"])
     visual = html.Div([
-        dbc.Row([dbc.Col(kpi("0", "estudios que clasifiquen el estrato con el catastro", "Scopus, oct-2026"), md=6),
-                 dbc.Col(kpi("1998", "antecedente más cercano", "logística con datos censales agregados"), md=6)],
+        dbc.Row([dbc.Col(kpi("0", "estudios que clasifiquen el estrato con el catastro", "Scopus, 5-oct-2026"), md=4),
+                 dbc.Col(kpi("1998", "antecedente más cercano", "logística con datos censales agregados"), md=4),
+                 dbc.Col(kpi("5 de 9", "candidatos originales probados", "los otros: optimizadores o selectores"), md=4)],
                 className="g-3 mb-3"),
-        tabla(t)])
-    return diapositiva("1.4", "Revisión bibliográfica: la brecha", visual,
-                       puntos=["Los trabajos cercanos predicen el precio de la vivienda, no el estrato.",
-                               "La revisión identificó modelos que mejoran a los clasificadores convencionales.",
+        tabla(t), html.Div(tabla(usados), className="mt-3")])
+    return diapositiva("1.4", "Revisión bibliográfica: la brecha y los candidatos", visual,
+                       puntos=["Los trabajos cercanos usan XGBoost, Random Forest, SVR o la logística, pero para el "
+                               "precio de la vivienda o con datos agregados por zona, no para el estrato.",
+                               "La Tabla III reúne nueve modelos que reducen el error frente a los clasificadores "
+                               "convencionales y nunca se aplicaron a este problema: los candidatos originales.",
                                "El mejor respaldado, el XGBoost geográfico, solo existía para regresión."],
                        conclusion="Nadie ha clasificado el estrato con variables catastrales: esa es la brecha.",
-                       fuente=f"{E2C} · cap. 1.3")
+                       fuente=f"{E2C} · caps. 1.3 y 9.1")
 
 
 def d_ruta():
@@ -149,13 +177,19 @@ def d_ruta():
                  className="hito"),
         html.Div([html.Div("Versión 3", className="hito-titulo"),
                   html.Div("Validación kNNDM, vecindad con grafo KNN y el modelo nuevo con vecindad frente al base")],
-                 className="hito destacado"),
+                 className="hito"),
+        html.Div([html.Div("Entregable 3", className="hito-titulo"),
+                  html.Div("156 combinaciones de modelo, balanceo y optimizador con validación anidada, costo "
+                           "computacional, pruebas estadísticas y SHAP")], className="hito"),
+        html.Div([html.Div("Después del E3 (19-oct-2026)", className="hito-titulo"),
+                  html.Div("Todos los modelos originales de la revisión con todos los datos, pruebas de significancia "
+                           "y EDA mejorado")], className="hito destacado"),
     ], className="hitos")
     return diapositiva("1.5", "Cómo se trabajó", html.Div([flujo(pasos), hitos]),
                        puntos=["Las reglas que miran una sola fila se aplican antes de partir.",
                                "Todo lo que se aprende de los datos se calcula solo con entrenamiento.",
                                "El test son zonas completas que el modelo nunca vio."],
-                       conclusion="El orden de los pasos evita la fuga de datos.", fuente="Entregables 1 y 2")
+                       conclusion="El orden de los pasos evita la fuga de datos.", fuente="Entregables 1, 2 y 3")
 
 
 # ===========================================================================
@@ -575,6 +609,76 @@ def d_fuga():
                        metricas=[("auc_univariado", 0.746, "0.75 (norte-sur)")], fuente=f"{E1C} · cap. 9")
 
 
+# --- EDA mejorado (Entregable 1, versión 3, cap. 15): hallazgos que el EDA original no había visto -------------
+def d_eda_entorno():
+    d = FM.eda()
+    eta = d["eta2"]
+    ban, area = eta["baños"], eta["área construida (log)"]
+    return diapositiva("3.20", "EDA mejorado: el entorno dice más del estrato que la vivienda", grafico(FM.fig_eta2_entorno()),
+                       puntos=["Para cada vivienda se promedian seis atributos en sus 8 edificios más cercanos, sin usar "
+                               "el estrato de nadie: la vecindad física.",
+                               f"En los seis, el promedio de los vecinos se asocia más con el estrato que el atributo "
+                               f"propio: baños {ban['vecinos']:.2f} frente a {ban['propia']:.2f}; área "
+                               f"{area['vecinos']:.2f} frente a {area['propia']:.2f}.",
+                               f"Hasta la distancia media a los vecinos (una medida de densidad) tiene η² = "
+                               f"{d['eta2_distancia_vecinos']:.2f}.",
+                               "Con estas variables, el F1 de test de la logística sube de 0.49 a 0.57 (pestaña 6)."],
+                       conclusion="El estrato es una propiedad de la zona: describir el entorno informa más que describir "
+                                  "la vivienda.",
+                       metricas=[("eta2", ban["vecinos"], f"{ban['vecinos']:.2f} (baños de los vecinos)")],
+                       fuente=f"{E1C} · cap. 15.2 (v3)")
+
+
+def d_eda_fronteras():
+    d = FM.eda()
+    fr = d["fronteras"]
+    visual = html.Div([controles(control("Medida", radio("fr-vista", [("pct", "Viviendas en frontera"),
+                                                                       ("vec", "Vecinos con otro estrato")], "pct"))),
+                       grafico(FM.fig_fronteras("pct"), "fr-fig")])
+    return diapositiva("3.21", "EDA mejorado: las fronteras entre estratos", visual,
+                       puntos=[f"El {fr['todas']['pct_frontera']:.0f} % de las viviendas está en una frontera: la mitad "
+                               "o más de sus 8 edificios vecinos tiene otro estrato.",
+                               f"El estrato 5 es el más fronterizo ({fr['5']['pct_frontera']:.0f} %); el 1 y el 2, los "
+                               f"más homogéneos ({fr['2']['pct_frontera']:.0f}–{fr['1']['pct_frontera']:.0f} %).",
+                               f"El {d['pct_un_solo_estrato']:.0f} % de esas diferencias es de un solo estrato.",
+                               "Explica por qué los errores son casi siempre de un estrato, el 5 es el más difícil y "
+                               "ADASYN es el peor balanceo (pestaña 7)."],
+                       conclusion="La dificultad está donde las zonas se tocan, no repartida por la ciudad.",
+                       fuente=f"{E1C} · cap. 15.3 (v3)")
+
+
+@callback(Output("fr-fig", "figure"), Input("fr-vista", "value"))
+def _fr(v):
+    return FM.fig_fronteras(v)
+
+
+def d_eda_test():
+    d = FM.eda()
+    c = d["composicion"]
+    tr, te = c["entrenamiento (%)"], c["prueba (%)"]
+    e6 = d["test_por_bloque"]["4004"]["E6"]
+    visual = html.Div([controles(control("Vista", radio("ct-vista", [("estratos", "Por estrato"),
+                                                                     ("bloques", "Por bloque de test")], "estratos"))),
+                       grafico(FM.fig_composicion_test("estratos"), "ct-fig")])
+    return diapositiva("3.22", "EDA mejorado: el test no tiene la composición del entrenamiento", visual,
+                       puntos=[f"El test tiene más estrato 1 ({te['1']:.0f} % frente a {tr['1']:.0f} %) y mucho menos "
+                               f"estrato 6 ({te['6']:.1f} % frente a {tr['6']:.1f} %).",
+                               f"Sus {e6} viviendas de estrato 6 están en un solo bloque (4004); otro bloque tiene 3 "
+                               "viviendas.",
+                               "El F1 del estrato 6 pesa un sexto del F1 macro y depende de un bloque: por eso los "
+                               "intervalos del test son anchos.",
+                               "Con 7 bloques el p-valor mínimo posible es 0.016: ninguna diferencia pequeña resiste la "
+                               "corrección por comparaciones múltiples."],
+                       conclusion="Diagnóstico hecho después de evaluar, sin cambiar decisiones: las conclusiones firmes "
+                                  "son las que aparecen en validación y en test.",
+                       fuente=f"{E1C} · cap. 15.4 (v3)")
+
+
+@callback(Output("ct-fig", "figure"), Input("ct-vista", "value"))
+def _ct(v):
+    return FM.fig_composicion_test(v)
+
+
 # ===========================================================================
 # 4. MODELO BASE
 # ===========================================================================
@@ -795,11 +899,13 @@ AV = R["avanzados"]
 
 def d_candidatos():
     t = pd.DataFrame([
-        ["XGBoost geográfico", "Propuesta novedosa: adaptado a clasificación", "Efectos que cambian por barrio"],
-        ["XGBoost", "Control del anterior (sin parte geográfica)", "No linealidades e interacciones"],
-        ["Rotation Forest", "Ensemble de árboles (implementación propia)", "Variables de tamaño correlacionadas"],
-        ["SVM RBF (Nyström) + TPE", "Kernel no lineal con optimización bayesiana", "Fronteras no lineales"],
-    ], columns=["Modelo", "Papel", "Problema que ataca"])
+        ["XGBoost geográfico", "Sí", "Modelo principal, adaptado a clasificación", "Efectos que cambian por barrio"],
+        ["XGBoost", "No", "Control del anterior (sin parte geográfica)", "No linealidades e interacciones"],
+        ["Rotation Forest", "Sí", "Candidato de la revisión (implementación propia)", "Variables de tamaño correlacionadas"],
+        ["SVM RBF (Nyström) + TPE", "Sí", "Candidato de la revisión (ronda 1)", "Fronteras no lineales"],
+        ["RF + SVM en dos etapas", "Sí", "Candidato de la revisión (v3)", "Variables redundantes"],
+        ["Stacking", "Sí", "Candidato de la revisión (v3)", "Modelos que aciertan estratos distintos"],
+    ], columns=["Modelo", "¿Original?", "Papel", "Problema que ataca"])
     pasos = [("1", "Global", "XGBoost con toda la ciudad"), ("2", "Anclas", "Centros de celdas de 2 km"),
              ("3", "Ventana", "15 % del entrenamiento"), ("4", "Locales", "Un XGBoost por ancla"),
              ("5", "Mezcla", "0.75·global + 0.25·local")]
@@ -808,9 +914,12 @@ def d_candidatos():
                        puntos=["Adaptación propia: el original (Grekousis, 2025) es de regresión.",
                                "Un XGBoost global más XGBoost locales alrededor de anclas, con un kernel espacial.",
                                "Mezcla p = α·global + (1 − α)·local; con α = 1 es su control, el XGBoost global.",
-                               "Compite con XGBoost, Rotation Forest y una SVM con TPE, con el mismo protocolo."],
+                               "Compite con los demás candidatos originales de la revisión (Rotation Forest, SVM con "
+                               "TPE, RF + SVM y stacking) con el mismo protocolo.",
+                               "«Original»: la revisión no halló ninguna aplicación del modelo al estrato con datos "
+                               "catastrales."],
                        conclusion="Hipótesis: los modelos locales aprenden lo que cambia de un barrio a otro.",
-                       fuente=f"{E2C} · cap. 4")
+                       fuente=f"{E2C} · caps. 4 y 9.1")
 
 
 def d_avanzados():
@@ -1104,20 +1213,25 @@ def d_hipotesis():
                 html.Li("Ningún estudio clasifica el estrato de una vivienda con datos catastrales."),
                 html.Li("El XGBoost geográfico, el mejor respaldado para datos espaciales, solo existe para regresión.")])],
                 className="caja-no"), md=6),
-            dbc.Col(html.Div([html.H5("El modelo propuesto"), html.Ul([
-                html.Li("XGBoost geográfico adaptado por nosotros a clasificación multiclase."),
-                html.Li("Un modelo global más modelos locales por zona, como la estratificación del DANE.")])],
+            dbc.Col(html.Div([html.H5("Los modelos propuestos"), html.Ul([
+                html.Li("Principal: XGBoost geográfico adaptado por nosotros a clasificación multiclase (un global más "
+                        "modelos locales por zona, como la estratificación del DANE)."),
+                html.Li("Los demás candidatos originales de la revisión: Rotation Forest, SVM con TPE, RF + SVM y "
+                        "stacking.")])],
                 className="caja-si"), md=6)], className="g-3"),
         html.Div("Hipótesis", className="pregunta-grande mt-3"),
-        html.Div("El XGBoost geográfico supera al modelo base (regresión logística) en F1 macro.",
-                 className="respuesta-grande", style={"fontSize": "1.4rem"}),
+        html.Div("Los modelos originales de la revisión, encabezados por el XGBoost geográfico, superan al modelo base "
+                 "(regresión logística) en F1 macro.", className="respuesta-grande", style={"fontSize": "1.4rem"}),
         html.P("Criterio fijado antes de ver resultados: superarlo por más de un error estándar de la diferencia pareada "
-               "en validación cruzada, y que el test (que se mira una sola vez) lo confirme.", className="mt-2")])
+               "en validación cruzada, y que el test (que se mira una sola vez) lo confirme. Después del E3 se agregaron "
+               "pruebas de significancia con corrección por comparaciones múltiples.", className="mt-2")])
     return diapositiva("1.4", "Objetivo e hipótesis", visual,
-                       puntos=["Objetivo: usar un modelo no aplicado antes a este problema.",
-                               "Y comprobar si es mejor que el modelo base.",
-                               "Respuesta en la pestaña 6 (Resultados)."],
-                       conclusion="La revisión bibliográfica deja una brecha; el modelo propuesto la ataca.",
+                       puntos=["Objetivo: usar modelos no aplicados antes a este problema (los candidatos de la "
+                               "revisión), encabezados por el XGBoost geográfico.",
+                               "Y comprobar si alguno es mejor que el modelo base.",
+                               "Modelo base: logística multinomial con las variables físicas y la ubicación (pestaña 4).",
+                               "Respuesta en las pestañas 6 (Resultados) y 8 (Conclusiones)."],
+                       conclusion="La revisión bibliográfica deja una brecha; los modelos originales la atacan.",
                        fuente=f"{E2C} · cap. 1.4")
 
 
@@ -1144,7 +1258,9 @@ def d_nuevo_vs_base():
                                f"En validación lo supera en {b['cv_F1']['folds_a_favor']} de 5 pliegues "
                                f"(+{b['cv_F1']['media']:.3f}, SE {b['cv_F1']['SE']:.3f}).",
                                f"Zonas conocidas: +{min(zc_b):.2f} a +{max(zc_b):.2f} de F1 en validación.",
-                               "Con solo las variables del base, el test no lo confirma (−0.009)."],
+                               "Con solo las variables del base, el test no lo confirma (−0.009).",
+                               "Ojo: con el intervalo BCa del E3 el mismo +0.09 da [−0.024, +0.172]; con 7 bloques la "
+                               "confirmación depende del método. La prueba con 30 bloques sí es significativa (6.14)."],
                        conclusion="Sí: con información del entorno, el modelo nuevo supera al base en los dos escenarios.",
                        metricas=[("f1_macro", knn["F1_test"], f"{knn['F1_test']:.3f} (modelo nuevo, test)"), "se_pareado", "ic95"],
                        fuente=f"{E2C} · cap. 8")
@@ -1153,6 +1269,250 @@ def d_nuevo_vs_base():
 @callback(Output("nvb-fig", "figure"), Input("nvb-esc", "value"), Input("nvb-ref", "value"))
 def _nvb(esc, ref):
     return FP.fig_nuevo_vs_base(esc, ref)
+
+
+# --- Todos los modelos originales de la revisión (Entregable 2, cap. 9; código en mejoras/ del Entregable 3) -----
+def d_originales():
+    m = FM.mejoras()
+    te, cv = m["test"], m["cv"]
+    rof, s1 = te["Rotation Forest"], te["Stacking S1 (logística, XGBoost, RF)"]
+    ic = lambda v: f"[{v[0]:+.3f}, {v[1]:+.3f}]"  # noqa: E731
+    visual = html.Div([controles(
+        control("Mirada", radio("orig-mir", [("test", "Test"), ("cv", "Validación"), ("tabla", "Tabla")], "test")),
+        control("Comparar con", radio("orig-ref", [("base", "Modelo base"), ("lv", "Logística con la misma vecindad")],
+                                      "base"))),
+        html.Div(grafico(FM.fig_originales("test", "base")), id="orig-cont")])
+    return diapositiva("6.13", "Todos los modelos originales de la revisión frente al modelo base", visual,
+                       puntos=["Con la vecindad física y todos los datos (257 273 viviendas, mismos pliegues kNNDM y "
+                               "mismo test) se probaron el XGBoost geográfico, Rotation Forest, stacking y RF + SVM.",
+                               f"Rotation Forest: {rof['vs_base']['dif']:+.3f} en test, IC {ic(rof['vs_base']['ic95_bca'])}, "
+                               f"{rof['vs_base']['bloques_a_favor']} de 7 bloques: el único original cuyo intervalo "
+                               "excluye el 0.",
+                               f"Stacking S1: la misma validación ({cv['Stacking S1 (logística, XGBoost, RF)']['f1']:.3f}), "
+                               f"pero su intervalo de test toca el 0 {ic(s1['vs_base']['ic95_bca'])}.",
+                               "Frente a la logística con la misma vecindad, ningún original se confirma en el test."],
+                       conclusion="Varios modelos originales superan al base; ninguno a los convencionales que reciben "
+                                  "la misma información.",
+                       metricas=["ic95", "se_pareado"], fuente=f"{E2C} · cap. 9.3 · {E3C} · cap. 11")
+
+
+@callback(Output("orig-cont", "children"), Input("orig-mir", "value"), Input("orig-ref", "value"))
+def _orig(mir, ref):
+    if mir == "tabla":
+        return tabla(FM.tabla_originales())
+    return grafico(FM.fig_originales(mir, ref))
+
+
+def d_signif_originales():
+    e = FM.estadistica()
+    fr = e["friedman"]
+    vb = e["comparaciones"]["vs modelo base"]
+    vl = e["comparaciones"]["vs logística con vecindad"]
+    con_vec = [r for r in vb if not r["a"].startswith(("RF + SVM", "SVM sola"))]
+    rof = next(r for r in vb if r["a"] == "Rotation Forest")
+    visual = html.Div([controles(control("Comparación", radio(
+        "sig-fam", [("base", "Frente al modelo base"), ("lv", "Frente a la logística con vecindad"),
+                    ("rangos", "Rangos (Friedman)")], "base"))),
+        grafico(FM.fig_significancia("base"), "sig-fig")])
+    return diapositiva("6.14", "¿Son estadísticamente significativas las diferencias?", visual,
+                       puntos=[f"Unidad con más réplicas: {e['bloques']['n_usados']} bloques de 2 km del entrenamiento "
+                               f"(predicciones fuera de muestra). Friedman: χ² = {fr['chi2']:.1f}, p = {cientifico(fr['p'])}.",
+                               f"Frente al base: Wilcoxon con Holm p < 0.01 para todos los modelos con vecindad, con δ de "
+                               f"Cliff de {min(r['delta_cliff'] for r in con_vec):.2f} a "
+                               f"{max(r['delta_cliff'] for r in con_vec):.2f} (mediano a grande); RF + SVM no (p = 0.10).",
+                               f"Frente a la logística con vecindad: nada es significativo (p de Holm ≥ "
+                               f"{piso(min(r['wilcoxon_p_holm'] for r in vl)):.2f}).",
+                               "Con 5 pliegues (t de Nadeau-Bengio) o 7 bloques de test (permutación exacta) nada resiste "
+                               "la corrección de Holm: son muy pocas réplicas."],
+                       conclusion="Lo significativo es la vecindad física: los modelos originales la aprovechan igual de "
+                                  "bien, no mejor.",
+                       metricas=[("cliff", rof["delta_cliff"], f"{rof['delta_cliff']:.2f} (Rotation Forest frente al base)"),
+                                 "holm", "friedman"],
+                       fuente=f"{E2C} · cap. 9.4 · {E3C} · cap. 11")
+
+
+@callback(Output("sig-fig", "figure"), Input("sig-fam", "value"))
+def _sig(f):
+    return FM.fig_significancia(f)
+
+
+def d_busqueda_geo():
+    g = FM.geo_busqueda()
+    m = FM.mejoras()
+    gl, lo = g["globales"][g["mejor"]["global"]], g["locales"][g["mejor"]["local"]]
+    dif_e2 = m["cv"]["XGBoost geográfico afinado"]["vs_geo_E2"]
+    vs_x = m["cv"]["XGBoost geográfico afinado"]["vs_xgboost_afinado"]
+    te = m["test"]
+    visual = html.Div([controles(control("Vista", radio("bg-vista", [("alpha", "Curva de α"),
+                                                                     ("comparar", "Validación y test")], "alpha"))),
+                       grafico(FM.fig_busqueda_geo("alpha"), "bg-fig")])
+    return diapositiva("6.15", "XGBoost geográfico: búsqueda de hiperparámetros con todos los datos", visual,
+                       puntos=[f"{len(g['globales'])} configuraciones del modelo global × {len(g['locales'])} de los "
+                               f"locales × {len(g['alfas'])} valores de α = {g['n_combinaciones']:,} combinaciones, con los "
+                               "5 pliegues kNNDM.".replace(",", " "),
+                               f"Eligió profundidad {gl['max_depth']} {'con' if gl['balanceado'] else 'sin'} pesos de clase, "
+                               f"rejilla de {lo['tam']:.0f} km, {100 * lo['frac']:.0f} % de vecinos por ancla y "
+                               f"α = {g['mejor']['alpha']}.",
+                               f"Sube la validación ({g['referencia_E2']['f1']:.3f} → {g['mejor']['f1']:.3f}, "
+                               f"{dif_e2['pliegues_a_favor']} de 5 pliegues) pero no el test "
+                               f"({te['XGBoost geográfico (configuración del E2)']['f1']:.3f} → "
+                               f"{te['XGBoost geográfico afinado']['f1']:.3f}).",
+                               f"Frente al XGBoost con el mismo global (α = 1), la parte geográfica aporta "
+                               f"{vs_x['media']:+.3f} en validación y "
+                               f"{te['XGBoost geográfico afinado']['vs_xgboost_afinado']['dif']:+.3f} en test."],
+                       conclusion="Afinar no cambia la conclusión: en zonas nuevas, la parte geográfica no se distingue "
+                                  "del XGBoost.",
+                       metricas=["alpha_geo", "knndm"], fuente=f"{E2C} · cap. 9.3 · {E3C} · cap. 11")
+
+
+@callback(Output("bg-fig", "figure"), Input("bg-vista", "value"))
+def _bg(v):
+    return FM.fig_busqueda_geo(v)
+
+
+# ===========================================================================
+# 7. OPTIMIZACIÓN (ENTREGABLE 3)
+# ===========================================================================
+def d_e3_diseno():
+    a = FM.e3("analisis_clasificacion")
+    mp = {r["modelo"]: r["f1_macro_mean"] for r in a["mejor_por_modelo"]}
+    cajas = html.Div([
+        html.Div([html.Div("8 modelos", className="paso-titulo"),
+                  html.Div("KNN, Naive Bayes, logística L1/L2, árbol, Random Forest, XGBoost, SVM (Nyström) y XGBoost "
+                           "geográfico", className="paso-desc")], className="paso"),
+        html.Div([html.Div("× 4 balanceos", className="paso-titulo"),
+                  html.Div("ninguno, SMOTE, ADASYN y class_weight", className="paso-desc")], className="paso"),
+        html.Div([html.Div("× 4 optimizadores", className="paso-titulo"),
+                  html.Div("Grid, Random, bayesiana (TPE) y genética", className="paso-desc")], className="paso"),
+        html.Div([html.Div("= 128 + 28", className="paso-titulo"),
+                  html.Div("de clasificación más 28 de regresión: 156 combinaciones", className="paso-desc")],
+                 className="paso")], className="flujo")
+    visual = html.Div([
+        dbc.Row([dbc.Col(kpi("156", "combinaciones", "con el mismo protocolo"), md=4),
+                 dbc.Col(kpi(f"{a['n_tareas']}", "tareas", "38 h de cómputo en 4.8 h de reloj"), md=4),
+                 dbc.Col(kpi(fmt(a["submuestra"]), "viviendas", "submuestra estratificada"), md=4)], className="g-3"),
+        html.Div(cajas, className="mt-3"), grafico(FM.fig_e3_modelos())])
+    return diapositiva("7.1", "El pipeline combinatorio del Entregable 3", visual,
+                       puntos=["Validación anidada 5 × 3 con kNNDM: el bucle interno elige los hiperparámetros y el "
+                               "externo, que nunca los vio, mide.",
+                               "Mismo presupuesto para todos: 12 evaluaciones por búsqueda, semilla 42.",
+                               f"Entre modelos el F1 va de {mp['Naive Bayes']:.2f} (Naive Bayes) a "
+                               f"{mp['Random Forest']:.2f} (Random Forest); dentro de un modelo, sus 16 combinaciones se "
+                               "separan apenas 0.02 a 0.05.",
+                               "Los tres ensambles de árboles forman el grupo de cabeza, sin diferencias demostrables."],
+                       conclusion="El modelo pesa mucho más que el balanceo o el optimizador.",
+                       metricas=["knndm", "f1_macro"], fuente=f"{E3C} · caps. 2 y 5")
+
+
+def d_e3_optimizadores():
+    a = FM.e3("analisis_clasificacion")
+    fo, dg = a["friedman_optimizadores"], a["diversidad_genetica"]
+    visual = html.Div([grafico(FM.fig_e3_optimizadores()), html.Div(tabla(FM.tabla_e3_optimizadores()), className="mt-2")])
+    return diapositiva("7.2", "Optimizadores: el mismo resultado, distinta velocidad", visual,
+                       puntos=["Grid, Random, bayesiana (Optuna, TPE) y genética (DEAP), con 12 evaluaciones cada uno y "
+                               "el pipeline completo dentro de cada evaluación.",
+                               f"F1 externo de 0.586 a 0.590: Friedman p = {fo['p']:.2f}, empatan.",
+                               "La bayesiana y la genética llegan al 99 % en 5 evaluaciones; Grid necesita 10.",
+                               f"Genético con población 4: la diversidad cae de {dg['0']['mean']:.2f} a "
+                               f"{dg['3']['mean']:.2f} en 3 generaciones (convergencia prematura).",
+                               "Successive Halving: el mismo F1 en XGBoost con ≈ ¼ del cómputo; en Random Forest pierde "
+                               "0.019."],
+                       conclusion="Con espacios bien acotados todos llegan a la meseta; la bayesiana es la más barata.",
+                       metricas=["p_valor"], fuente=f"{E3C} · cap. 3")
+
+
+def d_e3_balanceo():
+    a = FM.e3("analisis_clasificacion")
+    b, rk = a["balanceo"], a["friedman_balanceo"]["rangos"]
+    visual = html.Div([controles(control("Medida", radio(
+        "bal-met", [("f1", "F1 macro"), ("rango", "Rango medio"), ("ece", "Calibración (ECE)"),
+                    ("tiempo", "Tiempo")], "f1"))), grafico(FM.fig_e3_balanceo("f1"), "bal-fig")])
+    return diapositiva("7.3", "Balanceo de clases: class_weight gana, ADASYN pierde", visual,
+                       puntos=[f"class_weight: el mejor rango medio ({rk['class_weight']:.2f} de 4) y el más barato "
+                               f"({b['class_weight']['seg_busqueda_mean']:.0f} s por búsqueda frente a "
+                               f"{b['smote']['seg_busqueda_mean']:.0f} s de SMOTE).",
+                               f"SMOTE y no balancear quedan casi empatados; ADASYN es el peor (Friedman p = "
+                               f"{cientifico(a['friedman_balanceo']['p'], 0)}).",
+                               "ADASYN crea viviendas sintéticas junto a las «difíciles», que aquí son las de frontera "
+                               "(EDA mejorado, 3.21): refuerza el ruido.",
+                               "Todas las técnicas empeoran algo la calibración (ECE)."],
+                       conclusion="Basta con pesar las clases; generar viviendas sintéticas no ayuda.",
+                       metricas=["class_weight", "ece"], fuente=f"{E3C} · cap. 5")
+
+
+@callback(Output("bal-fig", "figure"), Input("bal-met", "value"))
+def _bal(m):
+    return FM.fig_e3_balanceo(m)
+
+
+def d_e3_computo():
+    visual = html.Div([controles(control("Familia", desplegable(
+        "cmp-fam", [(k, k) for k in FM.FAMILIAS_COMPLEJIDAD], "SVM", ancho=220))),
+        grafico(FM.fig_e3_complejidad("SVM"), "cmp-fig")])
+    return diapositiva("7.4", "Costo computacional: la teoría predice el tiempo", visual,
+                       puntos=["Se midió cada versión con 1 000 a 32 000 viviendas y se ajustó log t = a + b·log n: "
+                               "b ≈ 1 es lineal y b ≈ 2, cuadrático.",
+                               "SVM de núcleo completo: b = 1.88; Nyström: 1.27, predice 80 veces más rápido y pierde "
+                               "0.036 de F1.",
+                               "XGBoost hist: 9 veces más rápido que exact con el mismo F1. KNN con FAISS HNSW: 28 veces "
+                               "más rápido con 256 000 viviendas.",
+                               "El 91 % del tiempo es construir árboles; paralelizar las 640 tareas: 38.4 h → 4.8 h."],
+                       conclusion="No toda «optimización» conviene: con 35 variables densas, SAGA es 7 veces más lenta "
+                                  "que lbfgs y KD-Tree, más lento que la búsqueda exhaustiva.",
+                       fuente=f"{E3C} · cap. 4")
+
+
+@callback(Output("cmp-fig", "figure"), Input("cmp-fam", "value"))
+def _cmp(f):
+    return FM.fig_e3_complejidad(f)
+
+
+def d_e3_test():
+    f = FM.e3("finalistas")
+    s = f["semillas"]
+    lv = f["finalistas"]["Logística L1/L2"]["test"]["f1_macro"]
+    visual = html.Div([controles(control("Entrenados con", radio(
+        "e3t-datos", [("submuestra", "Submuestra (10 001)"), ("todos", "Todos los datos (257 273)")], "submuestra"))),
+        grafico(FM.fig_e3_test("submuestra"), "e3t-fig")])
+    return diapositiva("7.5", "Test de los finalistas: todo baja y los mejores empatan", visual,
+                       puntos=["Finalistas: la mejor combinación de cada modelo, evaluada una sola vez en los 7 bloques "
+                               "de test.",
+                               "Todo baja: los ensambles pasan de ≈ 0.66 en validación a 0.52–0.57 en test (el test "
+                               "tiene 1.2 % de estrato 6, ver 3.22).",
+                               f"Con 5 semillas: logística con vecindad {lv:.3f}, XGBoost {s['XGBoost']['media']:.3f} y "
+                               f"Random Forest {s['Random Forest']['media']:.3f}: empatan.",
+                               f"Todos menos Naive Bayes superan al modelo base ({f['modelo_base']['test']['f1_macro']:.3f} "
+                               "con la submuestra).",
+                               "Con todos los datos suben 0.006 a 0.025 los modelos cuyos hiperparámetros no dependen "
+                               "del tamaño de la muestra."],
+                       conclusion="Las conclusiones firmes son las que aparecen en validación y en test.",
+                       metricas=["f1_macro", "ic95"], fuente=f"{E3C} · caps. 5 y 9")
+
+
+@callback(Output("e3t-fig", "figure"), Input("e3t-datos", "value"))
+def _e3t(d):
+    return FM.fig_e3_test(d)
+
+
+def d_e3_shap():
+    visual = html.Div([controles(control("Modelo", radio(
+        "shap-mod", [("XGBoost", "XGBoost"), ("XGBoost geográfico", "XGBoost geográfico"),
+                     ("Logística L1/L2", "Logística con vecindad")], "XGBoost"))),
+        grafico(FM.fig_e3_shap("XGBoost"), "shap-fig")])
+    return diapositiva("7.6", "¿Qué decide el estrato? Interpretabilidad con SHAP", visual,
+                       puntos=["XGBoost (TreeSHAP exacto): encabezan la posición norte-sur, el área y los baños de los "
+                               "vecinos y la distancia al centro.",
+                               "La primera variable propia de la vivienda (sus baños) aparece en el décimo lugar.",
+                               "Las escalas no se comparan entre modelos (log-odds en XGBoost, probabilidad en los "
+                               "demás): se muestra el % de la importancia total.",
+                               "LIME coincide solo en parte con SHAP (3 a 5 de las 8 variables principales)."],
+                       conclusion="Lo que decide el estrato es la ubicación y el entorno, no la vivienda misma.",
+                       fuente=f"{E3C} · cap. 8")
+
+
+@callback(Output("shap-fig", "figure"), Input("shap-mod", "value"))
+def _shap(m):
+    return FM.fig_e3_shap(m)
 
 # ===========================================================================
 # 6. CONCLUSIONES
@@ -1170,7 +1530,22 @@ def d_hallazgos():
         tt = k["vs Logística B v3 (sin vecindad)"]["test_F1"]
         nuevo = [hallazgo(f"{k['F1_test'] - tt['diferencia']:.2f} → {k['F1_test']:.2f}",
                           "F1 de test: modelo base → XGBoost geográfico con vecindad",
-                          "El modelo nuevo supera al base en zonas nuevas (IC de la diferencia sin el 0).", "#008300")]
+                          "El modelo nuevo supera al base en zonas nuevas; con 30 bloques, la mejora es significativa "
+                          "(Holm p < 0.01).", "#008300")]
+    es, eda = FM.estadistica(), FM.eda()
+    if es and eda:
+        vl = es["comparaciones"]["vs logística con vecindad"]
+        ban = eda["eta2"]["baños"]
+        nuevo += [
+            hallazgo("3 de 4", "modelos originales con vecindad que superan al base con significancia",
+                     "XGBoost geográfico, Rotation Forest y stacking (efecto mediano a grande); RF + SVM no.", "#eb6834"),
+            hallazgo("0", "originales mejores que los convencionales con la misma información",
+                     f"Frente a la logística con vecindad, p de Holm ≥ {piso(min(r['wilcoxon_p_holm'] for r in vl)):.2f}: "
+                     "lo que mejora es describir el entorno.", "#52514e"),
+            hallazgo(f"{ban['vecinos']:.2f} vs {ban['propia']:.2f}", "η² de los baños: los 8 vecinos frente a la vivienda",
+                     "El entorno dice más del estrato que la vivienda misma (EDA mejorado).", "#0d366b"),
+            hallazgo("p = 0.74", "Cuatro optimizadores, el mismo F1 (E3)",
+                     "Grid, Random, bayesiana y genética empatan; la bayesiana llega antes. El modelo pesa más.", "#4a3aa7")]
     tarjetas = nuevo + [
         hallazgo(f"{T['f1_macro'][B]:.2f}", "F1 macro en test (logística B)",
                  f"{CV['f1_macro (media)'][B]:.2f} en CV espacial; {T['accuracy_±1'][B]:.0%} de aciertos a ±1 estrato."),
@@ -1208,10 +1583,14 @@ def d_respuesta():
                 html.Li("Las zonas homogéneas con que el DANE estratifica."),
                 html.Li("El puntaje de calificación de las edificaciones."),
                 html.Li("Los ajustes del comité de estratificación.")])], className="caja-no"), md=6)], className="g-3 mt-2"),
-        html.Div([html.H5("¿Y el modelo nuevo?"),
-                  html.P("Sí supera al modelo base: con la vecindad física, el XGBoost geográfico gana en zonas nuevas "
-                         "(validación y test) y en zonas conocidas. En zonas nuevas, la logística con la misma información "
-                         "empata; en zonas conocidas, el modelo nuevo también la supera.")], className="caja-si mt-3")])
+        html.Div([html.H5("¿Y los modelos originales de la revisión?"),
+                  html.P("Sí superan al modelo base cuando reciben la vecindad física: el XGBoost geográfico, el "
+                         "Rotation Forest y el stacking lo superan con significancia estadística (30 bloques, Wilcoxon "
+                         "con Holm p < 0.01, efecto mediano a grande). El Rotation Forest es el más sólido: también en el "
+                         "test (+0.099, IC 95 % [+0.024, +0.170]). Pero ninguno supera de forma significativa a los "
+                         "modelos convencionales que reciben la misma información: la mejora viene de describir el "
+                         "entorno. La ventaja propia del XGBoost geográfico está en las zonas con datos cerca.")],
+                 className="caja-si mt-3")])
     return diapositiva("6.2", "Respuesta a la pregunta del proyecto", visual,
                        conclusion="La parte pública del catastro revela sobre todo la zona; lo que distingue a la vivienda "
                                   "dentro de su zona no está publicado.")
@@ -1219,8 +1598,13 @@ def d_respuesta():
 
 def d_limitaciones():
     items = [("Cobertura", "Quedan 10 300 viviendas (3.1 %) sin ubicar, casi todas de estrato 1."),
-             ("Pocos bloques de test", "7 bloques: intervalos anchos; la cifra de CV es la más representativa."),
-             ("Hiperparámetros fijos en la ronda 2", "Los árboles usan los de la ronda 1; el Entregable 3 los busca con kNNDM."),
+             ("Pocos bloques de test", "7 bloques, con todo el estrato 6 en uno: intervalos anchos y p mínimo 0.016, así "
+                                       "que ninguna diferencia resiste la corrección de Holm."),
+             ("Submuestra en el E3", "Las 156 combinaciones usaron 10 001 viviendas; sus hiperparámetros no se trasladan "
+                                     "a los modelos que dependen del tamaño de la muestra."),
+             ("Candidatos sin probar", "Bagged TAO Trees (sin implementación abierta) y los selectores EFSHB y NSGA-II."),
+             ("Presupuesto de búsqueda", "12 evaluaciones: basta para llegar a la meseta, no para que el genético o la "
+                                         "multi-fidelidad muestren todo su potencial."),
              ("Etiqueta administrativa", "El estrato puede estar desactualizado o ajustado a mano."),
              ("Calidad del catastro", "Pisos del edificio registrados como de la vivienda; altura casi constante."),
              ("Uso ético", "Predecir el estrato puede discriminar (crédito, seguros): el uso aquí es analítico.")]
@@ -1230,22 +1614,35 @@ def d_limitaciones():
 
 
 def d_pasos():
-    pasos = [("1", "Variedad del entorno", "Medir qué tan mezclado es el barrio para saber cuándo confiar en la vecindad."),
-             ("2", "CV anidada para la SVM", "Saber si su ventaja en CV es real o efecto de la búsqueda."),
-             ("3", "Stacking logística + SVM", "Aciertan estratos distintos."),
-             ("4", "Búsqueda con kNNDM", "Optimizar el XGBoost geográfico con la validación correcta (Entregable 3)."),
-             ("5", "Modelo en dos etapas", "Estrato de la zona y luego vivienda atípica, como el DANE."),
-             ("6", "Más bloques de evaluación", "Para distinguir mejoras pequeñas del ruido.")]
-    return diapositiva("6.4", "Próximos pasos", flujo(pasos))
+    hechos = html.Div([html.Div("Ya hecho", className="hito-titulo"), html.Ul([
+        html.Li("Validación anidada y búsqueda de hiperparámetros con kNNDM para todos los modelos (Entregable 3)."),
+        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test (6.15)."),
+        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia (6.13 y 6.14)."),
+        html.Li("EDA mejorado con los hallazgos de los modelos (3.20 a 3.22).")], className="mb-0")],
+        className="hito mb-3")
+    pasos = [("1", "Más zonas de evaluación", "Otra ciudad u otra partición: con 7 bloques no se confirman diferencias "
+                                              "pequeñas."),
+             ("2", "Variedad del entorno", "Medir qué tan mezclado es el barrio para saber cuándo confiar en la vecindad."),
+             ("3", "Modelo en dos etapas", "Estrato de la zona y luego vivienda atípica, como el DANE."),
+             ("4", "Recalibrar en el pipeline", "Calibración con validación cruzada como último paso: en el test mejoró "
+                                                "la calibración y varios F1."),
+             ("5", "Zonas conocidas", "Usar el XGBoost geográfico para completar el mapa donde hay datos cerca."),
+             ("6", "Bagged TAO Trees", "El único modelo de la revisión que falta probar.")]
+    return diapositiva("8.4", "Próximos pasos", html.Div([hechos, flujo(pasos)]))
 
 
 def d_recursos():
-    enlaces = [("Libro del Entregable 1 (versión 3)", LIBRO_E1), ("Libro del Entregable 1 (versión 2)", LIBRO_E1_V2),
-               ("Libro del Entregable 1 (versión 1, entregada)", LIBRO_E1_V1),
-               ("Libro del Entregable 2 (versión 3)", LIBRO_E2), ("Libro del Entregable 2 (versión 2)", LIBRO_E2_V2),
-               ("Libro del Entregable 2 (versión 1, entregada)", LIBRO_E2_V1),
+    enlaces = [("Libro del Entregable 1 (versión 3)", LIBRO_E1),
+               ("E1 · cap. 15: EDA mejorado", LIBRO_E1 + "notebooks/15_eda_mejorado.html"),
+               ("Libro del Entregable 2 (versión 3)", LIBRO_E2),
+               ("E2 · cap. 9: todos los modelos originales de la revisión", LIBRO_E2 + "notebooks/09_modelos_revision.html"),
+               ("Libro del Entregable 3", LIBRO_E3),
+               ("E3 · cap. 11: todos los datos y otros modelos de la revisión", LIBRO_E3 + "notebooks/11_mejoras.html"),
+               ("Libro del Entregable 1 (versión 2)", LIBRO_E1_V2), ("Libro del Entregable 1 (versión 1, entregada)", LIBRO_E1_V1),
+               ("Libro del Entregable 2 (versión 2)", LIBRO_E2_V2), ("Libro del Entregable 2 (versión 1, entregada)", LIBRO_E2_V1),
                ("Repositorio del Entregable 1", "https://github.com/mcarocantillo/entregable1-ml-barranquilla"),
-               ("Repositorio del Entregable 2", "https://github.com/mcarocantillo/entregable2-ml-barranquilla")]
+               ("Repositorio del Entregable 2", "https://github.com/mcarocantillo/entregable2-ml-barranquilla"),
+               ("Repositorio del Entregable 3", "https://github.com/mcarocantillo/entregable3-ml-barranquilla")]
     visual = html.Div([html.A([html.Span(t), html.Span("↗", className="enlace-flecha")], href=u, target="_blank", className="enlace-recurso")
                        for t, u in enlaces], className="recursos")
     return diapositiva("6.5", "Para profundizar", visual,
@@ -1272,7 +1669,8 @@ PESTANAS = [
         ("Categóricas vs estrato", d_categoricas), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
         ("PCA", d_pca), ("Biplot", d_biplot), ("Outliers multivariados", d_outliers_mv), ("Clustering", d_clustering),
         ("t-SNE", d_tsne), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("LISA y Gi*", d_lisa),
-        ("Escala (MAUP)", d_maup), ("Fuga de datos", d_fuga)]},
+        ("Escala (MAUP)", d_maup), ("Fuga de datos", d_fuga), ("EDA mejorado: el entorno", d_eda_entorno),
+        ("EDA mejorado: fronteras", d_eda_fronteras), ("EDA mejorado: el test", d_eda_test)]},
     {"id": "modelo", "titulo": "Modelo base", "diapositivas": [
         ("Hiperparámetros", d_grid), ("Frente a líneas base", d_comparacion), ("¿Diferencias reales?", d_significancia),
         ("Errores por estrato", d_confusion), ("Probabilidades", d_roc), ("Coeficientes", d_coeficientes),
@@ -1287,7 +1685,12 @@ PESTANAS = [
         ("Ronda 2: vecindad (buffer)", d_vecindad), ("Ronda 2: 15 pliegues", d_vecindad15),
         ("Ronda 2: ¿dónde ayuda?", d_donde), ("Ronda 2: vecindad con kNNDM", d_vecindad_knn),
         ("Zonas conocidas", d_conocidas), ("Dos escenarios", d_escenarios),
-        ("¿Supera el modelo nuevo al base?", d_nuevo_vs_base)]},
+        ("¿Supera el modelo nuevo al base?", d_nuevo_vs_base),
+        ("Todos los modelos originales", d_originales), ("¿Son significativas?", d_signif_originales),
+        ("XGBoost geográfico afinado", d_busqueda_geo)]},
+    {"id": "e3", "titulo": "Optimización (E3)", "diapositivas": [
+        ("Pipeline combinatorio", d_e3_diseno), ("Optimizadores", d_e3_optimizadores), ("Balanceo", d_e3_balanceo),
+        ("Costo computacional", d_e3_computo), ("Test de los finalistas", d_e3_test), ("SHAP", d_e3_shap)]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
         ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
         ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},

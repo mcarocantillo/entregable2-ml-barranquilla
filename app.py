@@ -4,11 +4,12 @@ Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
 Machine Learning — Maestría, Universidad del Norte. Profesor Lihki Rubio.
 
-Reúne los Entregables 1 y 2 y los desarrollos posteriores en siete pestañas, ordenadas como la investigación
-(problema y revisión → datos → modelo base → modelo propuesto y protocolo → resultados → conclusiones). Cada pestaña es una secuencia de
+Reúne los Entregables 1, 2 y 3 y los desarrollos posteriores en ocho pestañas, ordenadas como la investigación
+(problema y revisión → datos → EDA → modelo base → modelo propuesto y protocolo → resultados → optimización del
+Entregable 3 → conclusiones). Cada pestaña es una secuencia de
 diapositivas (gráfica o tabla interactiva + lectura breve + fichas de cómo leer cada métrica); se navega con el menú
 lateral, con los botones o con las flechas del teclado. El contenido está en ``diapositivas.py``; las figuras, en
-``figuras.py`` y ``figuras_proyecto.py``; el glosario de métricas, en ``glosario.py``.
+``figuras.py``, ``figuras_proyecto.py`` y ``figuras_mejoras.py``; el glosario de métricas, en ``glosario.py``.
 Para Render: ``gunicorn app:server``.
 """
 import dash_bootstrap_components as dbc
@@ -49,7 +50,8 @@ portada = html.Header(html.Div([
     html.H1(["¿Se puede predecir el ", html.Span("estrato", className="resalte"), " de una vivienda con sus datos catastrales?"],
             className="hero-titulo"),
     html.P("Clasificación del estrato socioeconómico de las viviendas de Barranquilla con el catastro abierto, "
-           "validación espacial y modelos de la revisión bibliográfica.", className="hero-sub"),
+           "validación espacial, modelos originales de la revisión bibliográfica y optimización de hiperparámetros.",
+           className="hero-sub"),
     html.Div([cifra(fmt(DP.E1["viviendas"]), "viviendas"), cifra("96.9 %", "ubicadas en el mapa"),
               cifra(f"{DP.D['moran_estrato']['I']:.2f}", "I de Moran del estrato"),
               cifra_modelo_nuevo()], className="hero-cifras"),

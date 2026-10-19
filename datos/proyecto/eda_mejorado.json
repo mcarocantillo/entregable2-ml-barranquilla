@@ -1,0 +1,171 @@
+{
+ "fuente": "Entregable 1 (versión 3), capítulo 15: notebooks/15_eda_mejorado.ipynb",
+ "eta2": {
+  "área construida (log)": {
+   "propia": 0.166,
+   "vecinos": 0.445
+  },
+  "baños": {
+   "propia": 0.33,
+   "vecinos": 0.601
+  },
+  "habitaciones": {
+   "propia": 0.079,
+   "vecinos": 0.264
+  },
+  "antigüedad": {
+   "propia": 0.046,
+   "vecinos": 0.065
+  },
+  "piso": {
+   "propia": 0.244,
+   "vecinos": 0.308
+  },
+  "propiedad horizontal": {
+   "propia": 0.293,
+   "vecinos": 0.377
+  }
+ },
+ "eta2_distancia_vecinos": 0.264,
+ "fronteras": {
+  "1": {
+   "vecinos_otro_estrato": 0.193,
+   "pct_frontera": 18.693
+  },
+  "2": {
+   "vecinos_otro_estrato": 0.194,
+   "pct_frontera": 18.304
+  },
+  "3": {
+   "vecinos_otro_estrato": 0.214,
+   "pct_frontera": 21.87
+  },
+  "4": {
+   "vecinos_otro_estrato": 0.281,
+   "pct_frontera": 29.844
+  },
+  "5": {
+   "vecinos_otro_estrato": 0.391,
+   "pct_frontera": 43.563
+  },
+  "6": {
+   "vecinos_otro_estrato": 0.244,
+   "pct_frontera": 20.34
+  },
+  "todas": {
+   "vecinos_otro_estrato": 0.223,
+   "pct_frontera": 22.304
+  }
+ },
+ "pct_un_solo_estrato": 95.7,
+ "composicion": {
+  "entrenamiento (%)": {
+   "1": 30.0,
+   "2": 22.7,
+   "3": 22.9,
+   "4": 14.4,
+   "5": 5.2,
+   "6": 4.8
+  },
+  "prueba (%)": {
+   "1": 35.4,
+   "2": 20.3,
+   "3": 19.1,
+   "4": 18.8,
+   "5": 5.2,
+   "6": 1.2
+  }
+ },
+ "test_por_bloque": {
+  "1006": {
+   "E1": 119,
+   "E2": 3772,
+   "E3": 1116,
+   "E4": 1,
+   "E5": 0,
+   "E6": 0,
+   "total": 5008
+  },
+  "2002": {
+   "E1": 14953,
+   "E2": 1283,
+   "E3": 0,
+   "E4": 0,
+   "E5": 0,
+   "E6": 0,
+   "total": 16236
+  },
+  "2004": {
+   "E1": 6618,
+   "E2": 4570,
+   "E3": 2907,
+   "E4": 2,
+   "E5": 0,
+   "E6": 0,
+   "total": 14097
+  },
+  "3002": {
+   "E1": 3,
+   "E2": 0,
+   "E3": 0,
+   "E4": 0,
+   "E5": 0,
+   "E6": 0,
+   "total": 3
+  },
+  "3004": {
+   "E1": 1394,
+   "E2": 3051,
+   "E3": 7313,
+   "E4": 1915,
+   "E5": 6,
+   "E6": 0,
+   "total": 13679
+  },
+  "4004": {
+   "E1": 0,
+   "E2": 7,
+   "E3": 1054,
+   "E4": 10332,
+   "E5": 3361,
+   "E6": 793,
+   "total": 15547
+  },
+  "6005": {
+   "E1": 4,
+   "E2": 509,
+   "E3": 62,
+   "E4": 0,
+   "E5": 0,
+   "E6": 0,
+   "total": 575
+  }
+ },
+ "distancias": {
+  "Escenario: zona nueva de 2 km (test → todo train)": {
+   "p10 (km)": 0.107,
+   "mediana (km)": 0.453,
+   "p90 (km)": 0.819
+  },
+  "Test de la versión 2 (test → train tras buffer)": {
+   "p10 (km)": 1.103,
+   "mediana (km)": 1.532,
+   "p90 (km)": 2.013
+  },
+  "CV de la versión 2 (bloques + buffer de 1 km)": {
+   "p10 (km)": 1.074,
+   "mediana (km)": 1.406,
+   "p90 (km)": 2.075
+  },
+  "CV aleatoria por edificios": {
+   "p10 (km)": 0.0,
+   "mediana (km)": 0.01,
+   "p90 (km)": 0.109
+  },
+  "CV kNNDM (versión 3)": {
+   "p10 (km)": 0.104,
+   "mediana (km)": 0.464,
+   "p90 (km)": 1.227
+  }
+ }
+}

@@ -121,6 +121,36 @@ GLOSARIO = {
         tramos=[(0, 0.01, "muy significativo", V), (0.01, 0.05, "significativo", G), (0.05, 0.1, "marginal", A), (0.1, 1, "no significativo", R)],
         nota="Con cientos de miles de viviendas casi todo es significativo: lo que importa es el tamaño del efecto "
              "(η², V de Cramér, diferencia de F1). Con muchas pruebas a la vez se corrige con Holm o Benjamini-Hochberg."),
+    "holm": dict(
+        nombre="Corrección de Holm (comparaciones múltiples)", grupo="Validación",
+        mide="Al comparar varios modelos contra el mismo rival, la probabilidad de que alguna diferencia salga "
+             "«significativa» por azar crece con el número de pruebas. Holm ordena los p-valores y exige más al más "
+             "pequeño (p·m, luego p·(m − 1), …): controla el error de toda la familia de comparaciones.",
+        rango="p de Holm de 0 a 1", mejor="bajo",
+        tramos=[(0, 0.01, "muy significativo", V), (0.01, 0.05, "significativo", G), (0.05, 0.1, "marginal", A),
+                (0.1, 1, "no significativo", R)],
+        nota="Con 7 bloques de test, el p-valor más pequeño posible de una permutación exacta es 2/128 = 0.016: tras "
+             "corregir por 10 comparaciones ninguna diferencia puede ser significativa. Por eso se usan los 30 "
+             "bloques del entrenamiento.",
+        fuente="Holm (1979)"),
+    "friedman": dict(
+        nombre="Prueba de Friedman y diferencia crítica de Nemenyi", grupo="Validación",
+        mide="Ordena los modelos en cada réplica (bloque o pliegue) y prueba si sus rangos medios difieren más de lo "
+             "esperable por azar. Si difieren, Nemenyi da la diferencia crítica (CD): dos modelos cuyos rangos medios "
+             "se separan menos que la CD no se distinguen.",
+        rango="rango medio de 1 (siempre el mejor) a k (siempre el peor)", mejor="", tramos=[],
+        nota="Es el primer paso de la secuencia jerárquica: prueba global, luego comparaciones dirigidas con Holm y "
+             "el tamaño del efecto (δ de Cliff).",
+        fuente="Demšar (2006), Journal of Machine Learning Research"),
+    "cliff": dict(
+        nombre="δ de Cliff (tamaño del efecto)", grupo="Validación",
+        mide="Probabilidad de que el modelo A gane a B en un bloque elegido al azar menos la de que pierda. No supone "
+             "normalidad; acompaña al p-valor para decir si la diferencia importa.",
+        rango="−1 (B gana siempre) a 1 (A gana siempre); 0 = empate", mejor="alto",
+        tramos=[(0, 0.147, "despreciable", GR), (0.147, 0.33, "pequeño", A), (0.33, 0.474, "mediano", G),
+                (0.474, 1, "grande", V)],
+        nota="La escala se lee sobre el valor absoluto; el signo dice qué modelo gana.",
+        fuente="Romano et al. (2006)"),
     "buffer": dict(
         nombre="Buffer espacial (km)", grupo="Validación",
         mide="Franja alrededor de cada zona de validación o prueba cuyas viviendas se quitan del entrenamiento, para "

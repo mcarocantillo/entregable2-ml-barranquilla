@@ -46,11 +46,12 @@ El libro sigue el orden de una investigación: la pregunta y la revisión, el m�
 | **Apéndices** | A. Historia de las versiones · B. Dashboard · C. Referencias | Qué cambió de la v1 a la v3, cómo está hecho el tablero y la bibliografía |
 
 ```{note}
-**El dashboard.** El libro acompaña un tablero en Dash Plotly con la misma historia, en siete pestañas: **Problema y
+**El dashboard.** El libro acompaña un tablero en Dash Plotly con la misma historia, en ocho pestañas: **Problema y
 revisión**, **Datos y calidad**, **Análisis exploratorio**, **Modelo base**, **Modelo propuesto y protocolo**,
-**Resultados** y **Conclusiones**. Está en **https://entregable2-ml-barranquilla.onrender.com** (el servicio gratuito
-se suspende sin visitas: la primera carga puede tardar un minuto). Las figuras de los dos son las mismas, generadas por
-los módulos `figuras.py` y `figuras_proyecto.py`. El código de cada figura está oculto; se despliega con el botón de
+**Resultados**, **Optimización (Entregable 3)** y **Conclusiones**. Está en
+**https://entregable2-ml-barranquilla.onrender.com** (el servicio gratuito se suspende sin visitas: la primera carga
+puede tardar un minuto). Las figuras de los dos son las mismas, generadas por los módulos `figuras.py`,
+`figuras_proyecto.py` y `figuras_mejoras.py`. El código de cada figura está oculto; se despliega con el botón de
 cada celda.
 ```
 
