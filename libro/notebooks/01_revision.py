@@ -132,13 +132,14 @@ pd.DataFrame([
 #
 # ```{admonition} Objetivo e hipótesis del entregable
 # :class: important
-# **Objetivo.** Usar un modelo que no se había aplicado a esta aplicación, el XGBoost geográfico adaptado a
-# clasificación, y comprobar si es **mejor que el modelo base**, una regresión logística multinomial con las variables
-# físicas y de ubicación de la vivienda (capítulo 3).
+# **Objetivo.** Usar **modelos que no se habían aplicado a esta aplicación** (los candidatos de la revisión),
+# encabezados por el XGBoost geográfico adaptado a clasificación, y comprobar si alguno es **mejor que el modelo
+# base**, una regresión logística multinomial con las variables físicas y de ubicación de la vivienda (capítulo 3).
 #
-# **Hipótesis.** El XGBoost geográfico supera al modelo base en F1 macro con el mismo protocolo de evaluación
-# (capítulo 5). Los demás candidatos de la revisión (XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con
-# TPE) se evalúan con el mismo protocolo, como control y como competencia.
+# **Hipótesis.** El XGBoost geográfico, el modelo principal, supera al modelo base en F1 macro con el mismo protocolo
+# de evaluación (capítulo 5). Los demás candidatos originales de la revisión (Rotation Forest, SVM con TPE y, en la
+# versión 3, RF + SVM y stacking) se evalúan con el mismo protocolo, y XGBoost sirve de control del modelo principal
+# (capítulos 6, 8 y 9).
 #
 # **Criterio, fijado antes de ver resultados.** Un modelo reemplaza al base solo si su F1 macro en validación cruzada
 # lo supera en más de un error estándar de la diferencia pareada por pliegue, y el test (que se mira una sola vez)

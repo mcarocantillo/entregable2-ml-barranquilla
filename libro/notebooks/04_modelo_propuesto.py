@@ -88,12 +88,18 @@ pd.DataFrame([
 #
 # ## 4.3 Los demás candidatos de la revisión
 #
-# | Modelo | Papel en la comparación | Problema que ataca |
-# |---|---|---|
-# | **XGBoost geográfico (adaptado a clasificación)** | **Modelo propuesto** | Relaciones que cambian según la zona |
-# | XGBoost | Control del anterior: mismo algoritmo sin la parte geográfica | No linealidades e interacciones |
-# | Rotation Forest | Ensemble de árboles de la revisión {cite}`sartono2018` | Variables de tamaño correlacionadas |
-# | SVM RBF (Nyström) + TPE | SVM no lineal con optimización bayesiana {cite}`rizkallah2025` | Fronteras no lineales |
+# | Modelo | ¿Original para esta aplicación? | Papel en la comparación | Problema que ataca |
+# |---|---|---|---|
+# | **XGBoost geográfico (adaptado a clasificación)** | Sí | **Modelo principal** | Relaciones que cambian según la zona |
+# | XGBoost | No | Control del anterior: mismo algoritmo sin la parte geográfica | No linealidades e interacciones |
+# | Rotation Forest | Sí | Candidato de la revisión {cite}`sartono2018` | Variables de tamaño correlacionadas |
+# | SVM RBF (Nyström) + TPE | Sí | Candidato de la revisión {cite}`rizkallah2025` | Fronteras no lineales |
+# | RF + SVM en dos etapas | Sí | Candidato de la revisión, agregado en la versión 3 (cap. 9) | Variables correlacionadas |
+# | Stacking | Sí | Candidato de la revisión, agregado en la versión 3 (cap. 9) | Modelos que aciertan estratos distintos |
+#
+# «Original» quiere decir que la revisión no encontró ninguna aplicación del modelo a la clasificación del estrato con
+# datos catastrales. El capítulo 9 reúne los nueve candidatos de la revisión y los resultados de todos los que se
+# probaron.
 #
 # **XGBoost.** Árboles de gradiente con 300 árboles y tasa de aprendizaje 0.1; se buscó la profundidad (4, 6 u 8) y si
 # usar pesos de clase balanceados.

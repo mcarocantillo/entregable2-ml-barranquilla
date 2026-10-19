@@ -146,4 +146,4 @@ tabla_modelos("zonas conocidas")
 #
 # La hipótesis del proyecto se confirma con dos condiciones que salen de los datos: el modelo nuevo necesita
 # **información del entorno** para superar al base en zonas sin datos, y su ventaja propia (la de los modelos locales)
-# aparece **donde hay datos cerca**, que es el escenario para el que se diseñó. Las limitaciones están en el capítulo 9.
+# aparece **donde hay datos cerca**, que es el escenario para el que se diseñó. Las limitaciones están en el capítulo 10.

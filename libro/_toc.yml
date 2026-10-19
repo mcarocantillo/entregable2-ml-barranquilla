@@ -15,7 +15,10 @@ parts:
       - file: notebooks/06_ronda1
       - file: notebooks/07_ronda2_vecindad
       - file: notebooks/08_modelo_nuevo_vs_base
-      - file: notebooks/09_conclusiones
+      - file: notebooks/09_modelos_revision
+  - caption: Cierre
+    chapters:
+      - file: notebooks/10_conclusiones
   - caption: Apéndices
     chapters:
       - file: notebooks/A_versiones

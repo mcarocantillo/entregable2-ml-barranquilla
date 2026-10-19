@@ -10,17 +10,21 @@ Versión 3
 **Pregunta.** ¿Se puede predecir el estrato socioeconómico (1 a 6) de una vivienda de Barranquilla con sus datos
 catastrales abiertos (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y su ubicación?
 
-**Revisión bibliográfica.** Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y el
-modelo con mejor respaldo para problemas espaciales, el **XGBoost geográfico** {cite}`grekousis2025`, solo existía
-para regresión.
+**Revisión bibliográfica.** Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y los
+nueve modelos con evidencia de reducir el error que lista la revisión **nunca se habían aplicado a este problema**. El
+de mejor respaldo para problemas espaciales, el **XGBoost geográfico** {cite}`grekousis2025`, solo existía para
+regresión.
 
-**Objetivo.** Usar ese modelo, **adaptado por nosotros a clasificación**, y comprobar si supera al **modelo base**: una
-regresión logística multinomial con las variables de la vivienda y su ubicación.
+**Objetivo.** Usar **modelos no aplicados antes a esta aplicación**, encabezados por el XGBoost geográfico **adaptado
+por nosotros a clasificación**, y comprobar si alguno supera al **modelo base**: una regresión logística multinomial
+con las variables de la vivienda y su ubicación.
 
-**Respuesta.** **Sí, con dos condiciones** (capítulo 8). Con la información del entorno de la vivienda (la vecindad
-física), el XGBoost geográfico supera al modelo base en zonas nuevas en validación y en test (F1 macro **0.585 frente
-a 0.493**, IC 95 % de la diferencia [+0.034, +0.199]), y en zonas con datos cerca lo supera por +0.19 a +0.23. En
-zonas nuevas, una logística con la misma información empata con él; en zonas conocidas, el modelo nuevo la supera.
+**Respuesta.** **Sí, con condiciones** (capítulos 8 y 9). Con la información del entorno de la vivienda (la vecindad
+física), el XGBoost geográfico supera al modelo base en zonas nuevas (F1 macro **0.585 frente a 0.493** en test) y en
+zonas con datos cerca lo supera por +0.19 a +0.23. Otros dos modelos originales de la revisión, el **Rotation Forest** y
+el **stacking**, también superan al base con significancia estadística; el Rotation Forest es el único con un intervalo
+de test que excluye el 0 (+0.099, IC 95 % [+0.024, +0.170]). Pero en zonas nuevas **ninguno le gana a los modelos
+convencionales con la misma información**: la mejora la explica sobre todo describir el entorno.
 ```
 
 ## Cómo está organizado
@@ -36,8 +40,9 @@ El libro sigue el orden de una investigación: la pregunta y la revisión, el m�
 | | 5. El protocolo de evaluación | ¿Cómo se decide, sin hacerse trampa, si un modelo es mejor? |
 | **III. Resultados** | 6. Ronda 1 | Con las variables del modelo base, ¿supera algún candidato a la logística? |
 | | 7. Ronda 2 | ¿Ayuda describir el entorno de la vivienda? |
-| | **8. ¿Supera el modelo nuevo al modelo base?** | **La respuesta a la pregunta del proyecto** |
-| **Cierre** | 9. Conclusiones | Respuesta, limitaciones y próximos pasos |
+| | **8. ¿Supera el modelo nuevo al modelo base?** | **La respuesta para el modelo principal (XGBoost geográfico)** |
+| | **9. Todos los modelos originales de la revisión** | **¿Algún otro candidato de la revisión supera al modelo base? ¿Es significativo?** |
+| **Cierre** | 10. Conclusiones | Respuesta, limitaciones y próximos pasos |
 | **Apéndices** | A. Historia de las versiones · B. Dashboard · C. Referencias | Qué cambió de la v1 a la v3, cómo está hecho el tablero y la bibliografía |
 
 ```{note}
