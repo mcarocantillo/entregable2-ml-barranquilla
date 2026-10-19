@@ -66,7 +66,7 @@
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
     <link rel="next" title="B. El dashboard y su despliegue" href="B_dashboard.html" />
-    <link rel="prev" title="9. Conclusiones" href="09_conclusiones.html" />
+    <link rel="prev" title="10. Conclusiones" href="10_conclusiones.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="es"/>
   <meta name="docsearch:version" content="" />
@@ -230,7 +230,11 @@
 <li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modelos_revision.html">9. Todos los modelos originales de la revisión frente al modelo base</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">10. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="current nav bd-sidenav">
@@ -430,6 +434,11 @@ raíz del sitio, la v2 en <code class="docutils literal notranslate"><span class
 <td><p>El orden por versiones era confuso</p></td>
 <td><p>Mismas cifras, mejor contadas</p></td>
 </tr>
+<tr class="row-even"><td><p><strong>v3 (19-oct-2026)</strong></p></td>
+<td><p>Capítulo 9 nuevo: <strong>todos los candidatos originales de la revisión</strong> con vecindad física y todos los datos (Rotation Forest, stacking, RF + SVM y búsqueda de hiperparámetros del XGBoost geográfico) y pruebas de significancia con corrección de Holm; conclusiones pasan al capítulo 10</p></td>
+<td><p>El objetivo es probar modelos no usados antes en esta aplicación, no solo el XGBoost geográfico</p></td>
+<td><p>Tres modelos originales superan al base con significancia; ninguno a los convencionales con la misma información</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -542,12 +551,12 @@ validación con kNNDM ya no exige predecir a 1.4–1.5 km del dato más cercano.
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="09_conclusiones.html"
+       href="10_conclusiones.html"
        title="página anterior">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">anterior</p>
-        <p class="prev-next-title">9. Conclusiones</p>
+        <p class="prev-next-title">10. Conclusiones</p>
       </div>
     </a>
     <a class="right-next"

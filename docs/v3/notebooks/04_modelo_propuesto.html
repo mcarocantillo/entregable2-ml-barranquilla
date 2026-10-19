@@ -232,7 +232,11 @@
 <li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modelos_revision.html">9. Todos los modelos originales de la revisión frente al modelo base</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">10. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -546,30 +550,48 @@ con datos.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Modelo</p></th>
+<th class="head"><p>¿Original para esta aplicación?</p></th>
 <th class="head"><p>Papel en la comparación</p></th>
 <th class="head"><p>Problema que ataca</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>XGBoost geográfico (adaptado a clasificación)</strong></p></td>
-<td><p><strong>Modelo propuesto</strong></p></td>
+<td><p>Sí</p></td>
+<td><p><strong>Modelo principal</strong></p></td>
 <td><p>Relaciones que cambian según la zona</p></td>
 </tr>
 <tr class="row-odd"><td><p>XGBoost</p></td>
+<td><p>No</p></td>
 <td><p>Control del anterior: mismo algoritmo sin la parte geográfica</p></td>
 <td><p>No linealidades e interacciones</p></td>
 </tr>
 <tr class="row-even"><td><p>Rotation Forest</p></td>
-<td><p>Ensemble de árboles de la revisión <span class="bibtex-citation" id="id2">[<a class="reference internal" href="C_referencias.html#id11" title="B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. IOP Conference Series: Earth and Environmental Science, 187(1):012053, 2018. doi:10.1088/1755-1315/187/1/012053.">Sartono <em>et al.</em>, 2018</a>]</span></p></td>
+<td><p>Sí</p></td>
+<td><p>Candidato de la revisión <span class="bibtex-citation" id="id2">[<a class="reference internal" href="C_referencias.html#id11" title="B. Sartono, M. Raharjo, and C. Suhaeni. Empirical study on the predictive power of rotation forest. IOP Conference Series: Earth and Environmental Science, 187(1):012053, 2018. doi:10.1088/1755-1315/187/1/012053.">Sartono <em>et al.</em>, 2018</a>]</span></p></td>
 <td><p>Variables de tamaño correlacionadas</p></td>
 </tr>
 <tr class="row-odd"><td><p>SVM RBF (Nyström) + TPE</p></td>
-<td><p>SVM no lineal con optimización bayesiana <span class="bibtex-citation" id="id3">[<a class="reference internal" href="C_referencias.html#id12" title="L. W. Rizkallah. Optimizing svm hyperparameters for satellite imagery classification using metaheuristic and statistical techniques. International Journal of Data Science and Analytics, 20(5):4945–4962, 2025. doi:10.1007/s41060-025-00762-7.">Rizkallah, 2025</a>]</span></p></td>
+<td><p>Sí</p></td>
+<td><p>Candidato de la revisión <span class="bibtex-citation" id="id3">[<a class="reference internal" href="C_referencias.html#id12" title="L. W. Rizkallah. Optimizing svm hyperparameters for satellite imagery classification using metaheuristic and statistical techniques. International Journal of Data Science and Analytics, 20(5):4945–4962, 2025. doi:10.1007/s41060-025-00762-7.">Rizkallah, 2025</a>]</span></p></td>
 <td><p>Fronteras no lineales</p></td>
+</tr>
+<tr class="row-even"><td><p>RF + SVM en dos etapas</p></td>
+<td><p>Sí</p></td>
+<td><p>Candidato de la revisión, agregado en la versión 3 (cap. 9)</p></td>
+<td><p>Variables correlacionadas</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stacking</p></td>
+<td><p>Sí</p></td>
+<td><p>Candidato de la revisión, agregado en la versión 3 (cap. 9)</p></td>
+<td><p>Modelos que aciertan estratos distintos</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>«Original» quiere decir que la revisión no encontró ninguna aplicación del modelo a la clasificación del estrato con
+datos catastrales. El capítulo 9 reúne los nueve candidatos de la revisión y los resultados de todos los que se
+probaron.</p>
 <p><strong>XGBoost.</strong> Árboles de gradiente con 300 árboles y tasa de aprendizaje 0.1; se buscó la profundidad (4, 6 u 8) y si
 usar pesos de clase balanceados.</p>
 <p><strong>Rotation Forest.</strong> Para cada uno de 30 árboles, las variables se reparten al azar en 3 grupos; en cada grupo se

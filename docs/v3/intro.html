@@ -233,7 +233,11 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/09_conclusiones.html">9. Conclusiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/09_modelos_revision.html">9. Todos los modelos originales de la revisión frente al modelo base</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/10_conclusiones.html">10. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -406,15 +410,19 @@ Versión 3</p>
 <p class="admonition-title">En una página</p>
 <p><strong>Pregunta.</strong> ¿Se puede predecir el estrato socioeconómico (1 a 6) de una vivienda de Barranquilla con sus datos
 catastrales abiertos (área, baños, habitaciones, pisos, antigüedad, régimen de propiedad) y su ubicación?</p>
-<p><strong>Revisión bibliográfica.</strong> Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y el
-modelo con mejor respaldo para problemas espaciales, el <strong>XGBoost geográfico</strong> <span class="bibtex-citation" id="id1">[<a class="reference internal" href="notebooks/C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span>, solo existía
-para regresión.</p>
-<p><strong>Objetivo.</strong> Usar ese modelo, <strong>adaptado por nosotros a clasificación</strong>, y comprobar si supera al <strong>modelo base</strong>: una
-regresión logística multinomial con las variables de la vivienda y su ubicación.</p>
-<p><strong>Respuesta.</strong> <strong>Sí, con dos condiciones</strong> (capítulo 8). Con la información del entorno de la vivienda (la vecindad
-física), el XGBoost geográfico supera al modelo base en zonas nuevas en validación y en test (F1 macro <strong>0.585 frente
-a 0.493</strong>, IC 95 % de la diferencia [+0.034, +0.199]), y en zonas con datos cerca lo supera por +0.19 a +0.23. En
-zonas nuevas, una logística con la misma información empata con él; en zonas conocidas, el modelo nuevo la supera.</p>
+<p><strong>Revisión bibliográfica.</strong> Ningún estudio encontrado clasifica el estrato de una vivienda con datos catastrales, y los
+nueve modelos con evidencia de reducir el error que lista la revisión <strong>nunca se habían aplicado a este problema</strong>. El
+de mejor respaldo para problemas espaciales, el <strong>XGBoost geográfico</strong> <span class="bibtex-citation" id="id1">[<a class="reference internal" href="notebooks/C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span>, solo existía para
+regresión.</p>
+<p><strong>Objetivo.</strong> Usar <strong>modelos no aplicados antes a esta aplicación</strong>, encabezados por el XGBoost geográfico <strong>adaptado
+por nosotros a clasificación</strong>, y comprobar si alguno supera al <strong>modelo base</strong>: una regresión logística multinomial
+con las variables de la vivienda y su ubicación.</p>
+<p><strong>Respuesta.</strong> <strong>Sí, con condiciones</strong> (capítulos 8 y 9). Con la información del entorno de la vivienda (la vecindad
+física), el XGBoost geográfico supera al modelo base en zonas nuevas (F1 macro <strong>0.585 frente a 0.493</strong> en test) y en
+zonas con datos cerca lo supera por +0.19 a +0.23. Otros dos modelos originales de la revisión, el <strong>Rotation Forest</strong> y
+el <strong>stacking</strong>, también superan al base con significancia estadística; el Rotation Forest es el único con un intervalo
+de test que excluye el 0 (+0.099, IC 95 % [+0.024, +0.170]). Pero en zonas nuevas <strong>ninguno le gana a los modelos
+convencionales con la misma información</strong>: la mejora la explica sobre todo describir el entorno.</p>
 </div>
 <section id="como-esta-organizado">
 <h2>Cómo está organizado<a class="headerlink" href="#como-esta-organizado" title="Link to this heading">#</a></h2>
@@ -457,13 +465,17 @@ zonas nuevas, una logística con la misma información empata con él; en zonas 
 </tr>
 <tr class="row-odd"><td><p></p></td>
 <td><p><strong>8. ¿Supera el modelo nuevo al modelo base?</strong></p></td>
-<td><p><strong>La respuesta a la pregunta del proyecto</strong></p></td>
+<td><p><strong>La respuesta para el modelo principal (XGBoost geográfico)</strong></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Cierre</strong></p></td>
-<td><p>9. Conclusiones</p></td>
+<tr class="row-even"><td><p></p></td>
+<td><p><strong>9. Todos los modelos originales de la revisión</strong></p></td>
+<td><p><strong>¿Algún otro candidato de la revisión supera al modelo base? ¿Es significativo?</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cierre</strong></p></td>
+<td><p>10. Conclusiones</p></td>
 <td><p>Respuesta, limitaciones y próximos pasos</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Apéndices</strong></p></td>
+<tr class="row-even"><td><p><strong>Apéndices</strong></p></td>
 <td><p>A. Historia de las versiones · B. Dashboard · C. Referencias</p></td>
 <td><p>Qué cambió de la v1 a la v3, cómo está hecho el tablero y la bibliografía</p></td>
 </tr>
@@ -483,6 +495,8 @@ cada celda.</p>
 Entregable 1 (versión 3: https://mcarocantillo.github.io/entregable1-ml-barranquilla/v3/). Este entregable usa la
 misma partición y las mismas semillas, y reproduce sus métricas antes de comparar.</p>
 </section>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">

@@ -232,7 +232,11 @@
 <li class="toctree-l1"><a class="reference internal" href="06_ronda1.html">6. Ronda 1: los candidatos con las variables del modelo base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="07_ronda2_vecindad.html">7. Ronda 2: información del entorno de la vivienda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_modelo_nuevo_vs_base.html">8. ¿Supera el modelo nuevo al modelo base?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_conclusiones.html">9. Conclusiones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modelos_revision.html">9. Todos los modelos originales de la revisión frente al modelo base</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_conclusiones.html">10. Conclusiones</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Apéndices</span></p>
 <ul class="nav bd-sidenav">
@@ -689,12 +693,13 @@ probabilidades del global y de los locales. Encaja con el problema porque el est
 (sección 1.2) y un modelo con efectos locales puede aprender relaciones que cambian de un barrio a otro.</p>
 <div class="important admonition">
 <p class="admonition-title">Objetivo e hipótesis del entregable</p>
-<p><strong>Objetivo.</strong> Usar un modelo que no se había aplicado a esta aplicación, el XGBoost geográfico adaptado a
-clasificación, y comprobar si es <strong>mejor que el modelo base</strong>, una regresión logística multinomial con las variables
-físicas y de ubicación de la vivienda (capítulo 3).</p>
-<p><strong>Hipótesis.</strong> El XGBoost geográfico supera al modelo base en F1 macro con el mismo protocolo de evaluación
-(capítulo 5). Los demás candidatos de la revisión (XGBoost, Rotation Forest y una SVM con kernel RBF optimizada con
-TPE) se evalúan con el mismo protocolo, como control y como competencia.</p>
+<p><strong>Objetivo.</strong> Usar <strong>modelos que no se habían aplicado a esta aplicación</strong> (los candidatos de la revisión),
+encabezados por el XGBoost geográfico adaptado a clasificación, y comprobar si alguno es <strong>mejor que el modelo
+base</strong>, una regresión logística multinomial con las variables físicas y de ubicación de la vivienda (capítulo 3).</p>
+<p><strong>Hipótesis.</strong> El XGBoost geográfico, el modelo principal, supera al modelo base en F1 macro con el mismo protocolo
+de evaluación (capítulo 5). Los demás candidatos originales de la revisión (Rotation Forest, SVM con TPE y, en la
+versión 3, RF + SVM y stacking) se evalúan con el mismo protocolo, y XGBoost sirve de control del modelo principal
+(capítulos 6, 8 y 9).</p>
 <p><strong>Criterio, fijado antes de ver resultados.</strong> Un modelo reemplaza al base solo si su F1 macro en validación cruzada
 lo supera en más de un error estándar de la diferencia pareada por pliegue, y el test (que se mira una sola vez)
 debe confirmarlo.</p>
