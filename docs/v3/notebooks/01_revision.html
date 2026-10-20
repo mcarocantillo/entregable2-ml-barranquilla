@@ -430,11 +430,18 @@ dashboard.</p>
 </div>
 <section id="el-problema">
 <h2>1.1 El problema<a class="headerlink" href="#el-problema" title="Link to this heading">#</a></h2>
-<p>En Colombia, el <strong>estrato socioeconómico</strong> clasifica los inmuebles residenciales en seis niveles. Su uso principal es
-tarifario: con él se cobran de forma diferenciada los servicios públicos domiciliarios. Los estratos 1, 2 y 3 reciben
-subsidios y los estratos 5 y 6 pagan una contribución adicional, según el régimen de la Ley 142 de 1994. También se
-usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna con una metodología del DANE
-que considera las características de las viviendas y de su entorno urbano (sección 1.2).</p>
+<p>En Colombia, el <strong>estrato socioeconómico</strong> clasifica los <strong>inmuebles residenciales</strong> (no los hogares) en seis
+niveles. Su uso principal es tarifario: con él se cobran de forma diferenciada los servicios públicos domiciliarios
+con subsidios cruzados (Ley 142 de 1994). Los estratos 1, 2 y 3 reciben subsidios, pagados con fondos de solidaridad
+(artículo 89); el estrato 4 paga el costo del servicio; y los estratos 5 y 6, junto con los usuarios comerciales e
+industriales, pagan una contribución. Los topes de subsidio dependen del servicio: hasta 50 %, 40 % y 15 % del consumo
+básico para los estratos 1, 2 y 3 en energía y gas (artículo 99.6), y 70 %, 40 % y 15 % en acueducto, alcantarillado y
+aseo (Ley 1450 de 2011). Un estrato mal asignado hace que el subsidio llegue a quien no lo necesita o no llegue a
+quien sí. También se usa para focalizar programas sociales y para planear la ciudad. Cada alcaldía lo asigna con una
+metodología del DANE que considera las características de las viviendas y de su entorno urbano (sección 1.2).</p>
+<p>El estrato es un instrumento colombiano: según el DANE, el cobro diferencial por estratos «se institucionalizó sin
+que existiera un modelo similar en otros países» <span class="bibtex-citation" id="id1">[<a class="reference internal" href="C_referencias.html#id15" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>]</span>. Esto importa para la revisión
+bibliográfica (sección 1.3): la variable que se quiere predecir no existe fuera de Colombia.</p>
 <p>El proyecto plantea un problema de <strong>aprendizaje supervisado</strong>: predecir el estrato de cada unidad de vivienda de
 Barranquilla a partir de la información del <strong>catastro abierto</strong>, es decir, sus características físicas (área, baños,
 habitaciones, pisos, antigüedad, régimen de propiedad) y su ubicación. Es un problema de <strong>clasificación multiclase</strong>
@@ -451,7 +458,7 @@ catastro abierto no publica.</p>
 </section>
 <section id="como-asigna-el-dane-el-estrato">
 <h2>1.2 Cómo asigna el DANE el estrato<a class="headerlink" href="#como-asigna-el-dane-el-estrato" title="Link to this heading">#</a></h2>
-<p>La metodología vigente de estratificación urbana del DANE <span class="bibtex-citation" id="id1">[<a class="reference internal" href="C_referencias.html#id15" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>, <a class="reference internal" href="C_referencias.html#id16" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: manual de realización. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>]</span> trabaja, desde
+<p>La metodología vigente de estratificación urbana del DANE <span class="bibtex-citation" id="id2">[<a class="reference internal" href="C_referencias.html#id15" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: enfoque conceptual. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>, <a class="reference internal" href="C_referencias.html#id16" title="DANE. Metodología de estratificación socioeconómica urbana para servicios públicos domiciliarios: manual de realización. Versión 2.0, Departamento Administrativo Nacional de Estadística, Dirección de Geoestadística, 2015.">DANE, 2015</a>]</span> trabaja, desde
 2015, con la <strong>información predial del catastro</strong>. Tiene tres pasos:</p>
 <ol class="arabic simple">
 <li><p><strong>Zonas.</strong> Se cruzan las zonas homogéneas físicas del catastro (topografía, vías, servicios, uso del suelo) con
@@ -464,6 +471,9 @@ su estrato.</p></li>
 <li><p><strong>Viviendas atípicas.</strong> Solo cambia el estrato de una vivienda cuyo puntaje es atípico frente a las de su estrato:
 fuera de <span class="math notranslate nohighlight">\(Q_1 - 1.5\,RIC\)</span> o <span class="math notranslate nohighlight">\(Q_3 + 1.5\,RIC\)</span> sube o baja un estrato; fuera de <span class="math notranslate nohighlight">\(3\,RIC\)</span>, dos.</p></li>
 </ol>
+<p>Lo que la metodología <strong>no</strong> usa: los avalúos catastrales (el DANE dice que trabaja «sobre las características físicas
+de las viviendas y su localización») ni la información del hogar, como el ingreso, la ocupación o la educación. Las
+zonas geoeconómicas sí reflejan el valor del suelo de la <strong>zona</strong>, no el de cada vivienda.</p>
 <div class="cell tag_hide-input docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -581,14 +591,107 @@ con dos ecuaciones de búsqueda:</p>
 muestra (unas 2 300 observaciones independientes, capítulo 2) y por interpretabilidad.</p>
 <p><strong>Hallazgo de la búsqueda 1: no hay un antecedente directo.</strong> No se encontró ningún estudio que clasifique el estrato
 o nivel socioeconómico de una <strong>vivienda</strong> usando como predictores sus características catastrales y su ubicación.
-Los trabajos más cercanos hacen otra cosa:</p>
-<ul class="simple">
-<li><p>predicen el <strong>precio</strong> de la vivienda con XGBoost, Random Forest o SVR <span class="bibtex-citation" id="id2">[<a class="reference internal" href="C_referencias.html#id5" title="Y. Ren. Ensemble learning models for house price prediction: a case study in king county, usa. In AIP Conference Proceedings, volume 3194, 020004. 2024. doi:10.1063/5.0222900.">Ren, 2024</a>, <a class="reference internal" href="C_referencias.html#id2" title="J. Rojas-Quiroz and C. Marmolejo-Duarte. More than black boxes: machine learning models' capacity to capture housing submarket patterns. Urban Science, 10(8):440, 2026. doi:10.3390/urbansci10080440.">Rojas-Quiroz and Marmolejo-Duarte, 2026</a>]</span>;</p></li>
-<li><p>usan el nivel socioeconómico como <strong>predictor</strong> de otra variable, no como objetivo <span class="bibtex-citation" id="id3">[<a class="reference internal" href="C_referencias.html#id3" title="S. Jin, H. Zheng, N. Marantz, and A. Roy. Understanding the effects of socioeconomic factors on housing price appreciation using explainable ai. Applied Geography, 169:103339, 2024. doi:10.1016/j.apgeog.2024.103339.">Jin <em>et al.</em>, 2024</a>]</span>;</p></li>
-<li><p>mapean la pobreza por zonas con imágenes satelitales <span class="bibtex-citation" id="id4">[<a class="reference internal" href="C_referencias.html#id4" title="J. Salas, M. Zea-Ortiz, P. Vera, and D. Wood. A two-stage approach to improve poverty mapping spatial resolution. Remote Sensing, 18(3):427, 2026. doi:10.3390/rs18030427.">Salas <em>et al.</em>, 2026</a>]</span>;</p></li>
-<li><p>el antecedente metodológico más próximo es de 1998 y usa regresión logística con datos agregados por sector censal
-<span class="bibtex-citation" id="id5">[<a class="reference internal" href="C_referencias.html#id6" title="M. W. Sermons and F. S. Koppelman. Factor analytic approach to incorporating systematic taste variation into models of residential location choice. Transportation Research Record, pages 194–202, 1998. doi:10.3141/1617-27.">Sermons and Koppelman, 1998</a>]</span>.</p></li>
-</ul>
+Los 9 trabajos más cercanos (Tabla II de la revisión) predicen otra cosa:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Mostrar el código</p>
+<p class="expanded admonition-title">Ocultar el código</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">[</span><span class="s2">"Precio o valorización de la vivienda"</span><span class="p">,</span> <span class="s2">"5 de 9"</span><span class="p">,</span> <span class="s2">"XGBoost, Random Forest, SVR, árbol, Gradient Boosting, lineal"</span><span class="p">,</span>
+     <span class="s2">"Sí trabajan vivienda por vivienda y con atributos físicos parecidos, pero el objetivo es un precio continuo "</span>
+     <span class="s2">"(regresión, R² ≈ 0.88–0.89), y el estrato no puede basarse en el avalúo"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Pobreza multidimensional por zona (México)"</span><span class="p">,</span> <span class="s2">"1 de 9"</span><span class="p">,</span> <span class="s2">"XGBoost con datos censales"</span><span class="p">,</span>
+     <span class="s2">"Mide condiciones del hogar agregadas en celdas de 469 m: se parece más al SISBÉN (que clasifica hogares) que al "</span>
+     <span class="s2">"estrato (que clasifica inmuebles)"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Nivel socioeconómico como predictor (salud, PISA, valorización)"</span><span class="p">,</span> <span class="s2">"3 de 9"</span><span class="p">,</span> <span class="s2">"Logística; RF, XGBoost, LASSO, stacking"</span><span class="p">,</span>
+     <span class="s2">"El nivel socioeconómico es una variable de entrada, no lo que se predice"</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"Elección de dónde vivir (1998)"</span><span class="p">,</span> <span class="s2">"1 de 9"</span><span class="p">,</span> <span class="s2">"Análisis factorial y regresión logística"</span><span class="p">,</span>
+     <span class="s2">"Datos agregados por sector censal; es el antecedente más cercano en método, pero no predice el estrato"</span><span class="p">],</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Qué predicen"</span><span class="p">,</span> <span class="s2">"Estudios"</span><span class="p">,</span> <span class="s2">"Modelos"</span><span class="p">,</span> <span class="s2">"En qué se parece y en qué no"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Qué predicen</th>
+      <th>Estudios</th>
+      <th>Modelos</th>
+      <th>En qué se parece y en qué no</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Precio o valorización de la vivienda</td>
+      <td>5 de 9</td>
+      <td>XGBoost, Random Forest, SVR, árbol, Gradient Boosting, lineal</td>
+      <td>Sí trabajan vivienda por vivienda y con atributos físicos parecidos, pero el objetivo es un precio continuo (regresi...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Pobreza multidimensional por zona (México)</td>
+      <td>1 de 9</td>
+      <td>XGBoost con datos censales</td>
+      <td>Mide condiciones del hogar agregadas en celdas de 469 m: se parece más al SISBÉN (que clasifica hogares) que al estr...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Nivel socioeconómico como predictor (salud, PISA, valorización)</td>
+      <td>3 de 9</td>
+      <td>Logística; RF, XGBoost, LASSO, stacking</td>
+      <td>El nivel socioeconómico es una variable de entrada, no lo que se predice</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Elección de dónde vivir (1998)</td>
+      <td>1 de 9</td>
+      <td>Análisis factorial y regresión logística</td>
+      <td>Datos agregados por sector censal; es el antecedente más cercano en método, pero no predice el estrato</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Referencias de la tabla: precio y valorización <span class="bibtex-citation" id="id3">[<a class="reference internal" href="C_referencias.html#id3" title="S. Jin, H. Zheng, N. Marantz, and A. Roy. Understanding the effects of socioeconomic factors on housing price appreciation using explainable ai. Applied Geography, 169:103339, 2024. doi:10.1016/j.apgeog.2024.103339.">Jin <em>et al.</em>, 2024</a>, <a class="reference internal" href="C_referencias.html#id5" title="Y. Ren. Ensemble learning models for house price prediction: a case study in king county, usa. In AIP Conference Proceedings, volume 3194, 020004. 2024. doi:10.1063/5.0222900.">Ren, 2024</a>, <a class="reference internal" href="C_referencias.html#id2" title="J. Rojas-Quiroz and C. Marmolejo-Duarte. More than black boxes: machine learning models' capacity to capture housing submarket patterns. Urban Science, 10(8):440, 2026. doi:10.3390/urbansci10080440.">Rojas-Quiroz and Marmolejo-Duarte, 2026</a>]</span>; pobreza <span class="bibtex-citation" id="id4">[<a class="reference internal" href="C_referencias.html#id4" title="J. Salas, M. Zea-Ortiz, P. Vera, and D. Wood. A two-stage approach to improve poverty mapping spatial resolution. Remote Sensing, 18(3):427, 2026. doi:10.3390/rs18030427.">Salas <em>et al.</em>, 2026</a>]</span>; elección
+residencial <span class="bibtex-citation" id="id5">[<a class="reference internal" href="C_referencias.html#id6" title="M. W. Sermons and F. S. Koppelman. Factor analytic approach to incorporating systematic taste variation into models of residential location choice. Transportation Research Record, pages 194–202, 1998. doi:10.3141/1617-27.">Sermons and Koppelman, 1998</a>]</span>. Uno de los estudios de valorización también usa el nivel socioeconómico como predictor.</p>
+<p><strong>Por qué no hay estudios comparables.</strong> Las diferencias con este proyecto son tres:</p>
+<ol class="arabic simple">
+<li><p><strong>Objetivo.</strong> El estrato solo existe en Colombia (sección 1.1); la literatura internacional predice el precio de la
+vivienda, la pobreza o un índice socioeconómico del hogar.</p></li>
+<li><p><strong>Unidad.</strong> Los estudios socioeconómicos trabajan con zonas (celdas, sectores censales), donde los promedios
+facilitan la predicción; los que trabajan con viviendas individuales predicen su precio.</p></li>
+<li><p><strong>Tarea y métrica.</strong> Casi todos son regresiones evaluadas con R²; aquí es una clasificación en 6 clases
+ordenadas, evaluada con F1 macro.</p></li>
+</ol>
+<p><strong>Confirmación en Web of Science.</strong> Una búsqueda complementaria en Web of Science Core Collection (19 de octubre de
+2026), hecha directamente desde <em>Advanced Search</em>, con la consulta <code class="docutils literal notranslate"><span class="pre">TS=((&quot;socioeconomic</span> <span class="pre">status&quot;</span> <span class="pre">OR</span> <span class="pre">&quot;socioeconomic</span> <span class="pre">stratum&quot;</span> <span class="pre">OR</span> <span class="pre">&quot;socioeconomic</span> <span class="pre">stratification&quot;)</span> <span class="pre">AND</span> <span class="pre">(&quot;cadastral</span> <span class="pre">data&quot;</span> <span class="pre">OR</span> <span class="pre">&quot;housing</span> <span class="pre">characteristics&quot;))</span></code>, no devolvió ningún
+documento. El dashboard muestra la captura (pestaña 1).</p>
+<p><strong>Alcance de este hallazgo.</strong> «No se encontró» se refiere a esas dos bases (Scopus: dos ecuaciones, 5 de octubre de
+2026, sin <em>deep learning</em>; Web of Science: la consulta anterior). Ambas indexan poca literatura colombiana en
+español: una versión final de la revisión debería sumar SciELO, Redalyc y repositorios de tesis colombianas, y el
+libro <em>Los límites de la estratificación</em> (Sepúlveda, Gallego y López), que propone usar información catastral como
+alternativa al estrato.</p>
 <p><strong>Hallazgo de la búsqueda 2: modelos mejorados que no se han aplicado a este problema.</strong> En el orden de prioridad de
 la revisión:</p>
 <div class="cell tag_hide-input docutils container">
@@ -683,10 +786,21 @@ la revisión:</p>
 </section>
 <section id="la-brecha-el-modelo-propuesto-y-la-hipotesis">
 <h2>1.4 La brecha, el modelo propuesto y la hipótesis<a class="headerlink" href="#la-brecha-el-modelo-propuesto-y-la-hipotesis" title="Link to this heading">#</a></h2>
-<p><strong>La brecha.</strong> Ningún trabajo clasifica el estrato de una vivienda con datos catastrales, y el modelo mejor
-respaldado por la revisión para problemas espaciales, el <strong>XGBoost geográfico</strong> de Grekousis
-<span class="bibtex-citation" id="id6">[<a class="reference internal" href="C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span>, solo existe para <strong>regresión</strong>: no encontramos una versión para clasificación ni una aplicación
-al estrato.</p>
+<p><strong>La brecha tiene dos partes</strong> (la «brecha doble» de la revisión):</p>
+<ul class="simple">
+<li><p><strong>De aplicación.</strong> Ningún trabajo clasifica el estrato de cada vivienda con sus características catastrales y su
+ubicación, como problema de 6 clases.</p></li>
+<li><p><strong>De método.</strong> Los nueve modelos de la Tabla III reducen el error frente a los clasificadores convencionales en
+otros problemas, pero nunca se aplicaron a este. El mejor respaldado para problemas espaciales, el <strong>XGBoost
+geográfico</strong> de Grekousis <span class="bibtex-citation" id="id6">[<a class="reference internal" href="C_referencias.html#id7" title="G. Grekousis. Geographical-xgboost: a new ensemble model for spatially local regression based on gradient-boosted trees. Journal of Geographical Systems, 27(2):169–195, 2025. doi:10.1007/s10109-025-00465-4.">Grekousis, 2025</a>]</span>, solo existe para <strong>regresión</strong>: no encontramos una versión para
+clasificación ni una aplicación al estrato.</p></li>
+</ul>
+<p><strong>El matiz que precisa la brecha.</strong> El DANE sí calcula el estrato con el catastro (sección 1.2), pero con insumos que
+el <strong>catastro abierto no publica</strong>: el puntaje de calificación de las edificaciones y las zonas homogéneas. El vacío no
+es que nadie use el catastro, sino que nadie ha medido <strong>cuánto del estrato se recupera con la parte pública del
+catastro y aprendizaje supervisado</strong>.</p>
+<p><strong>Consecuencia.</strong> Como no hay cifras publicadas con las que compararse, el desempeño se juzga contra un <strong>modelo base
+propio</strong> (capítulo 3), evaluado con el mismo protocolo espacial que los modelos propuestos (capítulo 5).</p>
 <p><strong>El modelo propuesto.</strong> Una <strong>adaptación propia del XGBoost geográfico a clasificación multiclase</strong> (capítulo 4):
 un XGBoost global más modelos locales alrededor de puntos ancla, con un kernel espacial adaptativo, que mezcla las
 probabilidades del global y de los locales. Encaja con el problema porque el estrato es una propiedad de la zona
