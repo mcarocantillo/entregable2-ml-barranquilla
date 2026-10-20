@@ -461,7 +461,7 @@
 <section id="b-2-organizacion-e-interactividad">
 <h2>B.2 Organización e interactividad<a class="headerlink" href="#b-2-organizacion-e-interactividad" title="Link to this heading">#</a></h2>
 <p>El dashboard final reúne los tres entregables y los análisis posteriores con la misma historia de este libro. Tiene una
-portada y ocho pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelo propuesto y
+portada y ocho pestañas (Problema y revisión, Datos y calidad, Análisis exploratorio, Modelo base, Modelos propuestos y
 protocolo, Resultados, Optimización del Entregable 3 y Conclusiones); en la <strong>vista continua</strong> cada pestaña muestra todas sus diapositivas una debajo
 de otra, con un menú lateral que salta a cada una y flechas del teclado, y en la vista <strong>por diapositiva</strong> se pasan de
 a una. Cada diapositiva tiene una gráfica o tabla interactiva, de dos a cuatro frases de lectura,
@@ -475,28 +475,31 @@ con un buscador, y el botón «Presentar» oculta la portada y el menú para pro
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>1. Problema y revisión</p></td>
-<td><p>La pregunta y la escala de estratos; cómo asigna el DANE el estrato; la revisión bibliográfica (qué modelos usaron los trabajos cercanos y los nueve candidatos originales); el vacío en la literatura (por qué no hay estudios comparables, con la búsqueda en Web of Science); objetivo e hipótesis; la ruta de trabajo.</p></td>
+<tr class="row-even"><td><p>▶ 20 min</p></td>
+<td><p>La presentación de 20 minutos: 19 diapositivas esenciales de las demás pestañas, en orden de exposición, en modo compacto (dos puntos y la frase final) y con los minutos sugeridos en el menú; conservan su número original.</p></td>
 </tr>
-<tr class="row-odd"><td><p>2. Datos y calidad</p></td>
-<td><p>Embudo de limpieza; ubicación por manzana (umbral ajustable y mapa); cobertura y modelo v1 frente a v2; faltantes e imposibles; outliers; dependencia y tamaño efectivo (ICC ajustable); partición espacial (train/test/buffer, folds o mezcla de estratos).</p></td>
+<tr class="row-odd"><td><p>1. Problema y revisión</p></td>
+<td><p>La pregunta y la escala de estratos; cómo asigna el DANE el estrato; la revisión bibliográfica (qué modelos usaron los trabajos cercanos y los nueve candidatos originales); el vacío en la literatura (por qué no hay estudios comparables, con la búsqueda en Web of Science); objetivo e hipótesis; la ruta de trabajo; qué cambió en la versión 3 (validación y test del modelo base con el protocolo anterior y con kNNDM, y por qué el buffer era de 1 km).</p></td>
 </tr>
-<tr class="row-even"><td><p>3. Análisis exploratorio</p></td>
+<tr class="row-even"><td><p>2. Datos y calidad</p></td>
+<td><p>Embudo de limpieza; ubicación por manzana (umbral ajustable y mapa); cobertura por estrato; faltantes e imposibles; outliers; dependencia y tamaño efectivo (ICC ajustable); partición espacial (entrenamiento y test, mezcla de estratos o el buffer de la versión anterior).</p></td>
+</tr>
+<tr class="row-odd"><td><p>3. Análisis exploratorio</p></td>
 <td><p>Objetivo (distribución, sur–norte, mapa); numéricas (variable y escala); transformación; correlaciones (Spearman, Pearson o pares); densidad de pares (dos variables); numéricas y categóricas frente al estrato; ranking de asociación; VIF; PCA, biplot (componentes y color); outliers multivariados; clustering (k ajustable) y t-SNE; mapa por variable; autocorrelación, LISA y Gi*; escala (MAUP); auditoría de fuga; EDA mejorado (el entorno frente a la vivienda, las fronteras entre estratos y la composición del test).</p></td>
 </tr>
-<tr class="row-odd"><td><p>4. Modelo base</p></td>
-<td><p>Protocolo de validación; búsqueda de hiperparámetros; comparación con líneas base (métrica, gráfica o tabla); significancia; errores por estrato, ROC y calibración (modelo); coeficientes y odds; importancia por permutación; curva de aprendizaje; residuos; simulador (variables y clic en el mapa).</p></td>
+<tr class="row-even"><td><p>4. Modelo base</p></td>
+<td><p>El modelo base de la versión 3 (validación kNNDM, entrenamiento sin buffer; <code class="docutils literal notranslate"><span class="pre">proyecto/preparar_base_v3.py</span></code>): búsqueda de hiperparámetros; comparación con líneas base (métrica, gráfica o tabla); significancia; errores por estrato, ROC y calibración (modelo); coeficientes y odds; importancia por permutación; curva de aprendizaje; residuos; variantes (logística ordinal y umbrales); simulador (variables y clic en el mapa).</p></td>
 </tr>
-<tr class="row-even"><td><p>5. Modelo propuesto y protocolo</p></td>
-<td><p>El XGBoost geográfico y los demás candidatos; por qué separar zonas; validar a la distancia correcta (kNNDM); el modelo base con kNNDM.</p></td>
+<tr class="row-odd"><td><p>5. Modelos propuestos y protocolo</p></td>
+<td><p>Los modelos originales de la revisión y las referencias; cómo funciona el XGBoost geográfico; cómo funcionan Rotation Forest, stacking, RF + SVM y TPE-SVM; por qué separar zonas (validación aleatoria frente a kNNDM); validar a la distancia correcta.</p></td>
 </tr>
-<tr class="row-odd"><td><p>6. Resultados</p></td>
-<td><p>Ronda 1 (modelos de la revisión, criterio, errores, residuos); ronda 2 (vecindad física, dónde ayuda, grafo KNN); zonas conocidas y los dos escenarios; ¿supera el modelo nuevo al base?; todos los modelos originales (test o validación, frente al base o a la logística con vecindad); significancia (δ de Cliff, Holm y Friedman); búsqueda del XGBoost geográfico con todos los datos.</p></td>
+<tr class="row-even"><td><p>6. Resultados</p></td>
+<td><p>Solo con el protocolo de la versión 3: la vecindad física con kNNDM; todos los modelos originales (test o validación, frente al base o a la logística con vecindad); significancia (δ de Cliff, Holm y Friedman); el XGBoost geográfico en zonas nuevas y conocidas; su búsqueda con todos los datos. Las rondas con el protocolo anterior están en los capítulos 6 y 7 de este libro.</p></td>
 </tr>
-<tr class="row-even"><td><p>7. Optimización (Entregable 3)</p></td>
+<tr class="row-odd"><td><p>7. Optimización (Entregable 3)</p></td>
 <td><p>Pipeline combinatorio; optimizadores (curva de desempeño en cualquier momento); balanceo (F1, rango, calibración o tiempo); costo computacional (tiempo frente a n por familia); test de los finalistas (submuestra o todos los datos); SHAP por modelo.</p></td>
 </tr>
-<tr class="row-odd"><td><p>8. Conclusiones</p></td>
+<tr class="row-even"><td><p>8. Conclusiones</p></td>
 <td><p>Hallazgos, respuesta a la pregunta, limitaciones, próximos pasos y enlaces a los tres libros.</p></td>
 </tr>
 </tbody>

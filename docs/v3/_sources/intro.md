@@ -47,7 +47,7 @@ El libro sigue el orden de una investigación: la pregunta y la revisión, el m�
 
 ```{note}
 **El dashboard.** El libro acompaña un tablero en Dash Plotly con la misma historia, en ocho pestañas: **Problema y
-revisión**, **Datos y calidad**, **Análisis exploratorio**, **Modelo base**, **Modelo propuesto y protocolo**,
+revisión**, **Datos y calidad**, **Análisis exploratorio**, **Modelo base**, **Modelos propuestos y protocolo**,
 **Resultados**, **Optimización (Entregable 3)** y **Conclusiones**. Está en
 **https://entregable2-ml-barranquilla.onrender.com** (el servicio gratuito se suspende sin visitas: la primera carga
 puede tardar un minuto). Las figuras de los dos son las mismas, generadas por los módulos `figuras.py`,
