@@ -96,6 +96,7 @@ def d_dane():
     return diapositiva("1.2", "Cómo asigna el DANE el estrato", visual,
                        puntos=["El estrato es, ante todo, una propiedad de la zona.",
                                "Una vivienda solo se aparta de su zona si es claramente atípica.",
+                               "No usa los avalúos catastrales ni datos del hogar (ingreso, ocupación, educación).",
                                "Los dos insumos clave del DANE no son públicos."],
                        conclusion="La pregunta real: ¿cuánto del estrato se recupera con la parte pública del catastro?",
                        fuente=f"{E2C} · cap. 1.2")
@@ -160,6 +161,42 @@ def d_bibliografia():
                                "El mejor respaldado, el XGBoost geográfico, solo existía para regresión."],
                        conclusion="Nadie ha clasificado el estrato con variables catastrales: esa es la brecha.",
                        fuente=f"{E2C} · caps. 1.3 y 9.1")
+
+
+def d_vacio():
+    diferencias = pd.DataFrame([
+        ["Objetivo", "Precio de la vivienda, pobreza o un índice socioeconómico del hogar",
+         "El estrato oficial, que solo existe en Colombia"],
+        ["Unidad", "Zonas (celdas, sectores censales), salvo los estudios de precio", "Cada vivienda"],
+        ["Tarea y métrica", "Regresión, evaluada con R²", "Clasificación en 6 clases ordenadas, con F1 macro"],
+        ["Datos", "Censo, anuncios inmobiliarios o imágenes satelitales", "Catastro abierto y ubicación"],
+    ], columns=["Diferencia", "Trabajos cercanos (Tabla II)", "Este proyecto"])
+    consulta = ('TS = (("socioeconomic status" OR "socioeconomic stratum" OR "socioeconomic stratification") '
+                'AND ("cadastral data" OR "housing characteristics"))')
+    visual = html.Div([
+        html.Div("Búsqueda complementaria en Web of Science", className="subtitulo-visual"),
+        html.Img(src="/assets/busqueda_wos.png", alt=f"Web of Science Core Collection: 0 resultados para {consulta}",
+                 style={"width": "100%", "border": "1px solid #dcdcd6", "borderRadius": "10px"}),
+        html.P(["Captura de Web of Science Core Collection (búsqueda de Juan Camilo Oñoro): la consulta ",
+                html.Code(consulta), " devolvió 0 documentos. Repetida directamente desde Advanced Search, sin refinar "
+                "resultados anteriores (19-oct-2026), tampoco devolvió ninguno."],
+               style={"fontSize": ".85rem", "color": "#52514e", "marginTop": "6px"}),
+        html.Div("Por qué no hay estudios con los que compararse", className="subtitulo-visual mt-3"),
+        tabla(diferencias)])
+    return diapositiva("1.5", "El vacío en la literatura: por qué no hay con quién compararse", visual,
+                       puntos=["El DANE: el cobro por estratos «se institucionalizó sin que existiera un modelo similar en "
+                               "otros países». La variable objetivo no existe fuera de Colombia.",
+                               "Los 9 trabajos cercanos en Scopus predicen el precio de la vivienda (5), la pobreza por "
+                               "zonas (1) o la elección residencial (1998), o usan el nivel socioeconómico como entrada.",
+                               "Brecha de aplicación: nadie clasifica el estrato de cada vivienda con el catastro. Brecha "
+                               "de método: los 9 modelos originales nunca se aplicaron a este problema.",
+                               "El DANE usa insumos que el catastro abierto no publica: la pregunta es cuánto del estrato "
+                               "se recupera con la parte pública.",
+                               "Web of Science lo confirma: la consulta, sin refinar, no devuelve ningún documento. "
+                               "Falta revisar SciELO, Redalyc y tesis colombianas."],
+                       conclusion="Sin cifras externas con las que compararse, todo se mide contra un modelo base propio y "
+                                  "con el mismo protocolo espacial.",
+                       fuente=f"{E2C} · caps. 1.1 a 1.4")
 
 
 def d_ruta():
@@ -1657,7 +1694,7 @@ def d_recursos():
 PESTANAS = [
     {"id": "contexto", "titulo": "Problema y revisión", "diapositivas": [
         ("La pregunta", d_pregunta), ("Cómo asigna el DANE", d_dane), ("Revisión bibliográfica", d_bibliografia),
-        ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta)]},
+        ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta)]},
     {"id": "datos", "titulo": "Datos y calidad", "diapositivas": [
         ("Los datos", d_datos), ("Limpieza", d_embudo), ("Ubicación por manzana", d_manzana),
         ("Cobertura v1 → v2", d_cobertura), ("v1 frente a v2", d_v1v2), ("Faltantes e imposibles", d_calidad),
