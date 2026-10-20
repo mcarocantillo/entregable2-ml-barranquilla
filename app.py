@@ -2,7 +2,7 @@
 
 Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
-Machine Learning — Maestría, Universidad del Norte. Profesor Lihki Rubio.
+Machine Learning — Maestría en Ingeniería Mecánica, Universidad del Norte. Profesor Lihki Rubio.
 
 Reúne los Entregables 1, 2 y 3 y los desarrollos posteriores en ocho pestañas, ordenadas como la investigación
 (problema y revisión → datos → EDA → modelo base → modelo propuesto y protocolo → resultados → optimización del
@@ -26,6 +26,8 @@ app = Dash(__name__, title="Estrato socioeconómico en Barranquilla — Proyecto
 server = app.server
 
 PESTANAS = {p["id"]: p for p in DP.PESTANAS}
+# Número de cada pestaña (la presentación de 20 min no lleva número: reúne diapositivas de las demás).
+ORDEN = {p["id"]: n + 1 for n, p in enumerate(p for p in DP.PESTANAS if not p.get("sin_numero"))}
 AUTORES = "María Carolina Cantillo Orozco · Juan Camilo Oñoro Araujo"
 T, CV, B = DP.T, DP.CV, DP.B
 
@@ -46,7 +48,8 @@ def cifra_modelo_nuevo():
 
 
 portada = html.Header(html.Div([
-    html.Div("Machine Learning · Maestría · Universidad del Norte · Proyecto final", className="hero-kicker"),
+    html.Div("Machine Learning · Maestría en Ingeniería Mecánica · Universidad del Norte · Proyecto final",
+             className="hero-kicker"),
     html.H1(["¿Se puede predecir el ", html.Span("estrato", className="resalte"), " de una vivienda con sus datos catastrales?"],
             className="hero-titulo"),
     html.P("Clasificación del estrato socioeconómico de las viviendas de Barranquilla con el catastro abierto, "
@@ -61,10 +64,18 @@ portada = html.Header(html.Div([
              "processed by ESA.", className="hero-credito"),
 ], className="hero-contenido"), className="hero")
 
+def etiqueta_pestana(p):
+    if p.get("sin_numero"):
+        total = sum(d[2]["minutos"] for d in p["diapositivas"])
+        return f"▶ {total:g} min"
+    return f"{ORDEN[p['id']]}. {p.get('corto', p['titulo'])}"
+
+
 navegacion = html.Div(dbc.Container([
     html.Div([html.Span("Estrato · Barranquilla", className="nav-marca"),
               dbc.Tabs(id="pestana", active_tab="contexto", className="pestanas",
-                       children=[dbc.Tab(label=f"{i + 1}. {p['titulo']}", tab_id=p["id"]) for i, p in enumerate(DP.PESTANAS)]),
+                       children=[dbc.Tab(label=etiqueta_pestana(p), tab_id=p["id"], label_class_name=(
+                                     "pestana-presentacion" if p.get("sin_numero") else None)) for p in DP.PESTANAS]),
               html.Div([radio("vista", [("continua", "Continua"), ("diapositivas", "Por diapositiva")], "continua"),
                         dbc.Button("Glosario", id="btn-glosario", className="btn-nav", n_clicks=0),
                         dbc.Button("Presentar", id="btn-presentar", className="btn-nav", n_clicks=0)],
@@ -87,12 +98,18 @@ app.layout = html.Div([
 ], id="raiz")
 
 
+def num_menu(p, i):
+    """Número de la diapositiva en el menú lateral; en la presentación de 20 min, los minutos sugeridos."""
+    extra = p["diapositivas"][i][2:]
+    return f"{extra[0]['minutos']:g}′" if extra else f"{i + 1:02d}"
+
+
 def menu(pid, activo):
     p = PESTANAS[pid]
-    return html.Div([html.Button([html.Span(f"{i + 1:02d}", className="menu-num"), html.Span(t, className="menu-texto")],
+    return html.Div([html.Button([html.Span(num_menu(p, i), className="menu-num"), html.Span(t, className="menu-texto")],
                                  id={"type": "menu", "i": i}, n_clicks=0,
                                  className="menu-item" + (" activo" if i == activo else ""))
-                     for i, (t, _) in enumerate(p["diapositivas"])], className="menu")
+                     for i, (t, *_) in enumerate(p["diapositivas"])], className="menu")
 
 
 def pie_navegacion(pid, i):
@@ -105,18 +122,20 @@ def pie_navegacion(pid, i):
         className="pie-navegacion")
 
 
-ORDEN = {p["id"]: n + 1 for n, p in enumerate(DP.PESTANAS)}
 
 
 def construir(pid, i):
-    titulo, funcion = PESTANAS[pid]["diapositivas"][i]
-    CMP.NUMERO_ACTUAL = f"{ORDEN[pid]}.{i + 1}"      # numeración automática según la posición
+    titulo, funcion, *extra = PESTANAS[pid]["diapositivas"][i]
+    # Numeración automática según la posición; en la presentación de 20 min, la de la pestaña de origen.
+    pid_n, i_n = extra[0]["origen"] if extra else (pid, i)
+    CMP.NUMERO_ACTUAL = f"{ORDEN[pid_n]}.{i_n + 1}"
+    CMP.COMPACTA, CMP.PUNTOS = bool(extra), (extra[0]["puntos"] if extra else None)
     try:
         return funcion()
     except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
         return dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
     finally:
-        CMP.NUMERO_ACTUAL = None
+        CMP.NUMERO_ACTUAL, CMP.COMPACTA, CMP.PUNTOS = None, False, None
 
 
 def cuerpo_diapositiva(pid, i):
@@ -126,9 +145,9 @@ def cuerpo_diapositiva(pid, i):
 # Vista continua: todas las diapositivas de la pestaña una debajo de otra; el menú salta a cada una.
 def menu_continuo(pid):
     p = PESTANAS[pid]
-    return html.Div([html.A([html.Span(f"{i + 1:02d}", className="menu-num"), html.Span(t, className="menu-texto")],
+    return html.Div([html.A([html.Span(num_menu(p, i), className="menu-num"), html.Span(t, className="menu-texto")],
                             href=f"#d-{pid}-{i}", className="menu-item menu-enlace")
-                     for i, (t, _) in enumerate(p["diapositivas"])], className="menu")
+                     for i, (t, *_) in enumerate(p["diapositivas"])], className="menu")
 
 
 def cuerpo_continuo(pid):

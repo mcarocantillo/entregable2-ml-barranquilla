@@ -156,10 +156,11 @@ GLOSARIO = {
         mide="Franja alrededor de cada zona de validación o prueba cuyas viviendas se quitan del entrenamiento, para "
              "que el modelo no aprenda de vecinos casi idénticos.",
         rango="0 km en adelante", mejor="",
-        tramos=[(0, 0.5, "insuficiente: fuga por cercanía", R), (0.5, 2.6, "parcial (el usado: 1 km)", A),
+        tramos=[(0, 0.5, "insuficiente: fuga por cercanía", R), (0.5, 2.6, "parcial (versión anterior: 1 km)", A),
                 (2.6, 5, "≥ alcance del correlograma: sin fuga", V)],
-        nota="Más buffer quita más fuga, pero también más datos: con 2.6 km el F1 de CV cae a 0.15 porque se pierde "
-             "demasiado entrenamiento. 1 km fue el compromiso elegido."),
+        nota="Protocolo de las versiones 1 y 2. Más buffer quita más fuga, pero también más datos: con 2.6 km el F1 "
+             "de CV cae a 0.15 porque se pierde demasiado entrenamiento, y 1 km fue el compromiso. En la versión 3 lo "
+             "reemplazó kNNDM: con el buffer se validaba a 1.4 km del dato más cercano, cuando el escenario es 0.45 km."),
     "optimismo": dict(
         nombre="Optimismo de la validación aleatoria", grupo="Validación",
         mide="Cuánto más alto sale el F1 si se mezclan filas al azar en vez de separar zonas.",

@@ -48,8 +48,7 @@ def tipo(n):
 
 
 COLOR_TIPO = {"original": NARANJA, "referencia": AZUL, "base": TINTA}
-NOMBRE_TIPO = {"original": "modelo original de la revisión", "referencia": "modelo de referencia (no original)",
-               "base": "modelo base"}
+NOMBRE_TIPO = {"original": "original de la revisión", "referencia": "referencia (no original)", "base": "modelo base"}
 
 
 @lru_cache(maxsize=None)
@@ -479,3 +478,82 @@ def fig_e3_shap(modelo="XGBoost", n=12):
     fig.update_yaxes(showgrid=False)
     fig.update_layout(title=f"{modelo}: azul = ubicación y entorno; naranja = la propia vivienda")
     return _estilo(fig, alto=470, leyenda=False)
+
+
+# ---------------------------------------------------------------------------
+# Versión 3 (sugerencia del profesor): qué cambió y por qué
+# ---------------------------------------------------------------------------
+def fig_cambios(vista="cvtest"):
+    """«cvtest»: F1 de validación y de test del modelo base con el protocolo anterior (bloques con buffer de 1 km) y
+    con el de la versión 3 (kNNDM). «buffer»: por qué el buffer era de 1 km (F1 de validación y entrenamiento
+    excluido según su tamaño; Entregable 1, cap. 10)."""
+    if vista == "buffer":
+        import figuras_proyecto as FP
+        t = FP.tabla_e1("10_Sensibilidad al buffer_1", indice=False)
+        b = t["buffer_km"].astype(float)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=[f"{v:g} km" for v in b], y=t["% train excluido"].astype(float), name="% del entrenamiento excluido",
+                             marker_color=AZUL_CLARO, yaxis="y2", text=[f"{v:.0f} %" for v in t["% train excluido"].astype(float)],
+                             textposition="outside", hovertemplate="buffer %{x}: se excluye el %{y:.1f} %<extra></extra>"))
+        fig.add_trace(go.Scatter(x=[f"{v:g} km" for v in b], y=t["F1 macro CV"].astype(float), mode="lines+markers+text",
+                                 name="F1 macro de validación", line=dict(color=NARANJA, width=3), marker=dict(size=11),
+                                 text=[f"{v:.2f}" for v in t["F1 macro CV"].astype(float)], textposition="top center",
+                                 hovertemplate="buffer %{x}: F1 %{y:.3f}<extra></extra>"))
+        fig.update_layout(title="Protocolo anterior: más buffer quita más fuga, pero también más datos",
+                          yaxis=dict(title="F1 macro (validación)", range=[0, 0.6]),
+                          yaxis2=dict(title="% del entrenamiento excluido", overlaying="y", side="right", range=[0, 110],
+                                      showgrid=False))
+        fig.update_xaxes(title="tamaño del buffer (2.6 km = alcance del correlograma)")
+        return _estilo(fig, alto=430)
+    import figuras_proyecto as FP
+    d = FP.v3_e1()
+    if not d:
+        return None
+    c = d["cv_vs_test"]
+    filas = [("Versión anterior\n(bloques + buffer de 1 km)", c["v2: bloques + buffer de 1 km"]),
+             ("Versión 3\n(kNNDM, sin buffer)", c["v3: kNNDM sin buffer"])]
+    x = [f[0].replace("\n", "<br>") for f in filas]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=x, y=[f[1]["F1 macro CV"] for f in filas], name="validación cruzada", marker_color=AZUL_CLARO,
+                         text=[f"{f[1]['F1 macro CV']:.2f}" for f in filas], textposition="outside"))
+    fig.add_trace(go.Bar(x=x, y=[f[1]["F1 macro test"] for f in filas], name="test (7 bloques, el mismo)", marker_color=AZUL,
+                         text=[f"{f[1]['F1 macro test']:.2f}" for f in filas], textposition="outside"))
+    for i, f in enumerate(filas):
+        fig.add_annotation(x=x[i], y=max(f[1]["F1 macro CV"], f[1]["F1 macro test"]) + 0.08,
+                           text=f"brecha test − validación: {f[1]['test − CV']:+.2f}", showarrow=False,
+                           font=dict(size=13, color=TINTA))
+    fig.update_layout(barmode="group", title="Modelo base: la validación ahora anticipa el test")
+    fig.update_yaxes(title="F1 macro", range=[0, 0.7])
+    return _estilo(fig, alto=430)
+
+
+def fig_optimismo_v3():
+    """F1 del modelo base con validación aleatoria, con kNNDM y en el test (protocolo de la versión 3)."""
+    import figuras as F
+    r = F.resultados()
+    o = r["optimismo_validacion_aleatoria"]
+    B = "Logística B_fisicas+ubicacion"
+    t = r["resultados_test"]["f1_macro"][B]
+    nombres = ["Validación aleatoria<br>(filas mezcladas)", "Validación kNNDM<br>(zonas nuevas)", "Test<br>(7 bloques de 2 km)"]
+    vals = [o["F1 macro CV"]["aleatoria (StratifiedKFold)"], o["F1 macro CV"]["espacial (kNNDM)"], t]
+    err = [o["desv."]["aleatoria (StratifiedKFold)"], o["desv."]["espacial (kNNDM)"], 0]
+    fig = go.Figure(go.Bar(x=nombres, y=vals, marker_color=[ROJO, AZUL, TINTA], error_y=dict(array=err, color=GRIS),
+                           text=[f"{v:.2f}" for v in vals], textposition="outside", showlegend=False,
+                           hovertemplate="%{x}: F1 %{y:.3f}<extra></extra>"))
+    fig.update_yaxes(title="F1 macro del modelo base", range=[0, 0.85])
+    fig.update_layout(title="Mezclar filas al azar promete un F1 que en zonas nuevas no se cumple")
+    return _estilo(fig, alto=430, leyenda=False)
+
+
+def ece(y, proba, clases=(1, 2, 3, 4, 5, 6), bins=10):
+    """Error de calibración esperado de la clase predicha (10 tramos de confianza)."""
+    proba = np.asarray(proba)
+    conf = proba.max(1)
+    acierto = (np.asarray(clases)[proba.argmax(1)] == np.asarray(y)).astype(float)
+    cortes = np.linspace(0, 1, bins + 1)
+    total = 0.0
+    for a, b in zip(cortes[:-1], cortes[1:]):
+        m = (conf > a) & (conf <= b)
+        if m.any():
+            total += m.mean() * abs(acierto[m].mean() - conf[m].mean())
+    return float(total)

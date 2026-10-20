@@ -16,10 +16,15 @@ def fmt(n, dec=0):
     return f"{n:,.{dec}f}".replace(",", " ")
 
 
-def grafico(fig, id_=None, alto=None):
-    props = {"figure": fig, "config": GRAF, "className": "grafico"}
-    if alto:
-        props["style"] = {"height": f"{alto}px"}
+def grafico(fig, id_=None, alto=None, minimo=None):
+    """Gráfica que se adapta a la pantalla: usa la altura de la figura (o ``alto``) como máximo y, en pantallas bajas,
+    lo que queda descontando la barra de navegación y la cabecera de la diapositiva, para que quepa sin desplazarse.
+    ``responsive=True`` hace que Plotly ignore la altura fija de la figura (también en las que llegan por callback).
+    ``minimo``: alto mínimo para gráficas con muchas filas, que con menos alto ocultarían etiquetas."""
+    h = round(0.9 * (alto or (fig.layout.height if fig is not None and fig.layout.height else 450)))
+    m = minimo or min(h, 320)
+    props = {"figure": fig, "config": GRAF, "className": "grafico", "responsive": True,
+             "style": {"height": f"clamp({m}px, calc(100vh - var(--alto-nav, 52px) - 210px), {max(h, m)}px)"}}
     return dcc.Graph(id=id_, **props) if id_ else dcc.Graph(**props)
 
 
@@ -144,6 +149,8 @@ def glosario_completo(filtro=""):
 # Diapositiva
 # ---------------------------------------------------------------------------
 NUMERO_ACTUAL = None   # lo fija app.py según la posición de la diapositiva (numeración automática)
+COMPACTA = False       # presentación de 20 min: solo los puntos elegidos y la frase final, sin fichas de lectura
+PUNTOS = None          # índices de los puntos que se muestran en modo compacto (por defecto, los dos primeros)
 
 
 def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=None, fuente=None, ancho_visual=8):
@@ -155,6 +162,9 @@ def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=N
     puntos: 2 a 4 frases cortas ("Lo que se ve"); conclusion: una frase; metricas: lista de fichas
     (tuplas (clave, valor[, texto, absoluto]) o claves); fuente: capítulo del libro de donde sale.
     """
+    if COMPACTA:
+        puntos = [puntos[i] for i in PUNTOS] if (puntos and PUNTOS) else (puntos or [])[:2]
+        metricas = None
     panel = []
     if puntos:
         panel.append(html.Div([html.Div("Lo que se ve", className="panel-titulo"),

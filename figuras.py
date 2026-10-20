@@ -59,12 +59,20 @@ EMBUDO = [("Filas descargadas", 382_597), ("Usos no habitacionales", -36_497), (
           ("Sin estrato residencial válido", -12_093), ("Viviendas analizadas", 332_718)]
 
 
+TAM_FUENTE = 15   # el dashboard la baja a 13 (usar_fuente) para que quepa más en la pantalla; el libro usa 15
+
+
+def usar_fuente(tam):
+    global TAM_FUENTE
+    TAM_FUENTE = tam
+
+
 def _estilo(fig, alto=420, leyenda=True):
     """Estilo común: fondo claro, rejilla tenue, tipografía grande."""
     fig.update_layout(template="simple_white", height=alto, margin=dict(l=60, r=20, t=95 if leyenda else 60, b=50),
-                      font=dict(family="Inter, Segoe UI, Arial, sans-serif", size=15, color=TINTA),
-                      title=dict(y=0.985, yanchor="top", x=0.01, xanchor="left", font=dict(size=18)),
-                      hoverlabel=dict(font_size=14), showlegend=leyenda,
+                      font=dict(family="Inter, Segoe UI, Arial, sans-serif", size=TAM_FUENTE, color=TINTA),
+                      title=dict(y=0.985, yanchor="top", x=0.01, xanchor="left", font=dict(size=TAM_FUENTE + 3)),
+                      hoverlabel=dict(font_size=TAM_FUENTE - 1), showlegend=leyenda,
                       legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="left", x=0, title_text="",
                                   traceorder="normal"),
                       paper_bgcolor="white", plot_bgcolor="white")
@@ -76,6 +84,23 @@ def _estilo(fig, alto=420, leyenda=True):
 # ---------------------------------------------------------------------------
 # Carga (con caché: la app lee los archivos una sola vez)
 # ---------------------------------------------------------------------------
+# Carpeta de los resultados del modelo base. Por defecto, ``datos/`` (versión 2: bloques con buffer de 1 km), que es la
+# que usa el libro del Entregable 2. El dashboard llama a ``usar_base(DATOS / "base_v3")`` para mostrar la versión 3
+# (validación kNNDM, entrenamiento sin buffer), que genera ``proyecto/preparar_base_v3.py`` con el mismo formato.
+BASE = DATOS
+
+
+def usar_base(carpeta):
+    global BASE
+    BASE = Path(carpeta)
+    for f in (predicciones, resultados, diagnosticos, coeficientes, modelo_principal, rangos_simulador):
+        f.cache_clear()
+
+
+def es_v3():
+    return "kNNDM" in resultados().get("version", "")
+
+
 @lru_cache(maxsize=None)
 def viviendas():
     return pd.read_pickle(DATOS / "viviendas.pkl.gz")
@@ -83,22 +108,22 @@ def viviendas():
 
 @lru_cache(maxsize=None)
 def predicciones():
-    return pd.read_pickle(DATOS / "test_predicciones.pkl.gz")
+    return pd.read_pickle(BASE / "test_predicciones.pkl.gz")
 
 
 @lru_cache(maxsize=None)
 def resultados():
-    return json.loads((DATOS / "resultados.json").read_text(encoding="utf-8"))
+    return json.loads((BASE / "resultados.json").read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=None)
 def diagnosticos():
-    return json.loads((DATOS / "diagnosticos.json").read_text(encoding="utf-8"))
+    return json.loads((BASE / "diagnosticos.json").read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=None)
 def coeficientes():
-    return pd.read_pickle(DATOS / "coeficientes.pkl.gz")
+    return pd.read_pickle(BASE / "coeficientes.pkl.gz")
 
 
 def base_eda(particion="train"):
@@ -394,7 +419,7 @@ def fig_comparacion(metrica="f1_macro"):
     if metrica == "f1_macro":
         cv = r["tabla_cv"]
         fig.add_trace(go.Bar(x=[NOMBRE_CORTO[m] for m in MODELOS], y=[cv["f1_macro (media)"][m] for m in MODELOS],
-                             name="CV espacial (media ± desv.)", marker_color="#e6e5e1",
+                             name=("CV kNNDM" if es_v3() else "CV espacial") + " (media ± desv.)", marker_color="#e6e5e1",
                              marker_pattern=dict(shape="/", fgcolor="#8a8984", size=7), marker_line_color="#8a8984",
                              marker_line_width=1,
                              error_y=dict(type="data", array=[cv["F1 macro (desv. entre folds)"][m] for m in MODELOS],
@@ -550,7 +575,8 @@ def fig_curva_aprendizaje():
     d = diagnosticos()["curva_aprendizaje"]
     n = np.array(d["n"])
     fig = go.Figure()
-    for clave, nombre, color in [("train", "entrenamiento", "#e34948"), ("val", "validación espacial", "#2a78d6")]:
+    val = "validación kNNDM" if es_v3() else "validación espacial"
+    for clave, nombre, color in [("train", "entrenamiento", "#e34948"), ("val", val, "#2a78d6")]:
         m, s = np.array(d[f"{clave}_media"]), np.array(d[f"{clave}_desv"])
         fig.add_trace(go.Scatter(x=np.r_[n, n[::-1]], y=np.r_[m + s, (m - s)[::-1]], fill="toself",
                                  fillcolor=color, opacity=0.12, line=dict(width=0), hoverinfo="skip", showlegend=False))
@@ -564,7 +590,7 @@ def fig_curva_aprendizaje():
 
 
 def fig_mapa_residuos():
-    a = pd.read_pickle(DATOS / "residuos_mapa.pkl.gz")
+    a = pd.read_pickle(BASE / "residuos_mapa.pkl.gz")
     lim = float(a.residuo.abs().quantile(0.98))
     m = diagnosticos()["moran_residuos"]["B_fisicas+ubicacion"]
     fig = go.Figure(go.Scattermap(
@@ -585,12 +611,12 @@ def fig_mapa_residuos():
 @lru_cache(maxsize=None)
 def modelo_principal():
     import joblib
-    return joblib.load(DATOS / "modelo_logistica_B.joblib")
+    return joblib.load(BASE / "modelo_logistica_B.joblib")
 
 
 @lru_cache(maxsize=None)
 def rangos_simulador():
-    return json.loads((DATOS / "simulador_rangos.json").read_text(encoding="utf-8"))
+    return json.loads((BASE / "simulador_rangos.json").read_text(encoding="utf-8"))
 
 
 def predecir(entrada):
@@ -642,7 +668,7 @@ def fig_comparacion_avanzados(metrica="f1_macro"):
     fig = go.Figure()
     if metrica == "f1_macro":
         fig.add_trace(go.Bar(x=[NOMBRE_CORTO[m] for m in mods], y=[cv["f1_macro (media)"][m] for m in mods],
-                             name="CV espacial (media ± desv.)", marker_color="#e6e5e1",
+                             name=("CV kNNDM" if es_v3() else "CV espacial") + " (media ± desv.)", marker_color="#e6e5e1",
                              marker_pattern=dict(shape="/", fgcolor="#8a8984", size=7), marker_line_color="#8a8984",
                              marker_line_width=1,
                              error_y=dict(type="data", array=[cv["F1 macro (desv. entre folds)"][m] for m in mods],

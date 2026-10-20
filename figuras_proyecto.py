@@ -82,7 +82,7 @@ def _layout_mapa(fig, titulo, alto=560, zoom=11.3, lat=10.97, lon=-74.81):
 def _estilo_sub(fig, alto):
     """Estilo para figuras con dos paneles: la leyenda va abajo para no tapar los subtítulos."""
     _estilo(fig, alto=alto)
-    fig.update_layout(legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="left", x=0), margin=dict(t=95, b=120))
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.1, xanchor="right", x=1), margin=dict(t=110, b=60))
     fig.update_annotations(font_size=14)
     return fig
 
@@ -199,14 +199,24 @@ def fig_outliers_tukey():
 def fig_particion_mapa(modo="grupo"):
     m = _pkl("particion_mapa.pkl.gz")
     fig = go.Figure()
-    if modo == "grupo":
+    if modo == "grupo" and F.es_v3():
+        # Versión 3: el modelo entrena con todo el entrenamiento (sin buffer); el test son los mismos 7 bloques.
+        m = m.assign(grupo=m.grupo.replace({"excluida por el buffer": "entrenamiento"}))
+        for g, color, op in [("entrenamiento", AZUL, 0.55), ("prueba (test)", NARANJA, 0.8)]:
+            a = m[m.grupo == g].groupby(["lat", "lon"], as_index=False).n.sum()
+            fig.add_trace(go.Scattermap(lat=a.lat, lon=a.lon, mode="markers", name=f"{g} ({a.n.sum():,})".replace(",", " "),
+                                        marker=dict(size=5, color=color, opacity=op), customdata=a.n,
+                                        hovertemplate="%{customdata:,} viviendas<extra>" + g + "</extra>"))
+        titulo = "7 bloques de prueba; el modelo entrena con todo el resto"
+    elif modo in ("grupo", "anterior"):
         for g, color, op in [("entrenamiento", AZUL, 0.55), ("excluida por el buffer", "#c3c2b7", 0.6),
                              ("prueba (test)", NARANJA, 0.75)]:
             a = m[m.grupo == g].groupby(["lat", "lon"], as_index=False).n.sum()
             fig.add_trace(go.Scattermap(lat=a.lat, lon=a.lon, mode="markers", name=f"{g} ({a.n.sum():,})".replace(",", " "),
                                         marker=dict(size=5, color=color, opacity=op), customdata=a.n,
                                         hovertemplate="%{customdata:,} viviendas<extra>" + g + "</extra>"))
-        titulo = "Partición espacial: 7 bloques de prueba y un buffer de 1 km a su alrededor"
+        titulo = ("Versión anterior: 7 bloques de prueba y un buffer de 1 km a su alrededor (ya no se usa)" if modo == "anterior"
+                  else "Partición espacial: 7 bloques de prueba y un buffer de 1 km a su alrededor")
     else:
         colores = ["#2a78d6", "#eb6834", "#1baf7a", "#9085e9", "#eda100"]
         for f in range(1, 6):
@@ -562,7 +572,8 @@ def fig_auc_univariado():
 # MODELO BASE (Entregable 1, capítulo 10; Entregable 2, capítulo 3)
 # ===========================================================================
 def fig_grid():
-    g = _json("grid_cv.json")
+    v3 = F.BASE / "grid_cv.json"
+    g = json.loads(v3.read_text(encoding="utf-8")) if v3.exists() else _json("grid_cv.json")
     if not g:
         return None
     d = pd.DataFrame(g)
@@ -578,34 +589,47 @@ def fig_grid():
                                      error_y=dict(array=a.se, color=col, thickness=1.2), showlegend=i == 1,
                                      hovertemplate="C = %{x}: F1 %{y:.3f}<extra>" + pesos + "</extra>"), 1, i)
     fig.update_xaxes(type="log", title_text="C (inverso de la regularización)", tickvals=[0.01, 0.1, 1, 10])
-    fig.update_yaxes(title_text="F1 macro (CV espacial)", row=1, col=1)
+    fig.update_yaxes(title_text="F1 macro (CV kNNDM)" if v3.exists() else "F1 macro (CV espacial)", row=1, col=1)
     fig.update_layout(title="Búsqueda de hiperparámetros: superficie plana → regla 1-SE elige C = 0.01")
     return _estilo_sub(fig, 440)
 
 
 def fig_importancia_permutacion():
-    t = tabla_e1("10_10.6_2")
-    t["c"], t["d"] = t["caída F1 macro"].map(_num), t["desv."].map(_num)
-    t = t.sort_values("c")
+    v3 = F.BASE / "importancia.json"
+    if v3.exists():
+        d = json.loads(v3.read_text(encoding="utf-8"))
+        t = pd.DataFrame({"c": d["caida"], "d": d["desv"]}, index=d["variable"]).sort_values("c")
+    else:
+        t = tabla_e1("10_10.6_2")
+        t["c"], t["d"] = t["caída F1 macro"].map(_num), t["desv."].map(_num)
+        t = t.sort_values("c")
     fig = go.Figure(go.Bar(x=t.c, y=[et(i) for i in t.index], orientation="h", marker_color=AZUL,
                            error_x=dict(array=t.d, color="#52514e"),
                            hovertemplate="%{y}: el F1 cae %{x:.3f}<extra></extra>"))
     fig.update_xaxes(title="caída del F1 macro al barajar la variable (test)")
     fig.update_yaxes(showgrid=False)
-    fig.update_layout(title="Importancia por permutación (fold 1 de la CV espacial)")
+    fig.update_layout(title="Importancia por permutación (fold 1 de la CV " + ("kNNDM)" if v3.exists() else "espacial)"))
     return _estilo(fig, alto=480, leyenda=False)
 
 
 def fig_odds():
-    t = tabla_e1("10_10.6_1")
-    col = [c for c in t.columns if c.startswith("odds")][0]
-    t["o"] = t[col].map(_num)
-    t = t.sort_values("o")
-    fig = go.Figure(go.Bar(x=t.o, y=[F._nombre_variable(str(i)) for i in t.index], orientation="h",
-                           marker_color=[AZUL if o >= 1 else ROJO for o in t.o],
-                           hovertemplate="%{y}: odds ×%{x:.2f}<extra></extra>"))
+    v3 = F.BASE / "odds.json"
+    if v3.exists():
+        d = json.loads(v3.read_text(encoding="utf-8"))
+        t = pd.DataFrame({"o": d["odds"]}, index=d["variable"]).sort_values("o")
+    else:
+        t = tabla_e1("10_10.6_1")
+        col = [c for c in t.columns if c.startswith("odds")][0]
+        t["o"] = t[col].map(_num)
+        t = t.sort_values("o")
+    # Barras que salen de 1 (sin efecto): con base=1, el largo es odds − 1, así que las odds < 1 van hacia la izquierda.
+    fig = go.Figure(go.Bar(x=t.o - 1, y=[F._nombre_variable(str(i)) for i in t.index], orientation="h", base=1,
+                           marker_color=[AZUL if o >= 1 else ROJO for o in t.o], customdata=t.o,
+                           hovertemplate="%{y}: odds ×%{customdata:.3g}<extra></extra>"))
     fig.add_vline(x=0, line_color="#52514e")  # en un eje log, las líneas van en log10: log10(1) = 0
-    fig.update_xaxes(type="log", title="odds de estrato 6 frente a 1 por +1 desviación estándar (escala log)")
+    lo, hi = float(np.log10(t.o.min())), float(np.log10(t.o.max()))
+    fig.update_xaxes(type="log", title="odds 6 frente a 1 por +1 desv. estándar (escala log)",
+                     range=[min(lo, 0) - 0.15, max(hi, 0) + 0.15])
     fig.update_yaxes(showgrid=False)
     fig.update_layout(title="Cómo leer los coeficientes: odds ratio del estrato 6 frente al 1")
     return _estilo(fig, alto=520, leyenda=False)
@@ -917,12 +941,12 @@ NOMBRE_V3 = {"B v2 (con buffer)": "Logística B v2<br>(bloques + buffer)",
              "Ordinal v3 + umbrales F1": "Ordinal v3<br>+ umbrales F1"}
 
 
-def fig_v3_modelos(metrica="f1"):
+def fig_v3_modelos(metrica="f1", incluir_v2=True):
     d = v3_e1()
     if not d:
         return None
     r = d["resumen"]
-    mods = [m for m in ORDEN_V3 if m in r]
+    mods = [m for m in ORDEN_V3 if m in r and (incluir_v2 or not m.startswith("B v2"))]
     xs = [NOMBRE_V3[m] for m in mods]
     fig = go.Figure()
     if metrica == "f1":

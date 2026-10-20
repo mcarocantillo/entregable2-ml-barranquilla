@@ -18,6 +18,11 @@ import figuras_mejoras as FM
 import figuras_proyecto as FP
 from componentes import (control, controles, desplegable, diapositiva, fmt, grafico, interruptor, kpi, radio, tabla)
 
+# El dashboard muestra el modelo base de la versión 3 (validación kNNDM, entrenamiento sin buffer), que calcula
+# proyecto/preparar_base_v3.py en datos/base_v3/. Los archivos de datos/ (versión 2) los sigue usando el libro del E2.
+if (F.DATOS / "base_v3" / "resultados.json").exists():
+    F.usar_base(F.DATOS / "base_v3")
+F.usar_fuente(13)   # letra de las gráficas un poco menor que en el libro, para que quepa más en la pantalla
 R = F.resultados()
 D = F.diagnosticos()
 E1 = F.entregable1()
@@ -143,7 +148,7 @@ def d_bibliografia():
         ["4", "RF + SVM", "RF selecciona variables, SVM clasifica", "Sí"],
         ["5", "Rotation Forest", "Rotación PCA antes de cada árbol", "Sí"],
         ["6", "EFSHB", "Selección de variables por ensambles", "No: selector de variables"],
-        ["7", "TPE-SVM", "SVM con optimización bayesiana", "Sí (ronda 1)"],
+        ["7", "TPE-SVM", "SVM con optimización bayesiana", "Sí (sin vecindad)"],
         ["8", "Stacking", "Un metamodelo combina varios modelos", "Sí"],
         ["9", "NSGA-II", "Hiperparámetros y variables a la vez", "No: selector de variables"],
     ], columns=["#", "Candidato original (Tabla III)", "Idea", "¿Se probó?"])
@@ -263,26 +268,13 @@ def _mz(vista, umbral):
 
 def d_cobertura():
     c1 = COB.loc[1]
-    return diapositiva("2.3", "Cobertura v1 → v2: el modelo ahora ve la ciudad informal", grafico(FP.fig_cobertura_v1_v2()),
-                       puntos=[f"Estrato 1: {pct(c1.v1, c1.total, 0)} → {pct(c1.v2, c1.total, 0)} de las viviendas.",
+    return diapositiva("2.4", "Cobertura por estrato: la ciudad informal entra al modelo", grafico(FP.fig_cobertura_v1_v2()),
+                       puntos=[f"Estrato 1: {pct(c1.v1, c1.total, 0)} de las viviendas con coordenadas propias; "
+                               f"{pct(c1.v2, c1.total, 0)} con la ubicación por manzana.",
                                f"Estrato 2: {pct(COB.loc[2].v1, COB.loc[2].total, 0)} → {pct(COB.loc[2].v2, COB.loc[2].total, 0)}.",
                                "Los estratos 3 a 6 casi no cambian: ya tenían coordenadas."],
-                       conclusion="La versión 2 corrige un sesgo: el estrato 1 estaba subrepresentado.",
+                       conclusion="Ubicar por manzana corrige un sesgo: el estrato 1 estaba subrepresentado.",
                        fuente=f"{E1C} v2 · cap. 1.7")
-
-
-def d_v1v2():
-    c = FP._json("comparacion_v1_v2.json")["test"]
-    rm = FP._json("comparacion_v1_v2.json")["recall_por_manzana"]
-    return diapositiva("2.4", "¿Cambia el modelo? v1 frente a v2 con la misma vara", grafico(FP.fig_v1_v2_modelo()),
-                       puntos=[f"Mismo test y mismos folds: v2 {c['v2 (pesos balanceados)']['F1 test']:.3f} frente a "
-                               f"v1 con pesos {c['v1 con pesos balanceados']['F1 test']:.3f}: empate.",
-                               "La mejora frente a la v1 entregada viene de los pesos de clase balanceados.",
-                               f"En las {fmt(rm['n_test_por_manzana'])} viviendas de test ubicadas por manzana: recall del estrato 1 "
-                               f"{rm['v1 (sin pesos)']['1']:.2f} → {rm['v2']['1']:.2f}, pero el del 2 baja "
-                               f"{rm['v1 (sin pesos)']['2']:.2f} → {rm['v2']['2']:.2f}."],
-                       conclusion="La v2 amplía la cobertura sin costo en F1; en lo informal cambia qué estrato acierta.",
-                       metricas=[("f1_macro", T["f1_macro"][B]), "ic95"], fuente="Comparación v1–v2")
 
 
 def d_calidad():
@@ -343,17 +335,26 @@ def _kish(icc):
 
 
 def d_particion():
-    visual = html.Div([controles(control("Vista", radio("part-vista", [("grupo", "Train / test / buffer"),
-                                                                       ("fold", "Folds de la CV"),
-                                                                       ("balance", "Mezcla de estratos")], "grupo"))),
+    m = FP._pkl("particion_mapa.pkl.gz")
+    tb = FM.eda()["test_por_bloque"]
+    tam = [v["total"] for v in tb.values()]
+    excl = int(m.loc[m.grupo == "excluida por el buffer", "n"].sum())
+    visual = html.Div([controles(control("Vista", radio("part-vista", [("grupo", "Entrenamiento y test"),
+                                                                       ("balance", "Mezcla de estratos"),
+                                                                       ("anterior", "Buffer de la versión anterior")],
+                                                        "grupo"))),
                        grafico(FP.fig_particion_mapa("grupo"), "part-fig")])
     return diapositiva("2.8", "Partición espacial: el test son zonas que el modelo nunca vio", visual,
-                       puntos=[f"Test: {fmt(R['n_test'])} viviendas en {R['bloques_test']} bloques de 2 km.",
-                               f"Entrenamiento: {fmt(R['n_train_antes_buffer'])}; quedan {fmt(R['n_train'])} tras el buffer de 1 km.",
-                               "La validación cruzada repite la idea dentro de train: 5 folds de bloques completos.",
-                               "El test tiene más estrato 1 y menos estrato 6 que train: el azar de las zonas."],
+                       puntos=[f"La ciudad se divide en bloques de 2 km ({m.bloque.nunique()} con viviendas): cada bloque "
+                               "va completo a un solo lado, así que dos vecinas casi idénticas no quedan separadas.",
+                               f"Test: {fmt(R['n_test'])} viviendas en {R['bloques_test']} bloques (20 %). Un algoritmo "
+                               "reparte los bloques para equilibrar los estratos: por eso quedan dispersos por la ciudad.",
+                               f"Los bloques son muy desiguales ({fmt(min(tam))} a {fmt(max(tam))} viviendas): el test tiene "
+                               "más estrato 1 y todo su estrato 6 en un solo bloque (3.22).",
+                               f"El modelo entrena con las {fmt(R['n_train'])} viviendas restantes. El buffer de 1 km de la "
+                               f"versión anterior quitaba {fmt(excl)} (vista «Buffer de la versión anterior»)."],
                        conclusion="Así se mide lo que importa: predecir en barrios sin datos.",
-                       metricas=[("buffer", 1.0, "1 km")], fuente=f"{E1C} · cap. 2")
+                       fuente=f"{E1C} · caps. 2 y 14")
 
 
 @callback(Output("part-fig", "figure"), Input("part-vista", "value"))
@@ -607,7 +608,7 @@ def d_moran():
     return diapositiva("3.16", "Autocorrelación espacial: los vecinos se parecen", grafico(F.fig_correlograma()),
                        puntos=[f"I de Moran del estrato: {m['I']:.2f} (8 edificios vecinos, p = {m['p']:.3f}).",
                                "El parecido baja con la distancia y se vuelve débil hacia los 2.6 km.",
-                               "Un buffer de 1 km reduce la fuga sin vaciar el entrenamiento."],
+                               "Por eso se valida separando zonas, a la distancia a la que se predice (kNNDM, pestaña 5)."],
                        conclusion="Validar con filas al azar sería hacer trampa: hay que separar zonas.",
                        metricas=[("moran", m["I"]), "correlograma"], fuente=f"{E1C} · cap. 8.4")
 
@@ -721,39 +722,98 @@ def _ct(v):
 # ===========================================================================
 def d_protocolo():
     o = R["optimismo_validacion_aleatoria"]
-    a, e = o["F1 macro CV"]["aleatoria (StratifiedKFold)"], o["F1 macro CV"]["espacial (bloques + buffer)"]
-    return diapositiva("4.1", "Protocolo: validar como se va a usar", grafico(F.fig_optimismo()),
-                       puntos=[f"Mezclando filas al azar, el F1 de CV sería {a:.2f}; separando zonas, {e:.2f}.",
-                               "La diferencia es fuga: vecinos casi idénticos en train y validación.",
-                               "Más buffer quita más fuga pero también más datos."],
-                       conclusion="Hay que separar zonas; la v3 mide cuánto con la distancia al vecino conocido.",
-                       metricas=[("optimismo", a - e), ("buffer", 1.0, "1 km")], fuente=f"{E1C} · cap. 10.2")
+    a, e = o["F1 macro CV"]["aleatoria (StratifiedKFold)"], o["F1 macro CV"]["espacial (kNNDM)"]
+    return diapositiva("5.4", "Por qué separar zonas al validar", grafico(FM.fig_optimismo_v3()),
+                       puntos=[f"Mezclando filas al azar, el modelo base parece lograr un F1 de {a:.2f}; validando con "
+                               f"zonas nuevas (kNNDM), {e:.2f}; en el test, {T['f1_macro'][B]:.2f}.",
+                               "La diferencia es fuga: con filas al azar, cada vivienda de validación tiene vecinas casi "
+                               "idénticas (las de su edificio) en el entrenamiento.",
+                               "kNNDM no exagera ni castiga: valida a la misma distancia a la que se predice (5.5)."],
+                       conclusion="Validar como se va a usar el modelo: en barrios sin datos.",
+                       metricas=[("optimismo", a - e), "knndm"], fuente=f"{E1C} · caps. 10.2 y 14")
+
+
+def d_cambios():
+    d = FP.v3_e1()
+    q = d["distancias"]["cuantiles"]
+    cvt = d["cv_vs_test"]
+    v2, v3 = cvt["v2: bloques + buffer de 1 km"], cvt["v3: kNNDM sin buffer"]
+    versiones = pd.DataFrame([
+        ["1 (entregada)", "Bloques de 2 km y buffer de 1 km", "Primera entrega"],
+        ["2", "Ubicación por manzana (cobertura 83.8 % → 96.9 %), pesos de clase, vecindad física",
+         "Las viviendas sin coordenadas eran casi todas de estratos 1 y 2"],
+        ["3 (la de este dashboard)", "Validación kNNDM en lugar del buffer; entrenamiento sin buffer; vecindad con grafo KNN",
+         "Sugerencia del profesor: el buffer evaluaba un escenario más difícil que el real"],
+        ["Después del E3", "Todos los modelos originales con todos los datos; pruebas de significancia; EDA mejorado",
+         "El objetivo es probar modelos no usados antes, no solo el XGBoost geográfico"],
+    ], columns=["Versión", "Qué cambió", "Por qué"])
+    visual = html.Div([controles(control("Vista", radio("camb-vista", [("cvtest", "Validación y test"),
+                                                                       ("buffer", "¿Por qué era de 1 km?")], "cvtest"))),
+                       grafico(FM.fig_cambios("cvtest"), "camb-fig"), html.Div(tabla(versiones), className="mt-2")])
+    return diapositiva("1.7", "Qué cambió en la versión 3 (y por qué)", visual,
+                       puntos=["El buffer de 1 km salía del correlograma: el parecido entre viviendas se pierde hacia "
+                               "2.6 km, y se recortó a 1 km porque más buffer quitaba demasiado entrenamiento.",
+                               f"Pero con él se validaba a {q['CV de la versión 2 (bloques + buffer de 1 km)']['mediana (km)']:.1f} km "
+                               f"del dato más cercano, cuando una zona nueva se predice a "
+                               f"{q['Escenario: zona nueva de 2 km (test → todo train)']['mediana (km)']:.2f} km.",
+                               "Sugerencia del profesor: armar los pliegues con kNNDM, que reproduce esa distancia, y "
+                               "entrenar con todo el entrenamiento.",
+                               f"Efecto en el modelo base: validación {v2['F1 macro CV']:.2f} → {v3['F1 macro CV']:.2f} con el "
+                               f"mismo test ({v3['F1 macro test']:.2f}); la brecha test − validación pasa de "
+                               f"{v2['test − CV']:+.2f} a {v3['test − CV']:+.2f}."],
+                       conclusion="Todo este dashboard usa la versión 3; las anteriores siguen publicadas en los libros.",
+                       metricas=["buffer", "knndm", ("dist_vecino", q["Escenario: zona nueva de 2 km (test → todo train)"]["mediana (km)"],
+                                                     "0.45 km (escenario)")],
+                       fuente=f"{E1C} · caps. 8, 10 y 14 · {E2C} · apéndice A")
+
+
+@callback(Output("camb-fig", "figure"), Input("camb-vista", "value"))
+def _camb(v):
+    return FM.fig_cambios(v)
+
+
+def hp_texto(nombre):
+    h = R["mejores_hiperparametros"][nombre.replace("Logística ", "")]
+    pesos = "pesos balanceados" if h["clf__class_weight"] == "balanced" else "sin pesos de clase"
+    return f"C = {float(h['clf__C']):g}, {pesos}"
 
 
 def d_grid():
     fig = FP.fig_grid()
     visual = grafico(fig) if fig is not None else html.P("La búsqueda de hiperparámetros aún se está calculando.")
-    return diapositiva("4.2", "Hiperparámetros: el más simple que no pierde", visual,
-                       puntos=["Se probaron C = 0.01, 0.1, 1 y 10, con y sin pesos de clase.",
-                               "La superficie es plana: las diferencias caben en un error estándar.",
-                               "La regla 1-SE elige el modelo más regularizado: C = 0.01 en A y en B.",
-                               "B usa pesos balanceados; A, sin pesos."],
+    g = pd.DataFrame(json.loads((F.BASE / "grid_cv.json").read_text(encoding="utf-8")))
+    gb = g[g.conjunto == B.replace("Logística ", "")].f1_cv.map(np.mean)
+    return diapositiva("4.1", "Hiperparámetros: el más simple que no pierde", visual,
+                       puntos=["Se probaron C = 0.01, 0.1, 1 y 10, con y sin pesos de clase, con los 5 pliegues kNNDM.",
+                               f"La superficie es plana: en B, el F1 de validación va de {gb.min():.3f} a {gb.max():.3f}.",
+                               f"La regla 1-SE elige el modelo más regularizado: B, {hp_texto(B)}; A (solo físicas), "
+                               f"{hp_texto('A_fisicas')}.",
+                               f"F1 de validación del modelo base: {CV['f1_macro (media)'][B]:.3f}."],
                        conclusion="Ante un empate, se prefiere el modelo más simple.",
-                       metricas=["C", "class_weight", "se_pareado"], fuente=f"{E1C} · cap. 10.2")
+                       metricas=["C", "class_weight", "se_pareado"], fuente=f"{E1C} · cap. 14.3")
+
+
+def comparacion(base):
+    c = R["comparaciones_f1"]
+    k = f"{B} − {base}"
+    return float(c["diferencia"][k]), float(c["IC95_inf"][k]), float(c["IC95_sup"][k])
 
 
 def d_comparacion():
     visual = html.Div([controles(control("Métrica", desplegable("comp-met", list(F.METRICAS_COMPARABLES.items()), "f1_macro")),
                                  control("Vista", radio("comp-vista", [("fig", "Gráfica"), ("tabla", "Tabla")], "fig"))),
                        html.Div(grafico(F.fig_comparacion("f1_macro")), id="comp-cont")])
-    return diapositiva("4.3", "Modelo base frente a las líneas base", visual,
-                       puntos=[f"Logística B: F1 {CV['f1_macro (media)'][B]:.3f} en CV y {T['f1_macro'][B]:.3f} en test.",
+    dm, lm, hm = comparacion("Moda por zona")
+    return diapositiva("4.2", "Modelo base frente a las líneas base", visual,
+                       puntos=[f"Logística B: F1 {CV['f1_macro (media)'][B]:.3f} en validación kNNDM y "
+                               f"{T['f1_macro'][B]:.3f} en test.",
                                "Supera con claridad a las Dummy en todas las métricas.",
-                               f"La moda por zona ({R.get('tam_zona_moda_km', 4):g} km) es exigente: B la supera en todo, "
-                               "pero en F1 sin significancia."],
-                       conclusion="La logística con variables físicas y ubicación es la referencia.",
+                               f"La moda por zona ({R.get('tam_zona_moda_km', 4):g} km) usa solo la ubicación: B la supera "
+                               f"por {dm:+.3f} de F1 en test, " + ("con el intervalo lejos del 0." if lm > 0 else
+                                                                  "pero el intervalo incluye el 0.")],
+                       conclusion="La logística con variables físicas y ubicación es la referencia del proyecto.",
                        metricas=[("f1_macro", T["f1_macro"][B]), ("mae_ordinal", T["MAE_ordinal"][B]),
-                                 ("kappa", T["kappa_cuadrático"][B])], fuente=f"{E1C} · cap. 10.4")
+                                 ("kappa", T["kappa_cuadrático"][B])], fuente=f"{E1C} · caps. 10.4 y 14")
 
 
 @callback(Output("comp-cont", "children"), Input("comp-met", "value"), Input("comp-vista", "value"))
@@ -781,12 +841,17 @@ def fig_significancia():
 
 
 def d_significancia():
-    return diapositiva("4.4", "¿Las ventajas son reales o ruido?", grafico(fig_significancia()),
+    c = R["comparaciones_f1"]
+    gana = [n.split(" − ", 1)[1] for n in c["diferencia"] if float(c["IC95_inf"][n]) > 0]
+    no = [n.split(" − ", 1)[1] for n in c["diferencia"] if float(c["IC95_inf"][n]) <= 0]
+    nombre = lambda n: F.NOMBRE_CORTO[n] if n in F.NOMBRE_CORTO else n  # noqa: E731
+    return diapositiva("4.3", "¿Las ventajas son reales o ruido?", grafico(fig_significancia()),
                        puntos=["Bootstrap por bloques: se remuestrean zonas, no viviendas.",
-                               "B gana a las Dummy y a A (solo físicas) con intervalos lejos del 0.",
-                               "Frente a la moda por zona, el intervalo incluye el 0."],
-                       conclusion="La ubicación aporta de forma significativa; ganarle a la geografía sola no está demostrado.",
-                       metricas=["ic95"], fuente=f"{E1C} · cap. 10.4")
+                               "B gana con el intervalo lejos del 0 a: " + ", ".join(nombre(n) for n in gana) + ".",
+                               ("El intervalo incluye el 0 frente a: " + ", ".join(nombre(n) for n in no) + "."
+                                if no else "Todas las diferencias excluyen el 0.")],
+                       conclusion="La ubicación aporta de forma significativa frente a las variables físicas solas.",
+                       metricas=["ic95"], fuente=f"{E1C} · caps. 10.4 y 14")
 
 
 OPC_BASE = [(m, F.NOMBRE_CORTO[m]) for m in F.MODELOS]
@@ -798,13 +863,21 @@ def d_confusion():
                                  control("Valores", interruptor("conf-norm", "% de la fila", True))),
                        grafico(F.fig_confusion(B), "conf-fig")])
     rc = F.tabla_por_clase(B)
-    return diapositiva("4.5", "¿En qué se equivoca?", visual,
-                       puntos=[f"Estratos 1, 2 y 3 se reconocen bien (recall {rc.Recall[0]:.2f}, {rc.Recall[1]:.2f} y {rc.Recall[2]:.2f}).",
-                               f"El estrato 4 es el más difícil (recall {rc.Recall[3]:.2f}): se confunde con 3 y 5.",
-                               "Casi todos los errores son con un estrato vecino."],
+    rec = rc.Recall.to_numpy()
+    orden = np.argsort(rec)
+    y, pr, _ = F._pred(B)
+    peor = F.CLASES[orden[0]]
+    otros = pd.Series(pr[(y == peor) & (pr != peor)]).value_counts()
+    return diapositiva("4.4", "¿En qué se equivoca?", visual,
+                       puntos=[f"Mejor reconocidos: estratos {F.CLASES[orden[-1]]} y {F.CLASES[orden[-2]]} (recall "
+                               f"{rec[orden[-1]]:.2f} y {rec[orden[-2]]:.2f}).",
+                               f"El más difícil: el estrato {peor} (recall {rec[orden[0]]:.2f}), que se confunde sobre todo "
+                               f"con el {int(otros.index[0])}.",
+                               "Sin pesos de clase, el modelo favorece los estratos grandes; casi todos los errores son con "
+                               "un estrato vecino."],
                        conclusion=f"El {T['accuracy_±1'][B]:.0%} de las predicciones cae en el estrato real o en uno vecino.",
-                       metricas=[("recall", rc.Recall[3], f"{rc.Recall[3]:.2f} (estrato 4)"), ("acc1", T["accuracy_±1"][B])],
-                       fuente=f"{E1C} · cap. 10.4")
+                       metricas=[("recall", rec[orden[0]], f"{rec[orden[0]]:.2f} (estrato {peor})"), ("acc1", T["accuracy_±1"][B])],
+                       fuente=f"{E1C} · cap. 14.4")
 
 
 @callback(Output("conf-fig", "figure"), Input("conf-mod", "value"), Input("conf-vista", "value"), Input("conf-norm", "value"))
@@ -813,15 +886,22 @@ def _conf(m, v, n):
 
 
 def d_roc():
+    from sklearn.metrics import roc_auc_score
     visual = html.Div([controles(control("Modelo", desplegable("roc-mod", OPC_BASE, B, 300)),
                                  control("Vista", radio("roc-vista", [("roc", "Curvas ROC"), ("cal", "Calibración")], "roc"))),
                        grafico(F.fig_roc(B), "roc-fig")])
-    return diapositiva("4.6", "Probabilidades: ¿ordenan bien y son creíbles?", visual,
+    y, _, proba = F._pred(B)
+    auc_k = {k: roc_auc_score(y == k, proba[:, i]) for i, k in enumerate(F.CLASES)}
+    mejor, peor = max(auc_k, key=auc_k.get), min(auc_k, key=auc_k.get)
+    e = FM.ece(y, proba)
+    return diapositiva("4.5", "Probabilidades: ¿ordenan bien y son creíbles?", visual,
                        puntos=[f"AUC macro {T['AUC_OvR_macro'][B]:.2f}: el modelo ordena bien las viviendas.",
-                               "Los extremos (1 y 6) se distinguen mejor que los medios.",
-                               "Las probabilidades siguen la diagonal: si dice 70 %, acierta cerca del 70 %."],
+                               f"El estrato que mejor separa es el {mejor} (AUC {auc_k[mejor]:.2f}); el que peor, el "
+                               f"{peor} ({auc_k[peor]:.2f}).",
+                               f"Error de calibración (ECE) de {e:.2f}: en promedio, la probabilidad que da el modelo se "
+                               f"aparta {100 * e:.0f} puntos de su tasa real de acierto."],
                        conclusion="Las probabilidades sirven para medir incertidumbre, no solo la clase final.",
-                       metricas=[("auc", T["AUC_OvR_macro"][B]), ("ece", 0.03, "0.03")], fuente=f"{E1C} · cap. 10.4")
+                       metricas=[("auc", T["AUC_OvR_macro"][B]), ("ece", e, f"{e:.2f}")], fuente=f"{E1C} · cap. 14.4")
 
 
 @callback(Output("roc-fig", "figure"), Input("roc-mod", "value"), Input("roc-vista", "value"))
@@ -833,12 +913,22 @@ def d_coeficientes():
     visual = html.Div([controles(control("Vista", radio("coef-vista", [("odds", "Odds 6 frente a 1"), ("B", "Coeficientes B"),
                                                                        ("A", "Coeficientes A")], "odds"))),
                        grafico(FP.fig_odds(), "coef-fig")])
-    return diapositiva("4.7", "Qué aprendió el modelo", visual,
-                       puntos=["Más al norte, más área y más baños: más probable el estrato 6 que el 1.",
-                               "Ser informal o casa de hasta 3 pisos empuja hacia el estrato 1.",
-                               "Con las demás variables fijas, más habitaciones restan: el área ya dice el tamaño."],
-                       conclusion="Los coeficientes cuentan la misma historia que el EDA.",
-                       metricas=[("odds_ratio", 18.0, "×18 por +1 desv. de área")], fuente=f"{E1C} · cap. 10.6")
+    od = json.loads((F.BASE / "odds.json").read_text(encoding="utf-8"))
+    t = pd.DataFrame(od).sort_values("beta_6_menos_1")
+    minus = lambda x: x[0].lower() + x[1:]  # noqa: E731
+    sube = [minus(F._nombre_variable(v)) for v in t.variable[::-1][:3]]
+    baja = [minus(F._nombre_variable(v)) for v in t.variable[:2]]
+    mx = t.iloc[-1]
+    return diapositiva("4.6", "Qué aprendió el modelo", visual,
+                       puntos=["Cada barra: por cuánto se multiplican las odds del estrato 6 frente al 1 al subir la "
+                               "variable una desviación estándar.",
+                               "Hacia el estrato 6 empujan, sobre todo: " + ", ".join(sube) + ".",
+                               "Hacia el estrato 1: " + " y ".join(baja) + ".",
+                               "Cada coeficiente es un efecto parcial (las demás variables fijas): las variables "
+                               "correlacionadas se reparten el efecto."],
+                       conclusion="Los coeficientes cuentan la misma historia que el EDA: ubicación y tamaño.",
+                       metricas=[("odds_ratio", float(mx.odds), f"×{float(mx.odds):.3g} ({minus(F._nombre_variable(mx.variable))})")],
+                       fuente=f"{E1C} · cap. 10.6 (con el modelo v3)")
 
 
 @callback(Output("coef-fig", "figure"), Input("coef-vista", "value"))
@@ -847,24 +937,29 @@ def _coef(v):
 
 
 def d_permutacion():
-    return diapositiva("4.8", "Importancia por permutación", grafico(FP.fig_importancia_permutacion()),
-                       puntos=["Se calcula en una zona de validación (fold 1), no en test.",
-                               "Barajar la distancia al centro es lo que más daño hace.",
-                               "En esa zona, barajar x o y mejora el F1: la posición absoluta no siempre se traslada a "
-                               "un barrio nuevo."],
-                       conclusion="La ubicación relativa generaliza mejor que las coordenadas absolutas.",
-                       metricas=["importancia_perm"], fuente=f"{E1C} · cap. 10.6")
+    im = json.loads((F.BASE / "importancia.json").read_text(encoding="utf-8"))
+    t = pd.DataFrame(im).sort_values("caida", ascending=False)
+    minus = lambda x: x[0].lower() + x[1:]  # noqa: E731
+    top = [minus(FP.et(v)) for v in t.variable[:3]]
+    neg = [minus(FP.et(v)) for v in t.variable[t.caida < 0]]
+    return diapositiva("4.7", "Importancia por permutación", grafico(FP.fig_importancia_permutacion()),
+                       puntos=["Se calcula en una zona de validación (pliegue 1 de kNNDM), no en el test.",
+                               "Barajar estas variables es lo que más daño hace: " + ", ".join(top) + ".",
+                               ("Barajar " + " o ".join(neg) + " no empeora el F1 en esa zona: su información la cubren "
+                                "otras variables." if neg else "Todas las variables aportan algo en esa zona.")],
+                       conclusion="La ubicación y el tamaño de la vivienda son lo que el modelo más usa.",
+                       metricas=["importancia_perm"], fuente=f"{E1C} · cap. 10.6 (con el modelo v3)")
 
 
 def d_aprendizaje():
     ca = D["curva_aprendizaje"]
-    return diapositiva("4.9", "¿Más datos ayudarían?", grafico(F.fig_curva_aprendizaje()),
+    return diapositiva("4.8", "¿Más datos ayudarían?", grafico(F.fig_curva_aprendizaje()),
                        puntos=[f"La validación se queda entre {min(ca['val_media']):.2f} y {max(ca['val_media']):.2f} "
                                f"desde {fmt(ca['n'][0])} hasta {fmt(ca['n'][-1])} viviendas.",
                                "El entrenamiento no sube mucho: no es sobreajuste clásico.",
                                "La brecha es la distancia entre barrios conocidos y nuevos."],
                        conclusion="Más filas del mismo tipo no ayudan: falta otra información.",
-                       fuente=f"{E1C} · cap. 10.3")
+                       fuente=f"{E1C} · cap. 10.3 (con el modelo v3)")
 
 
 def d_residuos():
@@ -874,7 +969,8 @@ def d_residuos():
                                "Los errores vienen en manchas: barrios enteros mal estimados.",
                                "Al modelo le falta información de barrio."],
                        conclusion="La siguiente mejora tiene que venir del entorno, no de la vivienda.",
-                       metricas=[("moran", m["I"], f"{m['I']:.2f} (residuos; ideal 0)")], fuente=f"{E1C} · cap. 10.5")
+                       metricas=[("moran", m["I"], f"{m['I']:.2f} (residuos; ideal 0)")],
+                       fuente=f"{E1C} · cap. 10.5 (con el modelo v3)")
 
 
 RANGOS = F.rangos_simulador()
@@ -929,202 +1025,83 @@ def _simular(*valores):
 
 
 # ===========================================================================
-# 5. MÁS ALLÁ DEL MODELO BASE
+# 5. MODELOS PROPUESTOS Y PROTOCOLO
 # ===========================================================================
-AV = R["avanzados"]
-
-
 def d_candidatos():
     t = pd.DataFrame([
-        ["XGBoost geográfico", "Sí", "Modelo principal, adaptado a clasificación", "Efectos que cambian por barrio"],
-        ["XGBoost", "No", "Control del anterior (sin parte geográfica)", "No linealidades e interacciones"],
-        ["Rotation Forest", "Sí", "Candidato de la revisión (implementación propia)", "Variables de tamaño correlacionadas"],
-        ["SVM RBF (Nyström) + TPE", "Sí", "Candidato de la revisión (ronda 1)", "Fronteras no lineales"],
-        ["RF + SVM en dos etapas", "Sí", "Candidato de la revisión (v3)", "Variables redundantes"],
-        ["Stacking", "Sí", "Candidato de la revisión (v3)", "Modelos que aciertan estratos distintos"],
-    ], columns=["Modelo", "¿Original?", "Papel", "Problema que ataca"])
-    pasos = [("1", "Global", "XGBoost con toda la ciudad"), ("2", "Anclas", "Centros de celdas de 2 km"),
-             ("3", "Ventana", "15 % del entrenamiento"), ("4", "Locales", "Un XGBoost por ancla"),
-             ("5", "Mezcla", "0.75·global + 0.25·local")]
-    visual = html.Div([tabla(t), html.Div("Cómo funciona el XGBoost geográfico", className="subtitulo-visual mt-3"), flujo(pasos)])
-    return diapositiva("5.1", "El modelo propuesto: XGBoost geográfico para clasificación", visual,
-                       puntos=["Adaptación propia: el original (Grekousis, 2025) es de regresión.",
-                               "Un XGBoost global más XGBoost locales alrededor de anclas, con un kernel espacial.",
-                               "Mezcla p = α·global + (1 − α)·local; con α = 1 es su control, el XGBoost global.",
-                               "Compite con los demás candidatos originales de la revisión (Rotation Forest, SVM con "
-                               "TPE, RF + SVM y stacking) con el mismo protocolo.",
-                               "«Original»: la revisión no halló ninguna aplicación del modelo al estrato con datos "
-                               "catastrales."],
-                       conclusion="Hipótesis: los modelos locales aprenden lo que cambia de un barrio a otro.",
+        ["XGBoost geográfico", "Un XGBoost global más XGBoost locales por zona, con pesos por distancia",
+         "El estrato cambia de un barrio a otro", "Con y sin vecindad; zonas nuevas y conocidas; búsqueda con todos los datos"],
+        ["Rotation Forest", "Cada árbol ve las variables rotadas con un PCA por grupos",
+         "Variables de tamaño correlacionadas", "Con vecindad y todos los datos (implementación propia)"],
+        ["Stacking", "Una logística combina las probabilidades de varios modelos",
+         "Modelos que aciertan estratos distintos", "S1: logística, XGBoost y RF; S2: S1 + XGBoost geográfico"],
+        ["RF + SVM", "Un Random Forest elige las variables y una SVM clasifica",
+         "Variables redundantes", "SVM (Nyström) con las 10 o 20 variables más importantes"],
+        ["TPE-SVM", "SVM de núcleo RBF con búsqueda bayesiana (TPE)", "Fronteras no lineales",
+         "Solo sin vecindad, con el protocolo anterior (Entregable 2, cap. 6)"],
+    ], columns=["Modelo original", "Idea", "Problema que ataca", "Cómo se probó"])
+    ref = pd.DataFrame([["Logística con vecindad", "El modelo base con la misma información que reciben los originales"],
+                        ["XGBoost y Random Forest", "Modelos conocidos con la misma información: ¿la mejora es del "
+                                                    "algoritmo o de la información?"]],
+                       columns=["Referencias (no originales)", "Para qué"])
+    visual = html.Div([tabla(t), html.Div(tabla(ref), className="mt-3")])
+    return diapositiva("5.1", "Los modelos propuestos: los originales de la revisión", visual,
+                       puntos=["«Original»: la revisión no halló ninguna aplicación del modelo al estrato con datos "
+                               "catastrales (Tabla III, 1.3).",
+                               "Se probaron 5 de los 9 candidatos; los otros 4 son optimizadores o selectores de variables "
+                               "(GWO, EFSHB, NSGA-II) o no tienen implementación abierta (Bagged TAO).",
+                               "Todos reciben la misma información: las variables del modelo base más la vecindad física "
+                               "(los 8 edificios más cercanos, sin usar su estrato).",
+                               "Mismo protocolo para todos: 5 pliegues kNNDM y el test de 7 bloques, mirado una sola vez."],
+                       conclusion="La pregunta: ¿algún modelo no usado antes supera al modelo base?",
                        fuente=f"{E2C} · caps. 4 y 9.1")
 
 
-def d_avanzados():
-    visual = html.Div([controles(control("Métrica", desplegable("avz-met", list(F.METRICAS_COMPARABLES.items()), "f1_macro")),
-                                 control("Vista", radio("avz-vista", [("fig", "Gráfica"), ("tabla", "Tabla")], "fig"))),
-                       html.Div(grafico(F.fig_comparacion_avanzados("f1_macro")), id="avz-cont")])
-    return diapositiva("5.2", "Resultados: nadie le gana a la logística en test", visual,
-                       puntos=[f"En CV, XGBoost y la SVM llegan a {CV['f1_macro (media)']['XGBoost']:.3f} frente a "
-                               f"{CV['f1_macro (media)'][B]:.3f} de la logística.",
-                               f"En test, la logística es la mejor ({T['f1_macro'][B]:.3f}); la SVM y Rotation Forest "
-                               "quedan cerca (0.45).",
-                               f"Rotation Forest tiene el menor error ordinal (MAE {T['MAE_ordinal']['Rotation Forest']:.2f})."],
-                       conclusion="Más flexibilidad no se traduce en mejores predicciones en barrios nuevos.",
-                       metricas=[("f1_macro", T["f1_macro"]["SVM RBF (Nyström) + TPE"], "0.45 (SVM)"),
-                                 ("mae_ordinal", T["MAE_ordinal"]["Rotation Forest"], "0.39 (Rotation Forest)")],
-                       fuente=f"{E2C} · cap. 6.3")
+def d_geoxgb_como():
+    pasos = [("1", "Global", "XGBoost con toda la ciudad"), ("2", "Anclas", "Centros de celdas de 2 km"),
+             ("3", "Ventana", "Una fracción de las viviendas más cercanas"), ("4", "Locales", "Un XGBoost por ancla, "
+                                                                               "con pesos por distancia"),
+             ("5", "Mezcla", "α·global + (1 − α)·local")]
+    visual = html.Div([flujo(pasos), html.Div(
+        "p = α · p_global + (1 − α) · p_local", className="respuesta-grande mt-3", style={"fontSize": "1.6rem"}),
+        html.P("Con α = 1 es un XGBoost normal: por eso el XGBoost con las mismas variables es su control natural (la "
+               "diferencia entre los dos mide cuánto aporta la parte geográfica).", className="mt-2")])
+    return diapositiva("5.2", "Cómo funciona el XGBoost geográfico (adaptación propia)", visual,
+                       puntos=["El original (Grekousis, 2025) es de regresión; la adaptación a clasificación multiclase "
+                               "es nuestra.",
+                               "Kernel bicuadrado adaptativo: en zonas densas la ventana es pequeña; en zonas dispersas, "
+                               "grande.",
+                               "Hiperparámetros propios: la fracción de la ventana y el peso del global α."],
+                       conclusion="Hipótesis: los modelos locales aprenden lo que cambia de un barrio a otro.",
+                       metricas=["alpha_geo"], fuente=f"{E2C} · cap. 4")
 
 
-@callback(Output("avz-cont", "children"), Input("avz-met", "value"), Input("avz-vista", "value"))
-def _avz(met, vista):
-    return tabla(F.tabla_metricas_avanzados()) if vista == "tabla" else grafico(F.fig_comparacion_avanzados(met))
-
-
-def d_criterio():
-    s = AV["cv_pareado"]["SVM RBF (Nyström) + TPE"]
-    visual = html.Div([controles(control("Vista", radio("crit-vista", [("mapa", "CV frente a test"), ("folds", "Por fold")], "mapa"))),
-                       grafico(FP.fig_criterio_cv_test(), "crit-fig")])
-    return diapositiva("5.3", "La SVM pasa el criterio de la CV, pero el test no lo confirma", visual,
-                       puntos=[f"SVM: +{s['media']:.3f} de F1 en CV con error estándar {s['se']:.3f}: cumple el criterio.",
-                               "Pero sus hiperparámetros se buscaron en esos mismos folds: su CV es la más optimista.",
-                               "En test queda por debajo (−0.04, no significativo) y con errores más grandes."],
-                       conclusion="Se mantiene la logística, como desviación declarada del criterio.",
-                       metricas=[("se_pareado", None), ("ic95", None)], fuente=f"{E2C} · cap. 6.3")
-
-
-@callback(Output("crit-fig", "figure"), Input("crit-vista", "value"))
-def _crit(v):
-    return FP.fig_cv_pareado() if v == "folds" else FP.fig_criterio_cv_test()
+def d_otros_originales():
+    tarjetas = [
+        ("Rotation Forest", ["Las variables se reparten al azar en grupos", "Cada grupo se rota con un PCA",
+                             "Un árbol por rotación: cortes oblicuos"]),
+        ("Stacking", ["Logística con vecindad, XGBoost y Random Forest", "Sus probabilidades fuera de muestra",
+                      "Una logística las combina (metamodelo)"]),
+        ("RF + SVM en dos etapas", ["Un Random Forest ordena las variables", "Se quedan las 10 o 20 más importantes",
+                                    "Una SVM (Nyström) clasifica con ellas"]),
+        ("TPE-SVM", ["SVM con núcleo RBF aproximado (Nyström)", "Búsqueda bayesiana de C y γ con TPE",
+                     "Probada solo sin vecindad"]),
+    ]
+    visual = dbc.Row([dbc.Col(html.Div([html.Div(t, className="paso-titulo")] +
+                                       [html.Div(f"{i + 1}. {x}", className="paso-desc") for i, x in enumerate(pasos)],
+                                       className="paso", style={"height": "100%"}), md=6, className="mb-3")
+                      for t, pasos in tarjetas], className="g-3")
+    return diapositiva("5.3", "Cómo funcionan los demás modelos originales", visual,
+                       puntos=["Rotation Forest ataca la colinealidad de las variables de tamaño (área, baños, "
+                               "habitaciones).",
+                               "El stacking aprovecha que los modelos aciertan estratos distintos (en el test del E3, la "
+                               "logística con vecindad reconoce mejor los estratos 1 y 6 que los árboles).",
+                               "RF + SVM separa la selección de variables de la clasificación."],
+                       conclusion="Cuatro formas distintas de mejorar a un clasificador convencional.",
+                       fuente=f"{E2C} · caps. 4.3 y 9.3")
 
 
 OPC_TODOS = [(m, F.NOMBRE_CORTO[m]) for m in [B] + F.AVANZADOS]
-
-
-def d_errores():
-    visual = html.Div([controles(control("Modelo", desplegable("err-mod", OPC_TODOS, "XGBoost", 300)),
-                                 control("Vista", radio("err-vista", [("matriz", "Matriz"), ("clase", "Por estrato")], "matriz"))),
-                       grafico(F.fig_confusion("XGBoost"), "err-fig")])
-    return diapositiva("5.4", "Cada modelo se equivoca distinto", visual,
-                       puntos=["XGBoost colapsa la escala: casi no predice el 3 y manda al 4 casi todo el 5 y el 6.",
-                               "La SVM reconoce mejor los extremos (1, 5 y 6) y falla en el 2.",
-                               "La logística es la más equilibrada."],
-                       conclusion="Los árboles no extrapolan: en un barrio nuevo copian la zona más parecida.",
-                       metricas=["recall"], fuente=f"{E2C} · caps. 6.4–6.5")
-
-
-@callback(Output("err-fig", "figure"), Input("err-mod", "value"), Input("err-vista", "value"))
-def _err(m, v):
-    return F.fig_por_clase(m) if v == "clase" else F.fig_confusion(m)
-
-
-def d_geoxgb():
-    return diapositiva("5.5", "XGBoost geográfico: los modelos locales no ayudan en zonas nuevas", grafico(F.fig_geoxgb_busqueda()),
-                       puntos=["Dar más peso a los modelos locales (α bajo) empeora el F1 de CV.",
-                               "Los modelos locales aprenden de los barrios vecinos, no del barrio de la vivienda.",
-                               "En test sube el F1 de su control (0.375 → 0.418), pero en CV pasa lo contrario."],
-                       conclusion="Los efectos locales necesitan datos de la misma zona.",
-                       metricas=[("alpha_geo", None, "α = 0.75 (elegido)")], fuente=f"{E2C} · cap. 6.1")
-
-
-def d_residuos_av():
-    visual = html.Div([controles(control("Modelo", desplegable("res-mod", OPC_TODOS, "XGBoost geográfico", 300))),
-                       grafico(F.fig_mapa_residuos_modelo("XGBoost geográfico"), "res-fig")])
-    mr = {m: D["moran_residuos"][m]["I"] for m in F.AVANZADOS}
-    return diapositiva("5.6", "Residuos: ningún modelo borra el patrón de barrio", visual,
-                       puntos=[f"Logística: Moran de residuos {D['moran_residuos']['B_fisicas+ubicacion']['I']:.2f}.",
-                               f"Modelos nuevos: entre {min(mr.values()):.2f} y {max(mr.values()):.2f}, peor.",
-                               "La información que falta no está en la ficha de la vivienda."],
-                       conclusion="El cuello de botella es la información, no el algoritmo.",
-                       metricas=[("moran", max(mr.values()), f"{max(mr.values()):.2f} (SVM, residuos)")],
-                       fuente=f"{E2C} · cap. 6.6")
-
-
-@callback(Output("res-fig", "figure"), Input("res-mod", "value"))
-def _res(m):
-    return F.fig_mapa_residuos_modelo(m)
-
-
-def d_vecindad():
-    c = FP._json("comparacion_zonas_nuevas.json", "vecindad")
-    p = c["comparaciones_vs_B"]["B + vecindad (300 m y 1 km)"]
-    visual = html.Div([grafico(FP.fig_vecindad_forest()),
-                       html.Div("12 variables: 6 atributos físicos de las viviendas vecinas, a 300 m y a 1 km. Nunca su estrato.",
-                                className="nota-visual")])
-    return diapositiva("5.7", "Vecindad física: ¿ayuda describir el entorno?", visual,
-                       puntos=[f"Modelo principal (fijado antes): +{p['cv_dif_media']:.3f} en CV, sin superar un error estándar.",
-                               f"En test sube el F1 de {T['f1_macro'][B]:.2f} a {c['modelos']['B + vecindad (300 m y 1 km)']['test']['f1_macro']:.2f}, "
-                               "con intervalo que incluye el 0.",
-                               "El error ordinal sí baja de forma significativa (MAE −0.11).",
-                               "Las variantes de una sola escala pasan la CV, pero son exploratorias."],
-                       conclusion="Resultado mixto: prometedor, no demostrado.",
-                       metricas=[("se_pareado", None), ("ic95", None)], fuente=f"{E2C} · cap. 7.2")
-
-
-def d_vecindad15():
-    return diapositiva("5.8", "Con 15 folds: la mejora no se confirma", grafico(FP.fig_vecindad_15folds()),
-                       puntos=["Más folds = más comparaciones por pares, solo con entrenamiento.",
-                               "La vecindad gana en 10 zonas y pierde en 5, a veces por mucho.",
-                               "Las dos versiones con vecindad ganan y pierden en las mismas zonas."],
-                       conclusion="El efecto depende de la zona, no del azar del modelo.",
-                       metricas=[("se_pareado", None)], fuente=f"{E2C} · cap. 7.2")
-
-
-def d_donde():
-    visual = html.Div([controles(control("Vista", radio("don-vista", [("bloques", "Por bloque"), ("heterogeneidad", "Entorno mezclado"),
-                                                                      ("atipicidad", "Vivienda atípica")], "bloques")),
-                                 control("Datos", radio("don-conj", [("test", "Test"), ("cv", "CV 15 folds")], "test"))),
-                       grafico(FP.fig_vecindad_bloques(), "don-fig")])
-    z = FP._json("zonas.json", "vecindad")["correlaciones_bloques"]["y_km"]
-    return diapositiva("5.9", "¿Dónde ayuda la vecindad?", visual,
-                       puntos=[f"Ayuda más en los bloques del norte (Spearman ρ = {z['rho']:.2f}, p < 0.001).",
-                               "En test ayuda a las viviendas parecidas a su entorno y daña a las atípicas.",
-                               "En la CV ese patrón no se repite: no es una regla general."],
-                       conclusion="La vecindad suma en el norte; el modelo no sabe cuándo no confiar en ella.",
-                       metricas=["spearman"], fuente=f"{E2C} · cap. 7.5")
-
-
-@callback(Output("don-fig", "figure"), Input("don-vista", "value"), Input("don-conj", "value"))
-def _don(v, c):
-    return FP.fig_vecindad_bloques() if v == "bloques" else FP.fig_vecindad_donde(c, v)
-
-
-def d_conocidas():
-    ze, zm = FP.zonas_conocidas("edificio"), FP.zonas_conocidas("manzana")
-    me = ze["modelos"]
-    puntos = [f"Ocultando edificios: XGBoost {me['XGBoost']['F1_macro']:.2f} frente a la logística {me['Logística B']['F1_macro']:.2f}.",
-              f"Votar con las 15 viviendas conocidas más cercanas ya da {me['Vecinos más cercanos (k = 15)']['F1_macro']:.2f}."]
-    if zm:
-        mm = zm["modelos"]
-        puntos.append(f"Ocultando manzanas completas: vecinos {mm['Vecinos más cercanos (k = 15)']['F1_macro']:.2f}, "
-                      f"XGBoost geográfico {mm['XGBoost geográfico']['F1_macro']:.2f}, logística {mm['Logística B']['F1_macro']:.2f}.")
-        c = zm.get("comparaciones", {}).get("XGBoost geográfico − Vecinos más cercanos (k = 15)", {}).get("F1")
-        if c:
-            puntos.append(f"Con manzanas ocultas, el XGBoost geográfico le gana al voto de vecinos: {c['diferencia']:+.2f} "
-                          f"(IC 95 % [{c['IC95_inf']:+.3f}, {c['IC95_sup']:+.3f}]).")
-        concl = "Parte de la ventaja era copiar la manzana, pero los árboles siguen ganando: aprenden el mapa."
-    else:
-        puntos.append("La versión que oculta manzanas completas se está calculando.")
-        concl = "Donde ya se conocen los estratos del barrio, basta con mirar a los vecinos."
-    visual = html.Div([controles(control("Métrica", radio("zc-met", [("F1_macro", "F1 macro"), ("MAE", "MAE ordinal"),
-                                                                     ("accuracy", "Accuracy")], "F1_macro"))),
-                       grafico(FP.fig_zonas_conocidas(), "zc-fig")])
-    return diapositiva("5.10", "Zonas conocidas: el orden se invierte", visual, puntos=puntos, conclusion=concl,
-                       metricas=[("f1_macro", me["XGBoost"]["F1_macro"], f"{me['XGBoost']['F1_macro']:.2f} (XGBoost)")],
-                       fuente=f"{E2C} · caps. 7.4 y 8")
-
-
-@callback(Output("zc-fig", "figure"), Input("zc-met", "value"))
-def _zc(m):
-    return FP.fig_zonas_conocidas(m)
-
-
-def d_escenarios():
-    return diapositiva("5.11", "El mejor modelo depende del escenario", grafico(FP.fig_escenarios()),
-                       puntos=["Zonas nuevas (sin datos cerca): la logística es la mejor; los árboles no extrapolan.",
-                               "Zonas conocidas: los árboles aprenden el mapa y superan a la logística por más de 0.2.",
-                               "Ocultar manzanas completas es la prueba más honesta de ese segundo escenario."],
-                       conclusion="Hay que decir para qué escenario se recomienda cada modelo.",
-                       fuente=f"{E2C} · caps. 7.4 y 8")
 
 
 # ===========================================================================
@@ -1147,10 +1124,10 @@ def d_v3_validacion():
                        grafico(FP.fig_v3_distancias(), "v3v-fig")])
     return diapositiva("4.12", "Validar a la distancia a la que se predice", visual,
                        puntos=[f"Una zona nueva de 2 km tiene su vecino conocido a {esc:.2f} km (mediana).",
-                               f"Con el buffer de 1 km, la v2 validaba a {cv2['mediana (km)']:.1f} km y probaba a {tv2:.1f} km: "
+                               f"Con el buffer de 1 km, la versión anterior validaba a {cv2['mediana (km)']:.1f} km y probaba a {tv2:.1f} km: "
                                "un escenario más difícil que el declarado.",
                                f"kNNDM arma los folds para imitar el escenario: {kn['q']} grupos de K-Means, "
-                               f"Wasserstein {kn['W_km']:.2f} km (la CV de la v2: {cv2['Wasserstein al escenario (km)']:.2f} km).",
+                               f"Wasserstein {kn['W_km']:.2f} km (la validación anterior: {cv2['Wasserstein al escenario (km)']:.2f} km).",
                                "Solo usa las coordenadas del test, nunca su estrato."],
                        conclusion="El tamaño de la zona excluida ya no se fija a mano: sale de la geometría del problema.",
                        metricas=[("dist_vecino", esc, f"{esc:.2f} km (escenario)"),
@@ -1166,39 +1143,32 @@ def _v3v(v):
 def d_v3_mejoras():
     d = FP.v3_e1()
     if not d:
-        return _sin_v3("4.13", "Versión 3 del modelo base")
+        return _sin_v3("4.10", "Variantes del modelo base")
     r = d["resumen"]
-    b2, b3 = r["B v2 (con buffer)"], r["B v3 (kNNDM, sin buffer)"]
-    o3, bu = r["Ordinal v3 (kNNDM, sin buffer)"], r["B v3 + umbrales F1"]
-    cvt = d["cv_vs_test"]
-    gap2 = cvt["v2: bloques + buffer de 1 km"]["test − CV"]
-    gap3 = cvt["v3: kNNDM sin buffer"]["test − CV"]
-    hp = d["hiperparametros"]["B v3"]
+    b3, o3, bu = r["B v3 (kNNDM, sin buffer)"], r["Ordinal v3 (kNNDM, sin buffer)"], r["B v3 + umbrales F1"]
 
     def veredicto(m):
         return "supera" if m["Δ CV vs B v3"] > m["SE Δ"] else ("empata con" if m["Δ CV vs B v3"] > -m["SE Δ"] else "queda por debajo de")
 
     visual = html.Div([controles(control("Métrica", radio("v3m-met", [("f1", "F1 (CV y test)"), ("mae", "MAE ordinal"),
                                                                       ("kappa", "Kappa"), ("e4", "Recall E4")], "f1"))),
-                       grafico(FP.fig_v3_modelos(), "v3m-fig")])
-    return diapositiva("4.13", "Versión 3 del modelo base", visual,
-                       puntos=[f"Mismo test. Sin buffer, C = {hp['C']} y {'sin pesos' if hp['class_weight'] is None else 'pesos balanceados'}: "
-                               f"F1 {b3['F1 macro test']:.3f} (v2 {b2['F1 macro test']:.3f}), MAE {b3['MAE test']:.3f} "
-                               f"(v2 {b2['MAE test']:.3f}).",
-                               f"La CV ahora anticipa mejor el test: brecha {gap3:+.2f} frente a {gap2:+.2f} en la v2.",
-                               f"Logística ordinal: {veredicto(o3)} la multinomial en CV; MAE test {o3['MAE test']:.3f} "
-                               f"(multinomial {b3['MAE test']:.3f}).",
-                               f"Umbrales para el F1 macro: {veredicto(bu)} la multinomial en CV; recall del estrato 4 "
-                               f"{b3['recall E4']:.2f} → {bu['recall E4']:.2f}."],
-                       conclusion="La validación ahora mide el escenario declarado; el modelo se equivoca por menos, "
-                                  "pero el F1 no cambia.",
-                       metricas=[("f1_macro", b3["F1 macro test"], f"{b3['F1 macro test']:.3f} (B v3)"), "ordinal", "sesgos_f1"],
-                       fuente=f"{E1C} v3 · cap. 14.3–14.7")
+                       grafico(FP.fig_v3_modelos(incluir_v2=False), "v3m-fig")])
+    return diapositiva("4.10", "Variantes del modelo base: logística ordinal y umbrales", visual,
+                       puntos=["El estrato tiene orden: una logística ordinal (un solo vector de coeficientes y cinco "
+                               "umbrales) lo respeta por construcción.",
+                               f"La ordinal {veredicto(o3)} la multinomial en validación y en test se equivoca por más "
+                               f"(MAE {o3['MAE test']:.3f} frente a {b3['MAE test']:.3f}).",
+                               "Umbrales para el F1 macro: un sesgo por estrato, aprendido en la validación, antes de "
+                               "elegir la clase.",
+                               f"Con umbrales, el modelo {veredicto(bu)} la multinomial en validación; en test, el recall "
+                               f"del estrato 4 pasa de {b3['recall E4']:.2f} a {bu['recall E4']:.2f}."],
+                       conclusion="Ninguna variante supera a la multinomial en validación: el modelo base se queda como está.",
+                       metricas=["ordinal", "sesgos_f1"], fuente=f"{E1C} · cap. 14.5–14.7")
 
 
 @callback(Output("v3m-fig", "figure"), Input("v3m-met", "value"))
 def _v3m(m):
-    return FP.fig_v3_modelos(m)
+    return FP.fig_v3_modelos(m, incluir_v2=False)
 
 
 def d_vecindad_knn():
@@ -1288,7 +1258,7 @@ def d_nuevo_vs_base():
         control("Comparar con", radio("nvb-ref", [("base", "Modelo base"), ("misma", "Logística con la misma información")],
                                       "base"))),
         grafico(FP.fig_nuevo_vs_base("zonas nuevas", "base"), "nvb-fig")])
-    return diapositiva("6.12", "¿Supera el modelo nuevo al modelo base?", visual,
+    return diapositiva("6.4", "XGBoost geográfico: zonas nuevas y zonas conocidas", visual,
                        puntos=[f"Zonas nuevas con vecindad: F1 de test {knn['F1_test']:.3f} frente a "
                                f"{knn['F1_test'] - t['diferencia']:.3f} del base (+{t['diferencia']:.3f}, "
                                f"IC 95 % [{t['IC95_inf']:+.3f}, {t['IC95_sup']:+.3f}]).",
@@ -1297,7 +1267,7 @@ def d_nuevo_vs_base():
                                f"Zonas conocidas: +{min(zc_b):.2f} a +{max(zc_b):.2f} de F1 en validación.",
                                "Con solo las variables del base, el test no lo confirma (−0.009).",
                                "Ojo: con el intervalo BCa del E3 el mismo +0.09 da [−0.024, +0.172]; con 7 bloques la "
-                               "confirmación depende del método. La prueba con 30 bloques sí es significativa (6.14)."],
+                               "confirmación depende del método. La prueba con 30 bloques sí es significativa (6.3)."],
                        conclusion="Sí: con información del entorno, el modelo nuevo supera al base en los dos escenarios.",
                        metricas=[("f1_macro", knn["F1_test"], f"{knn['F1_test']:.3f} (modelo nuevo, test)"), "se_pareado", "ic95"],
                        fuente=f"{E2C} · cap. 8")
@@ -1318,7 +1288,7 @@ def d_originales():
         control("Mirada", radio("orig-mir", [("test", "Test"), ("cv", "Validación"), ("tabla", "Tabla")], "test")),
         control("Comparar con", radio("orig-ref", [("base", "Modelo base"), ("lv", "Logística con la misma vecindad")],
                                       "base"))),
-        html.Div(grafico(FM.fig_originales("test", "base")), id="orig-cont")])
+        html.Div(grafico(FM.fig_originales("test", "base"), minimo=400), id="orig-cont")])
     return diapositiva("6.13", "Todos los modelos originales de la revisión frente al modelo base", visual,
                        puntos=["Con la vecindad física y todos los datos (257 273 viviendas, mismos pliegues kNNDM y "
                                "mismo test) se probaron el XGBoost geográfico, Rotation Forest, stacking y RF + SVM.",
@@ -1337,7 +1307,7 @@ def d_originales():
 def _orig(mir, ref):
     if mir == "tabla":
         return tabla(FM.tabla_originales())
-    return grafico(FM.fig_originales(mir, ref))
+    return grafico(FM.fig_originales(mir, ref), minimo=400)
 
 
 def d_signif_originales():
@@ -1350,7 +1320,7 @@ def d_signif_originales():
     visual = html.Div([controles(control("Comparación", radio(
         "sig-fam", [("base", "Frente al modelo base"), ("lv", "Frente a la logística con vecindad"),
                     ("rangos", "Rangos (Friedman)")], "base"))),
-        grafico(FM.fig_significancia("base"), "sig-fig")])
+        grafico(FM.fig_significancia("base"), "sig-fig", minimo=400)])
     return diapositiva("6.14", "¿Son estadísticamente significativas las diferencias?", visual,
                        puntos=[f"Unidad con más réplicas: {e['bloques']['n_usados']} bloques de 2 km del entrenamiento "
                                f"(predicciones fuera de muestra). Friedman: χ² = {fr['chi2']:.1f}, p = {cientifico(fr['p'])}.",
@@ -1413,26 +1383,18 @@ def _bg(v):
 def d_e3_diseno():
     a = FM.e3("analisis_clasificacion")
     mp = {r["modelo"]: r["f1_macro_mean"] for r in a["mejor_por_modelo"]}
-    cajas = html.Div([
-        html.Div([html.Div("8 modelos", className="paso-titulo"),
-                  html.Div("KNN, Naive Bayes, logística L1/L2, árbol, Random Forest, XGBoost, SVM (Nyström) y XGBoost "
-                           "geográfico", className="paso-desc")], className="paso"),
-        html.Div([html.Div("× 4 balanceos", className="paso-titulo"),
-                  html.Div("ninguno, SMOTE, ADASYN y class_weight", className="paso-desc")], className="paso"),
-        html.Div([html.Div("× 4 optimizadores", className="paso-titulo"),
-                  html.Div("Grid, Random, bayesiana (TPE) y genética", className="paso-desc")], className="paso"),
-        html.Div([html.Div("= 128 + 28", className="paso-titulo"),
-                  html.Div("de clasificación más 28 de regresión: 156 combinaciones", className="paso-desc")],
-                 className="paso")], className="flujo")
-    visual = html.Div([
-        dbc.Row([dbc.Col(kpi("156", "combinaciones", "con el mismo protocolo"), md=4),
-                 dbc.Col(kpi(f"{a['n_tareas']}", "tareas", "38 h de cómputo en 4.8 h de reloj"), md=4),
-                 dbc.Col(kpi(fmt(a["submuestra"]), "viviendas", "submuestra estratificada"), md=4)], className="g-3"),
-        html.Div(cajas, className="mt-3"), grafico(FM.fig_e3_modelos())])
+    pasos = [("8 modelos", "KNN, Naive Bayes, logística, árbol, RF, XGBoost, SVM y XGBoost geográfico"),
+             ("× 4 balanceos", "ninguno, SMOTE, ADASYN y class_weight"),
+             ("× 4 optimizadores", "Grid, Random, bayesiana (TPE) y genética"),
+             ("= 156 combinaciones", f"128 + 28 de regresión; {a['n_tareas']} tareas con {fmt(a['submuestra'])} viviendas")]
+    cajas = html.Div([html.Div([html.Div(t, className="paso-titulo"), html.Div(d, className="paso-desc")], className="paso")
+                      for t, d in pasos], className="flujo")
+    visual = html.Div([cajas, grafico(FM.fig_e3_modelos())])
     return diapositiva("7.1", "El pipeline combinatorio del Entregable 3", visual,
                        puntos=["Validación anidada 5 × 3 con kNNDM: el bucle interno elige los hiperparámetros y el "
                                "externo, que nunca los vio, mide.",
-                               "Mismo presupuesto para todos: 12 evaluaciones por búsqueda, semilla 42.",
+                               "Mismo presupuesto para todos: 12 evaluaciones por búsqueda, semilla 42; 38 h de cómputo "
+                               "en 4.8 h de reloj.",
                                f"Entre modelos el F1 va de {mp['Naive Bayes']:.2f} (Naive Bayes) a "
                                f"{mp['Random Forest']:.2f} (Random Forest); dentro de un modelo, sus 16 combinaciones se "
                                "separan apenas 0.02 a 0.05.",
@@ -1583,26 +1545,35 @@ def d_hallazgos():
                      "El entorno dice más del estrato que la vivienda misma (EDA mejorado).", "#0d366b"),
             hallazgo("p = 0.74", "Cuatro optimizadores, el mismo F1 (E3)",
                      "Grid, Random, bayesiana y genética empatan; la bayesiana llega antes. El modelo pesa más.", "#4a3aa7")]
+    mj = FM.mejoras()
+    if mj:
+        rof = mj["test"]["Rotation Forest"]["vs_base"]
+        nuevo.insert(1, hallazgo(f"{rof['dif']:+.2f}", "F1 de test: Rotation Forest frente al modelo base",
+                                 f"IC 95 % [{rof['ic95_bca'][0]:+.3f}, {rof['ic95_bca'][1]:+.3f}], "
+                                 f"{rof['bloques_a_favor']} de 7 bloques: el modelo original más sólido.", "#eb6834"))
+    o = R["optimismo_validacion_aleatoria"]["F1 macro CV"]
     tarjetas = nuevo + [
-        hallazgo(f"{T['f1_macro'][B]:.2f}", "F1 macro en test (logística B)",
-                 f"{CV['f1_macro (media)'][B]:.2f} en CV espacial; {T['accuracy_±1'][B]:.0%} de aciertos a ±1 estrato."),
+        hallazgo(f"{CV['f1_macro (media)'][B]:.2f} → {T['f1_macro'][B]:.2f}", "Modelo base: validación kNNDM y test",
+                 f"La validación anticipa el test; {T['accuracy_±1'][B]:.0%} de aciertos a ±1 estrato."),
+        hallazgo(f"{o['aleatoria (StratifiedKFold)']:.2f} → {o['espacial (kNNDM)']:.2f}",
+                 "F1 con validación aleatoria frente a kNNDM",
+                 "Mezclar filas al azar promete un F1 que en zonas nuevas no se cumple.", "#e34948"),
         hallazgo(f"{D['moran_estrato']['I']:.2f}", "I de Moran del estrato", "La ciudad está segregada: la ubicación domina.", "#0d366b"),
-        hallazgo("0.62 → 0.32", "F1 aleatorio frente a espacial", "Validar mezclando filas habría duplicado el F1.", "#e34948"),
         hallazgo("96.9 %", "Cobertura con la ubicación por manzana", "La ciudad informal entra al modelo sin costo en F1.", "#eb6834"),
-        hallazgo("0", "Candidatos que superan a la logística en la ronda 1",
-                 "Solo con las variables del base, ninguno lo logra en test.", "#52514e"),
-        hallazgo(f"{FP.zonas_conocidas('edificio')['modelos']['XGBoost']['F1_macro']:.2f}", "F1 de XGBoost en zonas conocidas",
-                 "Con datos cerca, los árboles sí ganan: el escenario manda.", "#4a3aa7"),
     ]
+    if ar:
+        zc = [v["vs Logística B v3 (sin vecindad)"]["cv_F1"]["media"]
+              for v in ar["xgb_geografico_vs_logistica"]["zonas conocidas"]["variantes"].values()]
+        tarjetas.append(hallazgo(f"+{min(zc):.2f} a +{max(zc):.2f}", "XGBoost geográfico frente al base en zonas conocidas",
+                                 "Con datos cerca, la parte geográfica sí aporta: el escenario manda.", "#4a3aa7"))
     v3 = FP.v3_e1()
     if v3:
         q = v3["distancias"]["cuantiles"]
-        cvt = v3["cv_vs_test"]["v3: kNNDM sin buffer"]
         tarjetas.append(hallazgo(
             f"{q['CV de la versión 2 (bloques + buffer de 1 km)']['mediana (km)']:.1f} → "
             f"{q['Escenario: zona nueva de 2 km (test → todo train)']['mediana (km)']:.2f} km",
-            "Distancia al vecino conocido: validación v2 frente al escenario",
-            f"Con kNNDM (v3) la CV anticipa el test: {cvt['F1 macro CV']:.2f} frente a {cvt['F1 macro test']:.2f}.", "#2a78d6"))
+            "Distancia al dato más cercano: validación anterior frente al escenario",
+            "Por eso la versión 3 valida con kNNDM, a la distancia a la que se predice.", "#2a78d6"))
     visual = dbc.Row([dbc.Col(t, md=4, className="mb-3") for t in tarjetas], className="g-3")
     return diapositiva("6.1", "Hallazgos principales", visual)
 
@@ -1653,8 +1624,8 @@ def d_limitaciones():
 def d_pasos():
     hechos = html.Div([html.Div("Ya hecho", className="hito-titulo"), html.Ul([
         html.Li("Validación anidada y búsqueda de hiperparámetros con kNNDM para todos los modelos (Entregable 3)."),
-        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test (6.15)."),
-        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia (6.13 y 6.14)."),
+        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test (6.5)."),
+        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia (6.2 y 6.3)."),
         html.Li("EDA mejorado con los hallazgos de los modelos (3.20 a 3.22).")], className="mb-0")],
         className="hito mb-3")
     pasos = [("1", "Más zonas de evaluación", "Otra ciudad u otra partición: con 7 bloques no se confirman diferencias "
@@ -1692,15 +1663,16 @@ def d_recursos():
 # Índice de pestañas
 # ===========================================================================
 PESTANAS = [
-    {"id": "contexto", "titulo": "Problema y revisión", "diapositivas": [
+    {"id": "contexto", "titulo": "Problema y revisión", "corto": "Problema", "diapositivas": [
         ("La pregunta", d_pregunta), ("Cómo asigna el DANE", d_dane), ("Revisión bibliográfica", d_bibliografia),
-        ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta)]},
-    {"id": "datos", "titulo": "Datos y calidad", "diapositivas": [
+        ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta),
+        ("Qué cambió en la versión 3", d_cambios)]},
+    {"id": "datos", "titulo": "Datos y calidad", "corto": "Datos", "diapositivas": [
         ("Los datos", d_datos), ("Limpieza", d_embudo), ("Ubicación por manzana", d_manzana),
-        ("Cobertura v1 → v2", d_cobertura), ("v1 frente a v2", d_v1v2), ("Faltantes e imposibles", d_calidad),
+        ("Cobertura por estrato", d_cobertura), ("Faltantes e imposibles", d_calidad),
         ("Outliers univariados", d_outliers), ("Dependencia y tamaño efectivo", d_dependencia),
         ("Partición espacial", d_particion)]},
-    {"id": "eda", "titulo": "Análisis exploratorio", "diapositivas": [
+    {"id": "eda", "titulo": "Análisis exploratorio", "corto": "EDA", "diapositivas": [
         ("Variable objetivo", d_objetivo), ("Numéricas", d_numericas), ("Transformación", d_transformar),
         ("Correlaciones", d_correlaciones), ("Pares (densidad)", d_hexbin), ("Numéricas vs estrato", d_violin),
         ("Categóricas vs estrato", d_categoricas), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
@@ -1712,18 +1684,14 @@ PESTANAS = [
         ("Hiperparámetros", d_grid), ("Frente a líneas base", d_comparacion), ("¿Diferencias reales?", d_significancia),
         ("Errores por estrato", d_confusion), ("Probabilidades", d_roc), ("Coeficientes", d_coeficientes),
         ("Importancia", d_permutacion), ("Curva de aprendizaje", d_aprendizaje), ("Residuos espaciales", d_residuos),
-        ("Simulador", d_simulador)]},
-    {"id": "propuesto", "titulo": "Modelo propuesto y protocolo", "diapositivas": [
-        ("El modelo propuesto", d_candidatos), ("Por qué separar zonas", d_protocolo),
-        ("Validar a la distancia correcta", d_v3_validacion), ("El modelo base con kNNDM", d_v3_mejoras)]},
+        ("Variantes: ordinal y umbrales", d_v3_mejoras), ("Simulador", d_simulador)]},
+    {"id": "propuesto", "titulo": "Modelos propuestos y protocolo", "corto": "Modelos propuestos", "diapositivas": [
+        ("Los modelos originales", d_candidatos), ("XGBoost geográfico", d_geoxgb_como),
+        ("Los demás originales", d_otros_originales), ("Por qué separar zonas", d_protocolo),
+        ("Validar a la distancia correcta", d_v3_validacion)]},
     {"id": "mas", "titulo": "Resultados", "diapositivas": [
-        ("Ronda 1: resultados", d_avanzados), ("Ronda 1: criterio", d_criterio), ("Ronda 1: errores", d_errores),
-        ("Ronda 1: XGBoost geográfico", d_geoxgb), ("Ronda 1: residuos", d_residuos_av),
-        ("Ronda 2: vecindad (buffer)", d_vecindad), ("Ronda 2: 15 pliegues", d_vecindad15),
-        ("Ronda 2: ¿dónde ayuda?", d_donde), ("Ronda 2: vecindad con kNNDM", d_vecindad_knn),
-        ("Zonas conocidas", d_conocidas), ("Dos escenarios", d_escenarios),
-        ("¿Supera el modelo nuevo al base?", d_nuevo_vs_base),
-        ("Todos los modelos originales", d_originales), ("¿Son significativas?", d_signif_originales),
+        ("La vecindad física", d_vecindad_knn), ("Todos los modelos originales", d_originales),
+        ("¿Son significativas?", d_signif_originales), ("XGBoost geográfico: dos escenarios", d_nuevo_vs_base),
         ("XGBoost geográfico afinado", d_busqueda_geo)]},
     {"id": "e3", "titulo": "Optimización (E3)", "diapositivas": [
         ("Pipeline combinatorio", d_e3_diseno), ("Optimizadores", d_e3_optimizadores), ("Balanceo", d_e3_balanceo),
@@ -1732,3 +1700,38 @@ PESTANAS = [
         ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
         ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
 ]
+
+
+# ===========================================================================
+# Presentación de 20 minutos: lo esencial, en orden de exposición
+# ===========================================================================
+# (pestaña, diapositiva tal como aparece en el menú, minutos sugeridos, puntos que se muestran). Las diapositivas son las
+# mismas del dashboard completo y conservan su número, así que las referencias cruzadas (p. ej. «3.22» o «pestaña 6»)
+# siguen valiendo; en la presentación se ven en modo compacto: dos puntos, la frase final y sin fichas de lectura.
+GUION_20_MIN = [
+    ("contexto", "La pregunta", 1, [0, 2]), ("contexto", "El vacío en la literatura", 1.5, [1, 2]),
+    ("contexto", "Objetivo e hipótesis", 1, [0, 1]), ("contexto", "Qué cambió en la versión 3", 1.5, [1, 3]),
+    ("datos", "Partición espacial", 1, [0, 1]),
+    ("eda", "Variable objetivo", 0.75, [0, 1]), ("eda", "Mapa", 0.75, [0, 1]), ("eda", "Ranking de asociación", 0.75, [0, 1]),
+    ("eda", "Autocorrelación", 0.75, [0, 1]), ("eda", "EDA mejorado: el entorno", 0.75, [1, 3]),
+    ("modelo", "Frente a líneas base", 1, [0, 2]), ("propuesto", "Los modelos originales", 1.5, [1, 2]),
+    ("propuesto", "XGBoost geográfico", 1, [0, 1]), ("mas", "La vecindad física", 1, [0, 1]),
+    ("mas", "Todos los modelos originales", 1.5, [1, 3]), ("mas", "¿Son significativas?", 1, [1, 2]),
+    ("mas", "XGBoost geográfico: dos escenarios", 1, [0, 2]), ("e3", "Pipeline combinatorio", 1, [0, 2]),
+    ("conclusiones", "Respuesta", 1.25, None),
+]
+
+
+def _guion():
+    por_id = {p["id"]: p for p in PESTANAS}
+    salida = []
+    for pid, titulo, minutos, puntos in GUION_20_MIN:
+        nombres = [t for t, _ in por_id[pid]["diapositivas"]]
+        i = nombres.index(titulo)
+        salida.append((titulo, por_id[pid]["diapositivas"][i][1],
+                       {"origen": (pid, i), "minutos": minutos, "puntos": puntos}))
+    return salida
+
+
+PESTANAS.insert(0, {"id": "presentacion", "titulo": "Presentación (20 min)", "sin_numero": True,
+                    "diapositivas": _guion()})
