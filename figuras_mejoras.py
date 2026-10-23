@@ -8,8 +8,9 @@ Tres fuentes, todas copiadas en ``datos/`` (nada se reentrena aquí):
   ``proyecto/extraer_eda_mejorado.py`` a partir del cuaderno ejecutado.
 - ``datos/revision_v3/``: todos los modelos originales de la revisión con vecindad física y todos los datos, y sus
   pruebas de significancia (capítulo 9 del libro del Entregable 2; código en la carpeta ``mejoras/`` del Entregable 3).
-- ``datos/e3/``: resultados del Entregable 3 (pipeline combinatorio, optimizadores, balanceo, cómputo, test e
-  interpretabilidad), copiados de la carpeta ``resultados/`` de su repositorio.
+- ``datos/e3/``: resultados del Entregable 3 (pipeline combinatorio, optimizadores, balanceo, cómputo, test,
+  calibración, regresión, comparación estadística, interpretabilidad y el modelo nuevo frente al base), copiados de la
+  carpeta ``resultados/`` de su repositorio.
 """
 import json
 from functools import lru_cache
@@ -478,6 +479,165 @@ def fig_e3_shap(modelo="XGBoost", n=12):
     fig.update_yaxes(showgrid=False)
     fig.update_layout(title=f"{modelo}: azul = ubicación y entorno; naranja = la propia vivienda")
     return _estilo(fig, alto=470, leyenda=False)
+
+
+# ---------------------------------------------------------------------------
+# Entregable 3: calibración, regresión, comparación estadística y el modelo nuevo
+# ---------------------------------------------------------------------------
+NOMBRE_CAL = {"original": "Sin recalibrar", "platt": "Platt (sigmoide)", "isotonica": "Regresión isotónica"}
+COLOR_CAL = {"original": TINTA, "platt": AZUL, "isotonica": AZUL_CLARO}
+
+
+def fig_e3_calibracion(medida="ece"):
+    """ECE, Brier o F1 de test de cada finalista antes y después de recalibrar (Platt e isotónica)."""
+    f = e3("finalistas")
+    if not f:
+        return None
+    cal = f["calibracion"]
+    orden = sorted(cal, key=lambda n: cal[n]["original"]["ece"] if medida != "f1" else -f["finalistas"][n]["test"]["f1_macro"])
+    fig = go.Figure()
+    for clave, nombre in NOMBRE_CAL.items():
+        if medida == "f1":
+            x = [f["finalistas"][n]["test"]["f1_macro"] if clave == "original" else cal[n][clave]["f1"] for n in orden]
+        else:
+            x = [cal[n][clave][medida] for n in orden]
+        fig.add_trace(go.Bar(x=x, y=orden, orientation="h", name=nombre, marker_color=COLOR_CAL[clave],
+                             hovertemplate="%{y}: %{x:.3f}<extra>" + nombre + "</extra>"))
+    titulo = {"ece": "Error de calibración esperado (ECE) en test: más bajo es mejor",
+              "brier": "Brier en test: más bajo es mejor",
+              "f1": "F1 macro en test: el recalibrado también cambia las decisiones"}[medida]
+    fig.update_layout(barmode="group", title=titulo, bargap=0.25)
+    fig.update_xaxes(title={"ece": "ECE", "brier": "Brier", "f1": "F1 macro"}[medida])
+    fig.update_yaxes(showgrid=False)
+    return _estilo(fig, alto=500)
+
+
+def fig_e3_regresion(metrica="rmse"):
+    """Mejor optimizador de cada modelo de regresión: RMSE, MAE o F1 al redondear, media ± desviación entre pliegues."""
+    r = e3("resumen_regresion")
+    if not r:
+        return None
+    df = pd.DataFrame(r)
+    col = {"rmse": "rmse", "mae": "mae", "f1": "f1_macro_redondeado"}[metrica]
+    mejor = df.sort_values("rmse_mean").groupby("modelo").head(1)
+    mejor = mejor.sort_values(f"{col}_mean", ascending=metrica != "f1")
+    nombres = [m.replace(" (regresión)", "") + f" · {met}" for m, met in zip(mejor.modelo, mejor.metodo)]
+    fig = go.Figure(go.Bar(
+        x=mejor[f"{col}_mean"], y=nombres, orientation="h", showlegend=False,
+        marker_color=[AZUL if m.startswith(("Random Forest", "XGBoost")) else AZUL_CLARO for m in mejor.modelo],
+        error_x=dict(type="data", array=mejor[f"{col}_std"], color=GRIS, thickness=1.5),
+        text=[f"{v:.3f}" for v in mejor[f"{col}_mean"]], textposition="outside",
+        hovertemplate="%{y}: %{x:.3f}<extra></extra>"))
+    if metrica == "f1":
+        a = e3("analisis_clasificacion")
+        f1c = max(rr["f1_macro_mean"] for rr in a["mejor_por_modelo"])
+        fig.add_vline(x=f1c, line_dash="dot", line_color=NARANJA,
+                      annotation_text=f"mejor clasificador: {f1c:.3f}", annotation_position="top")
+    titulo = {"rmse": "RMSE en el bucle externo (estratos): más bajo es mejor",
+              "mae": "MAE en el bucle externo (estratos): más bajo es mejor",
+              "f1": "F1 macro al redondear la predicción al estrato más cercano"}[metrica]
+    fig.update_layout(title=titulo)
+    fig.update_xaxes(title={"rmse": "RMSE", "mae": "MAE", "f1": "F1 macro"}[metrica])
+    fig.update_yaxes(showgrid=False)
+    return _estilo(fig, alto=450, leyenda=False)
+
+
+def fig_e3_rangos():
+    """Diagrama de diferencia crítica (Friedman → Nemenyi) de la mejor combinación de cada modelo."""
+    a = e3("analisis_clasificacion")
+    if not a:
+        return None
+    f = a["friedman_mejor_por_modelo"]
+    r = sorted(f["rangos"].items(), key=lambda kv: kv[1])
+    cd, mejor = f["cd"], r[0][1]
+    nombres = [n for n, _ in r][::-1]
+    vals = [v for _, v in r][::-1]
+    fig = go.Figure()
+    fig.add_shape(type="rect", x0=mejor, x1=mejor + cd, y0=-0.5, y1=len(r) - 0.5, fillcolor="rgba(42,120,214,0.10)",
+                  line_width=0, layer="below")
+    fig.add_trace(go.Scatter(
+        x=vals, y=nombres, mode="markers+text", text=[f"{v:.2f}" for v in vals], textposition="middle right",
+        marker=dict(size=15, color=[NARANJA if n == "XGBoost geográfico" else (AZUL if v - mejor < cd else GRIS)
+                                    for n, v in zip(nombres, vals)], line=dict(color="white", width=2)),
+        showlegend=False, hovertemplate="%{y}: rango medio %{x:.2f}<extra></extra>"))
+    fig.add_annotation(x=mejor + cd / 2, y=len(r) - 0.3, showarrow=False, text=f"CD = {cd:.2f}: indistinguibles del mejor",
+                       font=dict(color=AZUL))
+    fig.update_xaxes(title="rango medio en 32 bloques espaciales (1 = siempre el mejor)", range=[2, 7.3])
+    fig.update_yaxes(showgrid=False)
+    fig.update_layout(title=f"Friedman χ² = {f['chi2']:.1f}, p = {cientifico(f['p'])} · franja azul: CD de Nemenyi")
+    return _estilo(fig, alto=450, leyenda=False)
+
+
+def fig_e3_delong(rival="Logística L1/L2"):
+    """Diferencia de AUC por estrato (uno contra el resto) del XGBoost geográfico frente a un rival, con Holm."""
+    a = e3("analisis_clasificacion")
+    if not a:
+        return None
+    filas = []
+    for d in a["delong_finalistas"]:
+        A, B = d["A"].split(" | ")[0], d["B"].split(" | ")[0]
+        if {A, B} == {"XGBoost geográfico", rival}:
+            signo = 1 if A == "XGBoost geográfico" else -1
+            filas.append((d["estrato"], signo * d["diferencia"], signo * 1.96 * d["se"], d["p_holm"]))
+    filas.sort()
+    x = [f"Estrato {e}" for e, *_ in filas]
+    y = [v for _, v, _, _ in filas]
+    colores = [(VERDE if v > 0 else ROJO) if p < 0.05 else GRIS for _, v, _, p in filas]
+    fig = go.Figure(go.Bar(x=x, y=y, marker_color=colores, showlegend=False,
+                           error_y=dict(type="data", array=[abs(s) for *_, s, _ in filas], color=TINTA, thickness=1.5),
+                           customdata=[[p] for *_, p in filas],
+                           hovertemplate="%{x}: ΔAUC = %{y:+.3f} (p de Holm = %{customdata[0]:.3g})<extra></extra>"))
+    fig.add_hline(y=0, line_color=TINTA)
+    nombre = "logística con vecindad" if rival == "Logística L1/L2" else rival
+    fig.update_layout(title=f"ΔAUC por estrato: XGBoost geográfico − {nombre}")
+    fig.update_yaxes(title="diferencia de AUC (IC 95 %)")
+    fig.add_annotation(x=0, y=-0.17, xref="paper", yref="paper", xanchor="left", showarrow=False,
+                       text="verde o rojo: diferencia significativa con Holm (p < 0.05) · gris: no significativa",
+                       font=dict(color=TINTA, size=13))
+    fig = _estilo(fig, alto=470, leyenda=False)
+    fig.update_layout(margin=dict(b=85))
+    return fig
+
+
+RIVALES_NUEVO = {"base": "Logística B (modelo base del E1)", "logistica": "Logística L1/L2", "xgboost": "XGBoost",
+                 "rf": "Random Forest"}
+
+
+def fig_e3_nuevo(rival="base"):
+    """XGBoost geográfico − rival en F1 macro: validación anidada, test con la submuestra y test con todos los datos."""
+    f, t = e3("finalistas"), e3("todos_los_datos")
+    if not f or not t:
+        return None
+    nombre = RIVALES_NUEVO[rival]
+    g = next(c for c in f["geo_vs_rivales"] if c["rival"] == nombre)
+    gt = next(c for c in t["geo_vs_rivales"] if c["rival"] == nombre)
+    filas = [("Validación anidada (5 pliegues, ±1 SE)", g["cv_dif_media"], g["cv_dif_media"] - g["cv_se"],
+              g["cv_dif_media"] + g["cv_se"], f"{g['cv_pliegues_a_favor']}/5 pliegues"),
+             ("Test, submuestra de 10 001 (IC 95 %)", g["test_dif"], *g["test_ic95_bca"],
+              f"{g['test_bloques_a_favor']}/{g['test_n_bloques']} bloques"),
+             ("Test, todos los datos (IC 95 %)", gt["test_dif"], *gt["test_ic95_bca"],
+              f"{gt['test_bloques_a_favor']}/{gt['test_n_bloques']} bloques")][::-1]
+    y = [r[0] for r in filas]
+    x = np.array([r[1] for r in filas])
+    lo, hi = np.array([r[2] for r in filas]), np.array([r[3] for r in filas])
+    colores = [VERDE if l > 0 else (ROJO if h < 0 else GRIS) for l, h in zip(lo, hi)]
+    fig = go.Figure(go.Scatter(
+        x=x, y=y, mode="markers+text", text=[f"{v:+.3f} · {r[4]}" for v, r in zip(x, filas)], textposition="top center",
+        marker=dict(size=16, color=colores), showlegend=False,
+        error_x=dict(type="data", symmetric=False, array=hi - x, arrayminus=x - lo, color=TINTA, thickness=2),
+        hovertemplate="%{y}: %{x:+.3f}<extra></extra>"))
+    fig.add_vline(x=0, line_color=TINTA, line_dash="dot")
+    etiqueta = {"base": "modelo base del E1", "logistica": "logística con la misma vecindad",
+                "xgboost": "XGBoost (sin modelos locales)", "rf": "Random Forest"}[rival]
+    fig.update_layout(title=f"F1 macro: XGBoost geográfico − {etiqueta}")
+    fig.update_xaxes(title="diferencia de F1 macro", range=[-0.16, 0.26])
+    fig.update_yaxes(showgrid=False)
+    fig.add_annotation(x=0, y=-0.3, xref="paper", yref="paper", xanchor="left", showarrow=False,
+                       text="verde: gana · rojo: pierde · gris: el intervalo incluye el 0 (no se distingue)",
+                       font=dict(color=TINTA, size=13))
+    fig = _estilo(fig, alto=420, leyenda=False)
+    fig.update_layout(margin=dict(b=95))
+    return fig
 
 
 # ---------------------------------------------------------------------------

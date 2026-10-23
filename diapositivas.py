@@ -1513,6 +1513,119 @@ def d_e3_shap():
 def _shap(m):
     return FM.fig_e3_shap(m)
 
+
+def d_e3_calibracion():
+    f = FM.e3("finalistas")
+    cal, fin = f["calibracion"], f["finalistas"]
+    geo, lv = "XGBoost geográfico", "Logística L1/L2"
+    visual = html.Div([controles(control("Medida", radio(
+        "cal-med", [("ece", "Calibración (ECE)"), ("brier", "Brier"), ("f1", "F1 macro")], "ece"))),
+        grafico(FM.fig_e3_calibracion("ece"), "cal-fig")])
+    return diapositiva("7.6", "¿Se puede confiar en sus probabilidades? Calibración", visual,
+                       puntos=[f"Bien calibrados de entrada: la logística con vecindad (ECE {cal[lv]['original']['ece']:.3f}), "
+                               f"KNN ({cal['KNN']['original']['ece']:.3f}) y XGBoost ({cal['XGBoost']['original']['ece']:.3f}).",
+                               f"Los peores: Naive Bayes ({cal['Naive Bayes']['original']['ece']:.2f}), el árbol "
+                               f"({cal['Árbol de decisión']['original']['ece']:.2f}) y SVM ({cal['SVM']['original']['ece']:.2f}); "
+                               "Platt o la regresión isotónica los corrigen.",
+                               f"Donde ya estaba bien no ayuda: la logística se descalibra (ECE "
+                               f"{cal[lv]['isotonica']['ece']:.2f}–{cal[lv]['platt']['ece']:.2f}).",
+                               f"El recalibrado promedia 5 modelos y cambia decisiones: el XGBoost geográfico sube de "
+                               f"{fin[geo]['test']['f1_macro']:.3f} a {cal[geo]['isotonica']['f1']:.3f} de F1, aún por debajo de "
+                               f"la logística ({fin[lv]['test']['f1_macro']:.3f})."],
+                       conclusion="Un AUC alto no garantiza probabilidades creíbles: se recalibra solo cuando hace falta.",
+                       metricas=["ece", "brier"], fuente=f"{E3C} · cap. 5")
+
+
+@callback(Output("cal-fig", "figure"), Input("cal-med", "value"))
+def _cal(m):
+    return FM.fig_e3_calibracion(m)
+
+
+def d_e3_regresion():
+    r = pd.DataFrame(FM.e3("resumen_regresion"))
+    ar = FM.e3("analisis_regresion")
+    mejor = r.sort_values("rmse_mean").groupby("modelo").head(1).set_index("modelo")
+    rf, xg, sv = (mejor.loc[m] for m in ["Random Forest (regresión)", "XGBoost (regresión)", "SVR"])
+    sup = ar["supuestos_mejor"]
+    en_mcs = sum(1 for m in ar["mcs"] if m["en_el_conjunto"])
+    visual = html.Div([controles(control("Medida", radio(
+        "reg-met", [("rmse", "RMSE"), ("mae", "MAE"), ("f1", "F1 al redondear")], "rmse"))),
+        grafico(FM.fig_e3_regresion("rmse"), "reg-fig")])
+    return diapositiva("7.7", "Regresión: el estrato como número no ayuda a clasificar", visual,
+                       puntos=["Mismos datos y pliegues: 7 modelos × 4 optimizadores = 28 combinaciones, sin balanceo.",
+                               f"Gana Random Forest (RMSE {rf['rmse_mean']:.3f} estratos, R² {rf['r2_mean']:.2f}), seguido de "
+                               f"XGBoost ({xg['rmse_mean']:.3f}) y SVR ({sv['rmse_mean']:.3f}); el MCS conserva {en_mcs} de las "
+                               "28 combinaciones.",
+                               "Al redondear, su F1 macro queda por debajo del mejor clasificador: la regresión comprime los "
+                               "extremos (solo el 19 % del estrato 6 llega a 6).",
+                               f"Residuos heterocedásticos (White), dependientes (BDS y Ljung-Box) y correlacionados en el "
+                               f"espacio (I de Moran {sup['moran_residuos_k8']:.2f}): queda estructura espacial."],
+                       conclusion="Sirve como lectura ordinal del error, no como clasificador.",
+                       metricas=["mae_ordinal", "moran"], fuente=f"{E3C} · caps. 6 y 7")
+
+
+@callback(Output("reg-fig", "figure"), Input("reg-met", "value"))
+def _reg(m):
+    return FM.fig_e3_regresion(m)
+
+
+def d_e3_estadistica():
+    a = FM.e3("analisis_clasificacion")
+    f = a["friedman_mejor_por_modelo"]
+    cliff = next(c for c in a["cliff_finalistas"] if c["A"].startswith("XGBoost geográfico") and c["B"].startswith("Logística"))
+    visual = html.Div([controles(control("Vista", radio(
+        "est-vista", [("rangos", "Rangos (Nemenyi)"), ("Logística L1/L2", "DeLong vs logística"),
+                      ("XGBoost", "DeLong vs XGBoost"), ("Random Forest", "DeLong vs Random Forest")], "rangos"))),
+        grafico(FM.fig_e3_rangos(), "est-fig")])
+    return diapositiva("7.8", "¿Diferencias reales? Friedman, Nemenyi y DeLong", visual,
+                       puntos=[f"Friedman con la mejor combinación de cada modelo en 32 bloques espaciales: difieren "
+                               f"(p = {cientifico(f['p'])}).",
+                               f"El XGBoost geográfico tiene el mejor rango medio ({f['rangos']['XGBoost geográfico']:.2f}), "
+                               f"pero con la diferencia crítica de Nemenyi (CD = {f['cd']:.2f}) solo Naive Bayes queda "
+                               "claramente atrás.",
+                               "DeLong por estrato con Holm: frente a la logística con vecindad, el geográfico ordena mejor "
+                               "los estratos 1 a 4 y peor el 5 y el 6.",
+                               f"Tamaño del efecto: δ de Cliff = {cliff['delta_cliff_bloques']:.2f} frente a la logística "
+                               f"({cliff['magnitud']}); despreciable entre ensambles."],
+                       conclusion="Entre los mejores, las diferencias son pequeñas y cambian de signo según el estrato.",
+                       metricas=["friedman", "holm", "cliff"], fuente=f"{E3C} · cap. 7")
+
+
+@callback(Output("est-fig", "figure"), Input("est-vista", "value"))
+def _est(v):
+    return FM.fig_e3_rangos() if v == "rangos" else FM.fig_e3_delong(v)
+
+
+def d_e3_nuevo():
+    f, t = FM.e3("finalistas"), FM.e3("todos_los_datos")
+    g = {c["rival"]: c for c in f["geo_vs_rivales"]}
+    gt = {c["rival"]: c for c in t["geo_vs_rivales"]}
+    base = "Logística B (modelo base del E1)"
+    b, bt = g[base], gt[base]
+    alpha = f["finalistas"]["XGBoost geográfico"]["params"]["alpha"]
+    visual = html.Div([controles(control("Frente a", radio(
+        "nuevo-rival", [("base", "Modelo base"), ("logistica", "Logística con vecindad"), ("xgboost", "XGBoost"),
+                        ("rf", "Random Forest")], "base"))),
+        grafico(FM.fig_e3_nuevo("base"), "nuevo-fig")])
+    return diapositiva("7.10", "El modelo nuevo frente al modelo base en el Entregable 3", visual,
+                       puntos=["La propuesta es el XGBoost geográfico adaptado a clasificación; los 7 modelos de la guía "
+                               "son referencias. XGBoost es su parte global sin modelos locales: compararlos es una ablación.",
+                               f"Frente al modelo base: {b['cv_dif_media']:+.3f} en validación ({b['cv_pliegues_a_favor']}/5) y "
+                               f"{b['test_dif']:+.3f} en test (IC [{b['test_ic95_bca'][0]:+.3f}, {b['test_ic95_bca'][1]:+.3f}], "
+                               f"{b['test_bloques_a_favor']}/{b['test_n_bloques']} bloques).",
+                               f"Con todos los datos y los hiperparámetros de la submuestra (α = {alpha:.2f}) ya no se "
+                               f"distingue del base ({bt['test_dif']:+.3f}).",
+                               f"Con la misma vecindad no gana en zonas nuevas: con todos los datos pierde frente a XGBoost "
+                               f"({gt['XGBoost']['test_dif']:+.3f}) y Random Forest ({gt['Random Forest']['test_dif']:+.3f})."],
+                       conclusion="Supera al modelo base, pero la mejora la explica la vecindad física; su ventaja propia "
+                                  "está en las zonas con datos cerca (Entregable 2).",
+                       metricas=["f1_macro", "ic95", "alpha_geo"], fuente=f"{E3C} · cap. 9")
+
+
+@callback(Output("nuevo-fig", "figure"), Input("nuevo-rival", "value"))
+def _nuevo(r):
+    return FM.fig_e3_nuevo(r)
+
 # ===========================================================================
 # 6. CONCLUSIONES
 # ===========================================================================
@@ -1693,9 +1806,11 @@ PESTANAS = [
         ("La vecindad física", d_vecindad_knn), ("Todos los modelos originales", d_originales),
         ("¿Son significativas?", d_signif_originales), ("XGBoost geográfico: dos escenarios", d_nuevo_vs_base),
         ("XGBoost geográfico afinado", d_busqueda_geo)]},
-    {"id": "e3", "titulo": "Optimización (E3)", "diapositivas": [
+    {"id": "e3", "titulo": "Entregable 3: optimización y evaluación", "corto": "Entregable 3", "diapositivas": [
         ("Pipeline combinatorio", d_e3_diseno), ("Optimizadores", d_e3_optimizadores), ("Balanceo", d_e3_balanceo),
-        ("Costo computacional", d_e3_computo), ("Test de los finalistas", d_e3_test), ("SHAP", d_e3_shap)]},
+        ("Costo computacional", d_e3_computo), ("Test de los finalistas", d_e3_test), ("Calibración", d_e3_calibracion),
+        ("Regresión", d_e3_regresion), ("Comparación estadística", d_e3_estadistica), ("SHAP", d_e3_shap),
+        ("El modelo nuevo en el E3", d_e3_nuevo)]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
         ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
         ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
