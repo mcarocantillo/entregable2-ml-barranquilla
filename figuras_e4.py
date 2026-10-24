@@ -398,7 +398,8 @@ def fig_diagnostico(modelo=ORIGINAL, vista="confusion"):
 
 def fig_externos(conjunto="king_county"):
     e = leer("resumen_externos_v2.json")[conjunto]
-    orden = sorted(e["media"], key=e["media"].get)
+    # las variantes del EPL con un solo espacio («[solo …]») no son rivales: se dejan fuera
+    orden = sorted((m for m in e["media"] if not m.startswith("[")), key=e["media"].get)
     fig = go.Figure(go.Bar(x=[e["media"][m] for m in orden], y=orden, orientation="h",
                            marker_color=[_color(m) for m in orden],
                            error_x=dict(type="data", array=[e["sd"][m] for m in orden], color=GRIS, thickness=1.2),

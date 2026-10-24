@@ -580,12 +580,13 @@ def d_e4_diagnostico():
     return diapositiva("8.16", "Diagnóstico en el test de cada modelo", visual,
                        puntos=[f"El {100 * cerca:.0f} % de las predicciones del EPL cae en el estrato real o en uno "
                                "vecino; los errores grandes son raros.",
-                               "Los estratos 1 y 6 se reconocen mejor; 4 y 5 se confunden entre sí, como en todos los "
-                               "entregables.",
+                               "El estrato 1 es el que mejor se reconoce (79 %). Los altos se corren hacia abajo: el 5 "
+                               "va al 4 en el 42 % de los casos y el 6 al 5 en el 70 % (en el test hay solo 793 "
+                               "viviendas de estrato 6, todas en un bloque).",
                                "Importancia: la misma estimación de Shapley por permutaciones para todos los modelos, "
                                "así que se pueden comparar.",
                                "En el EPL y en CatBoost encabezan la ubicación y el entorno (vecinos), no la vivienda."],
-                       conclusion="El EPL se equivoca como los demás: entre estratos vecinos y en 4–5.",
+                       conclusion="El EPL se equivoca como los demás: entre estratos vecinos, sobre todo en los altos.",
                        metricas=["acc1", "ece", "auc"], fuente=f"{E4C} · caps. 6.5 y 6.8")
 
 
@@ -598,7 +599,7 @@ def d_e4_externos():
     e = F4.leer("resumen_externos_v2.json")
     filas = []
     for k, v in e.items():
-        mejor_rival = max((m for m in v["media"] if m != ORIGINAL), key=v["media"].get)
+        mejor_rival = max((m for m in v["media"] if m != ORIGINAL and not m.startswith("[")), key=v["media"].get)
         filas.append((F4.NOMBRE_EXTERNO[k].split(" (")[0], v["media"][ORIGINAL], mejor_rival, v["media"][mejor_rival],
                       v["friedman"]["rangos"][ORIGINAL]))
     resumen = pd.DataFrame(filas, columns=["Conjunto", "F1 del EPL", "Mejor rival", "F1 del rival", "Rango del EPL"])
