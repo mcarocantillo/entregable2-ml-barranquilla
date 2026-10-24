@@ -81,17 +81,16 @@ def d_pregunta():
                  dbc.Col(kpi("5 – 6", "pagan contribución", "Ley 142 de 1994"), md=4)], className="g-3 mt-1"),
     ])
     return diapositiva("1.1", "¿Se puede predecir el estrato de una vivienda con sus datos catastrales?", visual,
-                       puntos=["El estrato fija la tarifa de los servicios públicos de cada vivienda.",
-                               "Lo asigna cada alcaldía con la metodología del DANE.",
-                               "Problema: clasificación multiclase ordinal, con datos espaciales."],
-                       conclusion="Predecir el estrato (1 a 6) de cada vivienda de Barranquilla con su ficha catastral y su "
-                                  "ubicación.", fuente=f"{E2C} · cap. 1")
+                       puntos=["Cada vivienda tiene un estrato del 1 al 6 que fija cuánto paga de servicios públicos.",
+                               "Estratos 1 a 3: reciben subsidio. Estratos 5 y 6: pagan contribución."],
+                       conclusion="¿Cuánto del estrato se puede predecir con el catastro abierto de Barranquilla?",
+                       fuente=f"{E2C} · cap. 1")
 
 
 def d_dane():
-    pasos = [("1", "Zonas", "Se cruzan zonas homogéneas físicas y de valor del suelo"),
-             ("2", "Estrato de la zona", "Puntaje de las edificaciones (0 a 100) y cortes por municipio"),
-             ("3", "Viviendas atípicas", "Fuera de Q1 − 1.5·RIC o Q3 + 1.5·RIC: ±1 estrato")]
+    pasos = [("1", "Zonas", "Zonas homogéneas físicas y de valor del suelo"),
+             ("2", "Estrato de la zona", "Puntaje de las edificaciones (0 a 100)"),
+             ("3", "Viviendas atípicas", "Se mueven ±1 estrato")]
     insumos = pd.DataFrame([
         ["Zonas homogéneas", "No: se aproximan con coordenadas y vecindad"],
         ["Puntaje de las edificaciones", "No"],
@@ -101,11 +100,10 @@ def d_dane():
     ], columns=["Insumo del DANE", "¿Está en el catastro abierto?"])
     visual = html.Div([flujo(pasos), html.Div(tabla(insumos), className="mt-3")])
     return diapositiva("1.2", "Cómo asigna el DANE el estrato", visual,
-                       puntos=["El estrato es, ante todo, una propiedad de la zona.",
-                               "Una vivienda solo se aparta de su zona si es claramente atípica.",
-                               "No usa los avalúos catastrales ni datos del hogar (ingreso, ocupación, educación).",
-                               "Los dos insumos clave del DANE no son públicos."],
-                       conclusion="La pregunta real: ¿cuánto del estrato se recupera con la parte pública del catastro?",
+                       puntos=["El DANE asigna el estrato por zonas.",
+                               "Solo mueve las viviendas atípicas: ±1 estrato.",
+                               "Sus dos insumos clave no son públicos: los aproximamos con la ubicación y la vecindad."],
+                       conclusion="¿Cuánto del estrato se recupera con la parte pública del catastro?",
                        fuente=f"{E2C} · cap. 1.2")
 
 
@@ -187,7 +185,7 @@ def _bib_e12():
                  dbc.Col(kpi("1998", "antecedente más cercano", "logística con datos censales agregados"), md=4),
                  dbc.Col(kpi("5 de 9", "candidatos originales probados", "los otros: optimizadores o selectores"), md=4)],
                 className="g-3 mb-3"),
-        tabla(t), html.Div(tabla(usados), className="mt-3")])
+        tabla(usados), html.Div(tabla(t), className="mt-3")])
 
 
 def _bib_e4():
@@ -223,15 +221,12 @@ def d_bibliografia():
                       ("cercanos", "Trabajos más cercanos")], "e12"))),
         html.Div(_bib_e12(), id="bib-contenido")])
     return diapositiva("1.4", "Revisión bibliográfica: la brecha, los candidatos y la novedad", visual,
-                       puntos=["Los trabajos cercanos usan XGBoost, Random Forest, SVR o la logística, pero para el "
-                               "precio de la vivienda o con datos agregados por zona, no para el estrato.",
-                               "La Tabla III reúne nueve modelos que reducen el error frente a los clasificadores "
-                               "convencionales y nunca se aplicaron a este problema: los candidatos originales.",
-                               "En el E4 la búsqueda se amplió a 4 bases y 6 cadenas: tampoco hay estudios que predigan el "
-                               "estrato de cada vivienda; donde aparece, es una entrada o se estima con datos del hogar.",
-                               "Al método sí hay trabajos afines (pesos por región, gradiente exponenciado, ponderación "
-                               "espacial): por eso la novedad del modelo original se declara con precisión."],
-                       conclusion="Nadie ha clasificado el estrato con variables catastrales: esa es la brecha.",
+                       puntos=["Los trabajos cercanos predicen el precio de la vivienda o la pobreza por zonas, no el "
+                               "estrato.",
+                               "E4: Scopus, Web of Science, Google Scholar y arXiv con 6 cadenas. Tampoco aparece.",
+                               "Lo más parecido al método: combinación convexa por regiones para regresión (Zhou y Lin, "
+                               "2026)."],
+                       conclusion="Nadie ha predicho el estrato con el catastro: esa es la brecha.",
                        fuente=f"{E2C} · caps. 1.3 y 9.1 · {DE4.E4C} · cap. 4")
 
 
@@ -254,26 +249,14 @@ def d_vacio():
         html.Div("Búsqueda complementaria en Web of Science", className="subtitulo-visual"),
         html.Img(src="/assets/busqueda_wos.png", alt=f"Web of Science Core Collection: 0 resultados para {consulta}",
                  style={"width": "100%", "border": "1px solid #dcdcd6", "borderRadius": "10px"}),
-        html.P(["Captura de Web of Science Core Collection (búsqueda de Juan Camilo Oñoro): la consulta ",
-                html.Code(consulta), " devolvió 0 documentos. Repetida directamente desde Advanced Search, sin refinar "
-                "resultados anteriores (19-oct-2026), tampoco devolvió ninguno."],
+        html.P("Web of Science Core Collection, 19-oct-2026: 0 documentos.",
                style={"fontSize": ".85rem", "color": "#52514e", "marginTop": "6px"}),
         html.Div("Por qué no hay estudios con los que compararse", className="subtitulo-visual mt-3"),
         tabla(diferencias)])
     return diapositiva("1.5", "El vacío en la literatura: por qué no hay con quién compararse", visual,
-                       puntos=["El DANE: el cobro por estratos «se institucionalizó sin que existiera un modelo similar en "
-                               "otros países». La variable objetivo no existe fuera de Colombia.",
-                               "Los 9 trabajos cercanos en Scopus predicen el precio de la vivienda (5), la pobreza por "
-                               "zonas (1) o la elección residencial (1998), o usan el nivel socioeconómico como entrada.",
-                               "Brecha de aplicación: nadie clasifica el estrato de cada vivienda con el catastro. Brecha "
-                               "de método: los 9 modelos originales nunca se aplicaron a este problema.",
-                               "El DANE usa insumos que el catastro abierto no publica: la pregunta es cuánto del estrato "
-                               "se recupera con la parte pública.",
-                               "Web of Science lo confirma: la consulta, sin refinar, no devuelve ningún documento. En "
-                               "el E4 se repitió en 4 bases con 6 cadenas, en inglés y en español (con tesis colombianas): "
-                               "el vacío se mantiene. Faltan SciELO y Redalyc."],
-                       conclusion="Sin cifras externas con las que compararse, todo se mide contra un modelo base propio y "
-                                  "con el mismo protocolo espacial.",
+                       puntos=["El estrato solo existe en Colombia.",
+                               "No hay cifras externas con qué compararnos."],
+                       conclusion="Todo se mide contra un modelo base propio, con el mismo protocolo.",
                        fuente=f"{E2C} · caps. 1.1 a 1.4")
 
 
@@ -1293,61 +1276,49 @@ def _vk(e):
 def d_hipotesis():
     visual = html.Div([
         html.Div("Objetivo", className="pregunta-grande"),
-        html.P("Predecir el estrato (1 a 6) de cada vivienda de Barranquilla con el catastro abierto, en zonas que el "
-               "modelo no vio, y comprobar si un modelo no usado antes en este problema supera al modelo base "
-               "(regresión logística multinomial).", style={"fontSize": "1.15rem"}),
+        html.P("Predecir el estrato (1 a 6) de cada vivienda con el catastro abierto, en zonas que el modelo no vio.",
+               style={"fontSize": "1.15rem"}),
         dbc.Row([
             dbc.Col(html.Div([html.H5("H1 · Entregables 2 y 3"),
-                              html.P("Los modelos de la revisión (XGBoost geográfico, Rotation Forest, stacking…) "
-                                     "superan al modelo base en F1 macro."),
-                              html.P("Resultado: sí, con la vecindad física; pero no a los convencionales con la misma "
-                                     "información.", className="nota-visual")], className="caja-si"), md=6),
+                              html.P("Los modelos de la revisión superan al modelo base."),
+                              html.P("Resultado: sí, con la vecindad física.", className="nota-visual")],
+                             className="caja-si"), md=6),
             dbc.Col(html.Div([html.H5("H2 · Entregable 4"),
-                              html.P("Un ensamble con pesos locales (EPL) supera al modelo base y a los mejores "
-                                     "benchmarks en F1 macro, con significancia estadística."),
-                              html.P("Resultado: supera al base (4 de 4 pruebas); frente a CatBoost, solo 1 de 3.",
+                              html.P("El EPL supera al modelo base y a los mejores benchmarks."),
+                              html.P("Resultado: al base sí (4 de 4 pruebas); a CatBoost, solo 1 de 3.",
                                      className="nota-visual")], className="caja-no"), md=6)], className="g-3 mt-2")])
     return diapositiva("1.4", "Objetivo e hipótesis", visual,
-                       puntos=["Criterio fijado antes de ver resultados: ganar en validación con pruebas pareadas "
-                               "corregidas por comparaciones múltiples, y que el test (mirado una sola vez) lo confirme.",
-                               "Métrica principal: F1 macro, porque los 6 estratos pesan igual y están desbalanceados."],
-                       conclusion="La brecha de la revisión se ataca con modelos nuevos para el problema, medidos contra "
-                                  "un modelo base propio.",
+                       puntos=["H1: los modelos de la revisión frente al modelo base (E2 y E3).",
+                               "H2: nuestro modelo original, el EPL, frente al base y a los mejores (E4)."],
+                       conclusion="H1 se cumplió; H2 solo frente al modelo base.",
                        fuente=f"{E2C} · cap. 1.4 · {DE4.E4C} · cap. 0")
 
 
 FORMULACION_PROBLEMA = r"""
-**Datos.** $\mathcal{D} = \{(x_i, s_i, y_i)\}_{i=1}^{n}$: $x_i \in \mathbb{R}^{16} \times \mathcal{C}^{3}$ variables
-del catastro (8 numéricas y 3 categóricas), la distancia al centro y 7 de vecindad (8 edificios más cercanos), $s_i \in \mathbb{R}^2$ ubicación en km y
-$y_i \in \{1, \dots, 6\}$ el estrato (variable objetivo, **ordinal**).
+**Datos.** $\mathcal{D} = \{(x_i, s_i, y_i)\}_{i=1}^{n}$: $x_i$ variables del catastro y de vecindad,
+$s_i \in \mathbb{R}^2$ ubicación en km y $y_i \in \{1, \dots, 6\}$ el estrato (**ordinal**).
 
 **Tarea.** Clasificación supervisada multiclase: aprender $f: (x, s) \mapsto \hat p(\cdot \mid x, s) \in \Delta_6$ y
 predecir $\hat y = \arg\max_k \hat p(k \mid x, s)$.
 
-**Objetivo.** Minimizar el riesgo en **zonas nuevas**, donde la distancia al dato de entrenamiento más cercano es la
-del uso real:
+**Objetivo.** El menor error esperado en **zonas nuevas** ($\ell$: log-pérdida ponderada por clase):
 
 $$f^\star = \arg\min_{f \in \mathcal{F}} \; \mathbb{E}_{(x, s, y) \sim \mathcal{P}_{\text{zona nueva}}} \big[\ell\big(y, f(x, s)\big)\big]$$
 
-con $\ell$ la log-pérdida ponderada por clase al entrenar.
+**Métrica.** $\displaystyle F_1^{\text{macro}} = \frac{1}{6} \sum_{k=1}^{6} \frac{2\, P_k R_k}{P_k + R_k}$: los 6 estratos pesan igual.
 
-**Métrica.** $\displaystyle F_1^{\text{macro}} = \frac{1}{6} \sum_{k=1}^{6} \frac{2\, P_k R_k}{P_k + R_k}$; secundarias:
-acierto a ±1 estrato, MAE ordinal, AUC y calibración (ECE).
-
-**Validación.** Partición espacial por bloques de 2 km (test = 7 bloques) y kNNDM en el entrenamiento, para que la
-distancia de validación imite la de predicción.
+**Validación.** Por zonas: test de 7 bloques de 2 km y kNNDM en el entrenamiento, porque las viviendas vecinas se
+parecen.
 """
 
 
 def d_formulacion():
     return diapositiva("1.5", "Formulación matemática del problema", DE4._md(FORMULACION_PROBLEMA),
-                       puntos=["Variables predictoras: área, habitaciones, baños, pisos, antigüedad, tipo, uso, régimen, "
-                               "ubicación y la vecindad física; objetivo: el estrato oficial.",
-                               "El estrato es ordinal: confundir 3 con 4 es menos grave que 1 con 6 (por eso el acierto "
-                               "a ±1 y el MAE ordinal).",
-                               "Las viviendas cercanas se parecen (I de Moran 0.92): validar al azar exageraría el "
-                               "desempeño, así que se valida por zonas."],
-                       conclusion="Clasificación ordinal de 6 clases evaluada donde se va a usar: en barrios sin datos.",
+                       puntos=["Clasificación supervisada multiclase y ordinal: una probabilidad por estrato.",
+                               "Objetivo: el menor error en zonas nuevas.",
+                               "Métrica: F1 macro, los 6 estratos pesan igual.",
+                               "Validación por zonas: las viviendas vecinas se parecen (I de Moran 0.92)."],
+                       conclusion="Clasificación ordinal de 6 clases, evaluada en zonas que el modelo no vio.",
                        fuente=f"{E1C} · caps. 1 y 6 · {DE4.E4C} · cap. 2", ancho_visual=9)
 
 
