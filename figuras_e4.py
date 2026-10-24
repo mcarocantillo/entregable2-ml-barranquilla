@@ -21,9 +21,9 @@ ORIGINAL = "EPL (original)"
 BASE_E1 = "Modelo base (E1)"
 ESTRATOS = ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab", "#104281", "#0d366b"]
 NOMBRE_ESPACIO = {"geografico": "geográfico", "variables": "de las variables", "probabilidades": "de las probabilidades"}
-NOMBRE_EXTERNO = {"king_county": "King County (precio de vivienda en 4 clases)",
-                  "california": "California (valor de vivienda en 5 clases)",
-                  "vino_tinto": "Vino tinto (calidad en 6 clases)"}
+NOMBRE_EXTERNO = {"king_county": "King County (calidad de construcción, 6 clases, 5 000 viviendas)",
+                  "california": "California (valor de vivienda, 6 clases, 5 001 zonas)",
+                  "vino_tinto": "Vino tinto (calidad, 4 clases, 1 599 vinos)"}
 NOMBRE_COND = {"base": "Datos originales", "ruido_20": "20 % de etiquetas con ruido",
                "tamano_25": "25 % del entrenamiento", "desbalance_56": "Estratos 5 y 6 reducidos"}
 NOMBRE_REGLA = {"EPL": "EPL (original)", "promedio_simple": "Promedio simple", "pesos_error_global": "Pesos por error global",
@@ -450,11 +450,12 @@ def fig_externos(conjunto="king_county"):
                            error_x=dict(type="data", array=[e["sd"][m] for m in orden], color=GRIS, thickness=1.2),
                            text=[f"{e['media'][m]:.3f}" for m in orden], textposition="inside", insidetextanchor="end",
                            hovertemplate="%{y}: %{x:.3f}<extra></extra>"))
-    fig.update_layout(title=f"{NOMBRE_EXTERNO[conjunto]}: F1 macro en 15 pliegues (3 × 5)")
+    fig.update_layout(title=f"{NOMBRE_EXTERNO[conjunto]}<br><span style='font-size:13px'>F1 macro en 15 pliegues "
+                            "(3 × 5)</span>")
     fig.update_xaxes(title="F1 macro (media ± desviación)")
     fig.update_yaxes(showgrid=False)
     fig = _estilo(fig, alto=450, leyenda=False)
-    fig.update_layout(margin=dict(l=150))
+    fig.update_layout(margin=dict(l=150, t=80))
     return fig
 
 
