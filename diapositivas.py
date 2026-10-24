@@ -1944,6 +1944,6 @@ PESTANAS = [
 ]
 
 # Quién presenta cada diapositiva en la sustentación (M = María Carolina, J = Juan Camilo), en el orden de cada pestaña.
-PRESENTA = {"contexto": "MMMMMMJJJ", "eda": "J" * 14, "modelos": "M" * 6 + "J" * 22, "conclusiones": "MMMMM"}
+PRESENTA = {"contexto": "MMMMMMJJJ", "eda": "J" * 14, "modelos": "M" * 6 + "J" * 13 + "M" * 9, "conclusiones": "MMMMM"}
 NOMBRE_PRESENTA = {"M": "María Carolina", "J": "Juan Camilo"}
 assert all(len(PRESENTA[p["id"]]) == len(p["diapositivas"]) for p in PESTANAS)
