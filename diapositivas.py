@@ -1788,70 +1788,30 @@ def d_respuesta():
         dbc.Row([
             dbc.Col(html.Div([html.H5("Lo que sí revela"), html.Ul([
                 html.Li("La zona: dónde está la vivienda y cómo son sus vecinas."),
-                html.Li("El tamaño y la tipología: área, baños, régimen de propiedad."),
-                html.Li("Errores casi siempre de un estrato, como las viviendas atípicas del DANE.")])], className="caja-si"), md=6),
+                html.Li("El tamaño y la tipología: área, baños, régimen.")])], className="caja-si"), md=6),
             dbc.Col(html.Div([html.H5("Lo que no está publicado"), html.Ul([
-                html.Li("Las zonas homogéneas con que el DANE estratifica."),
-                html.Li("El puntaje de calificación de las edificaciones."),
-                html.Li("Los ajustes del comité de estratificación.")])], className="caja-no"), md=6)], className="g-3 mt-2"),
-        html.Div([html.H5("¿Y los modelos originales de la revisión?"),
-                  html.P("Sí superan al modelo base cuando reciben la vecindad física: el XGBoost geográfico, el "
-                         "Rotation Forest y el stacking lo superan con significancia estadística (30 bloques, Wilcoxon "
-                         "con Holm p < 0.01, efecto mediano a grande). El Rotation Forest es el más sólido: también en el "
-                         "test (+0.099, IC 95 % [+0.024, +0.170]). Pero ninguno supera de forma significativa a los "
-                         "modelos convencionales que reciben la misma información: la mejora viene de describir el "
-                         "entorno. La ventaja propia del XGBoost geográfico está en las zonas con datos cerca.")],
-                 className="caja-si mt-3"),
-        html.Div([html.H5("¿Y el modelo original del Entregable 4?"),
-                  html.P("El ensamble con pesos locales (EPL) es nuevo en la aplicación y propio en la implementación "
-                         "(R1 y R2). Tiene el mayor F1 medio en la validación repetida 5 × 5 (0.618) y supera con "
-                         "claridad al modelo base (+0.19, 25 de 25 pliegues), pero frente a CatBoost y Random Forest la "
-                         "ventaja es pequeña: solo Wilcoxon-Holm rechaza, y en el test empatan. R3 no se cumple. Lo que "
-                         "aporta es combinar expertos con predicciones fuera de muestra; el campo de pesos local no "
-                         "ayuda de forma medible en zonas nuevas.")], className="caja-no mt-3")])
+                html.Li("El puntaje de las edificaciones."),
+                html.Li("Las zonas homogéneas del DANE.")])], className="caja-no"), md=6)], className="g-3 mt-2")])
     return diapositiva("6.2", "Respuesta a la pregunta del proyecto", visual,
                        conclusion="La parte pública del catastro revela sobre todo la zona; lo que distingue a la vivienda "
                                   "dentro de su zona no está publicado.")
 
 
 def d_limitaciones():
-    items = [("Cobertura", "Quedan 10 300 viviendas (3.1 %) sin ubicar, casi todas de estrato 1."),
-             ("Pocos bloques de test", "7 bloques, con todo el estrato 6 en uno: intervalos anchos y p mínimo 0.016, así "
-                                       "que ninguna diferencia resiste la corrección de Holm."),
-             ("Submuestra en el E3 y el E4", "Las combinaciones y la validación 5 × 5 usaron 10 001 viviendas; sus hiperparámetros no se trasladan "
-                                     "a los modelos que dependen del tamaño de la muestra."),
-             ("Candidatos sin probar", "Bagged TAO Trees (sin implementación abierta) y los selectores EFSHB y NSGA-II."),
-             ("Presupuesto de búsqueda", "12 evaluaciones: basta para llegar a la meseta, no para que el genético o la "
-                                         "multi-fidelidad muestren todo su potencial."),
-             ("Modelo original sin superioridad", "El EPL no supera con significancia a CatBoost ni a Random "
-                                                  "Forest (1 de 3 pruebas) y el test no confirma la ventaja."),
+    items = [("Test pequeño", "7 bloques, con todo el estrato 6 en uno: intervalos anchos."),
+             ("Submuestra", "Los modelos se compararon con 10 001 viviendas."),
              ("Etiqueta administrativa", "El estrato puede estar desactualizado o ajustado a mano."),
-             ("Calidad del catastro", "Pisos del edificio registrados como de la vivienda; altura casi constante."),
-             ("Uso ético", "Predecir el estrato puede discriminar (crédito, seguros): el uso aquí es analítico.")]
+             ("Uso ético", "No usar el modelo para decidir sobre personas (crédito, seguros): el uso es analítico.")]
     visual = dbc.Row([dbc.Col(html.Div([html.Div(t, className="lim-titulo"), html.P(d, className="lim-texto")],
                                        className="limitacion"), md=6, className="mb-3") for t, d in items], className="g-3")
     return diapositiva("6.3", "Limitaciones", visual)
 
 
 def d_pasos():
-    hechos = html.Div([html.Div("Ya hecho", className="hito-titulo"), html.Ul([
-        html.Li("Validación anidada y búsqueda de hiperparámetros con kNNDM para todos los modelos (Entregable 3)."),
-        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test."),
-        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia."),
-        html.Li("EDA mejorado con los hallazgos de los modelos."),
-        html.Li("Modelo original (EPL), validación repetida 5 × 5, conjuntos externos y robustez (Entregable 4).")],
-        className="mb-0")],
-        className="hito mb-3")
-    pasos = [("1", "Más zonas de evaluación", "Otra ciudad u otra partición: con 7 bloques no se confirman diferencias "
-                                              "pequeñas."),
-             ("2", "Variedad del entorno", "Medir qué tan mezclado es el barrio para saber cuándo confiar en la vecindad."),
-             ("3", "Modelo en dos etapas", "Estrato de la zona y luego vivienda atípica, como el DANE."),
-             ("4", "Recalibrar en el pipeline", "Calibración con validación cruzada como último paso: en el test mejoró "
-                                                "la calibración y varios F1."),
-             ("5", "Zonas conocidas", "Probar el EPL y el XGBoost geográfico donde hay datos cerca: ahí la "
-                                      "información local sí ayudó."),
-             ("6", "Bagged TAO Trees", "El único modelo de la revisión que falta probar.")]
-    return diapositiva("8.4", "Próximos pasos", html.Div([hechos, flujo(pasos)]))
+    pasos = [("1", "Zonas conocidas", "Probar el EPL donde hay datos cerca: ahí la información local sí ayudó."),
+             ("2", "Más zonas de evaluación", "Con 7 bloques no se confirman diferencias pequeñas."),
+             ("3", "Modelo en dos etapas", "Primero la zona y luego la vivienda atípica, como el DANE.")]
+    return diapositiva("8.4", "Próximos pasos", flujo(pasos))
 
 
 def d_recursos():

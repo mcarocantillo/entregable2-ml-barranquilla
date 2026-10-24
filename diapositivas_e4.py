@@ -145,15 +145,13 @@ def d_e4_idea():
                      className="flujo mb-2")
     visual = html.Div([flujo, grafico(F4.fig_anclas(), minimo=420)])
     return diapositiva("8.4", "El modelo original: ensamble con pesos locales (EPL)", visual,
-                       puntos=["Izquierda: cada punto es una vivienda de entrenamiento en el plano de las 2 componentes "
-                               f"(azul más oscuro = estrato más alto); los círculos naranja son las J = {J} anclas.",
-                               "Derecha: cada barra es un ancla y sus colores son los pesos de los 7 expertos (suman 1). "
-                               "La última barra son los pesos globales π.",
-                               f"XGBoost tiene el mayor peso en {lider.count('XGBoost')} de las {J} anclas; en las otras "
-                               f"mandan {' y '.join(sorted(set(lider) - {'XGBoost'}))}: esa es la parte «local».",
-                               f"Los pesos minimizan una log-pérdida con penalización KL hacia π (λ = "
-                               f"{c['params']['lam']:.2f}): problema convexo con óptimo único."],
-                       conclusion="Una regla de combinación local, convexa y entrenada sin fuga de información.",
+                       puntos=["Los 7 modelos de la guía se equivocan en lugares distintos.",
+                               "El EPL los combina con pesos que cambian según la región.",
+                               f"Izquierda: las J = {J} regiones (anclas) entre las viviendas. Derecha: los pesos de "
+                               "cada una (cada barra suma 1).",
+                               f"XGBoost manda en {lider.count('XGBoost')} de las {J} anclas; en las otras, "
+                               f"{' y '.join(sorted(set(lider) - {'XGBoost'}))}."],
+                       conclusion="Un árbitro que decide cuánto creerle a cada modelo en cada región.",
                        fuente=f"{E4C} · cap. 5", ancho_visual=9)
 
 
@@ -219,13 +217,12 @@ gradiente); (d) la competencia de cada experto varía de forma suave en el espac
 
 def d_e4_formulacion():
     return diapositiva("8.5", "Fundamentos (1): el modelo y su función de pérdida", _md(FORMULACION_EPL),
-                       puntos=["Cada vivienda recibe su propio vector de pesos sobre los 7 expertos, mezcla suave de los "
-                               "pesos de las anclas cercanas en el espacio de competencia.",
-                               "La pérdida es la log-verosimilitud negativa ponderada por clase (para el F1 macro) de la "
-                               "mezcla, evaluada con probabilidades fuera de muestra.",
-                               "El término λ·KL es la regularización: acerca los pesos de cada ancla a los globales π.",
-                               "Versión 2: z es geográfico (km), 2 componentes principales de las variables o la clase "
-                               "esperada y el desacuerdo entre expertos, según elija la validación."],
+                       puntos=["Cada región tiene un vector de pesos sobre los 7 expertos; una vivienda mezcla los de las regiones "
+                               "cercanas con un núcleo gaussiano.",
+                               "La predicción es una mezcla convexa: sigue siendo una distribución.",
+                               "Pérdida: log-verosimilitud negativa ponderada por clase, con probabilidades fuera de "
+                               "muestra.",
+                               "Más λ·KL: acerca cada región a los pesos globales π."],
                        conclusion="Un problema de máxima verosimilitud regularizada sobre el símplex.",
                        fuente=f"{E4C} · cap. 5.2", ancho_visual=9)
 
@@ -234,12 +231,12 @@ def d_e4_optimizacion():
     visual = dbc.Row([dbc.Col(_md(OPTIMIZACION_EPL), lg=8), dbc.Col(grafico(F4.fig_convergencia(), alto=340), lg=4)],
                      className="g-2")
     return diapositiva("8.6", "Fundamentos (2): optimización y propiedades", visual,
-                       puntos=["El gradiente exponenciado es el descenso espejo natural del símplex: actualiza los pesos "
-                               "multiplicativamente y los renormaliza.",
-                               "Por convexidad, no hay mínimos locales: el resultado no depende del punto de partida.",
-                               "La proposición 3 garantiza que el combinador no empeora la log-pérdida del mejor experto "
-                               "en el entrenamiento; no garantiza un mejor F1 en datos nuevos (eso se prueba después).",
-                               "El costo lo dominan los expertos (el término (B + 1)ΣC_m); el combinador es lineal en n."],
+                       puntos=["Gradiente exponenciado: multiplica cada peso por la exponencial del gradiente y renormaliza.",
+                               "Los pesos siempre son positivos y suman 1.",
+                               "Propiedades 1 y 2: convexo, con solución única si λ > 0; la pérdida baja en cada "
+                               "iteración.",
+                               "Propiedades 3 y 4: no empeora la pérdida del mejor experto en el entrenamiento; costo "
+                               "lineal en el número de viviendas."],
                        conclusion="Óptimo único, descenso garantizado y costo lineal en el número de viviendas.",
                        fuente=f"{E4C} · caps. 5.2 y 5.3", ancho_visual=9)
 
@@ -259,12 +256,12 @@ def d_e4_generalizacion():
                                                  "ε = 10⁻⁴, η₀ = 1, tolerancia 10⁻⁷, bloques de 1 km.",
                                                  className="nota-visual")], lg=6)], className="g-2")
     return diapositiva("8.7", "Fundamentos (3): regularización, supuestos e hiperparámetros", visual,
-                       puntos=["La capacidad del combinador es pequeña y está regularizada; el riesgo de sobreajuste "
-                               "está en los expertos, que ya se validaron en el E3.",
-                               "Los rangos van de un extremo con sentido al otro (casi global ↔ muy local) en escala "
-                               "logarítmica.",
-                               "La sensibilidad es plana: moviendo J, h, k o λ el F1 va de 0.615 a 0.624.",
-                               "El supuesto (a) es el que se rompe en el test: zonas con estructura distinta."],
+                       puntos=["Tres frenos al sobreajuste: la KL, el núcleo y pocas regiones (como mucho 560 pesos frente a "
+                               "8 000 viviendas).",
+                               "Lo que lo hace generalizar: pesos aprendidos con predicciones fuera de muestra por "
+                               "bloques de 1 km.",
+                               "Supuesto clave: esas probabilidades se parecen a las de zonas nuevas.",
+                               "Hiperparámetros: optimización bayesiana, con el mismo presupuesto que los demás."],
                        conclusion="Generaliza por diseño (ajuste cruzado + KL + núcleo), no por suerte en la búsqueda.",
                        fuente=f"{E4C} · caps. 5 y 6.7", ancho_visual=9)
 
@@ -276,16 +273,12 @@ def d_e4_sobreajuste():
         "e4-sa-vista", [("brechas", "Interno → externo → test"), ("ajuste", "Sin ajuste cruzado")], "brechas"))),
         grafico(F4.fig_sobreajuste("brechas"), "e4-sa-fig")])
     return diapositiva("8.20", "Diagnóstico de sobreajuste", visual,
-                       puntos=[f"EPL: {e['interno']:.3f} en el bucle interno (donde se eligen los hiperparámetros), "
-                               f"{e['externo']:.3f} en los pliegues externos y {e['test']:.3f} en el test.",
-                               "Interno → externo (0.01 a 0.04 en todos los modelos): optimismo de elegir entre 12 "
-                               "configuraciones. Externo → test: zonas con otra composición (estrato 6 en un solo bloque).",
-                               "La brecha del EPL es como la de CatBoost o Random Forest: el combinador no sobreajusta "
-                               "más que sus expertos. SVM y XGBoost geográfico son los que más caen en el test.",
-                               "Sin ajuste cruzado (pesos aprendidos con predicciones dentro de muestra) el F1 cae 0.054: "
-                               "ese sí es sobreajuste."],
-                       conclusion="La validación anidada absorbe el sobreajuste de la búsqueda; el ajuste cruzado evita el "
-                                  "del combinador.",
+                       puntos=[f"EPL: {e['interno']:.3f} en el bucle interno → {e['externo']:.3f} en la validación → "
+                               f"{e['test']:.3f} en el test.",
+                               "Todos los modelos bajan así.",
+                               "La caída del EPL es como la de CatBoost y Random Forest: no sobreajusta más que sus "
+                               "expertos."],
+                       conclusion="El combinador no añade sobreajuste.",
                        metricas=["f1_macro"], fuente=f"{E4C} · caps. 3 y 6")
 
 
@@ -372,15 +365,12 @@ def d_e4_lideres():
                                                          "cv"))),
                        grafico(F4.fig_lideres("cv"), "e4-lid-fig")])
     return diapositiva("8.8", "Los 11 modelos en la validación repetida 5 × 5", visual,
-                       puntos=["Mejor combinación de balanceo y optimizador del E3 para cada uno de los 8 modelos, los "
-                               "recientes LightGBM y CatBoost, y el EPL; mismas 25 particiones para todos.",
-                               f"El EPL tiene la mayor media ({lid.f1_cv.iloc[0]:.3f}); le siguen "
-                               f"{lid.modelo.iloc[1]} ({lid.f1_cv.iloc[1]:.3f}) y {lid.modelo.iloc[2]} "
-                               f"({lid.f1_cv.iloc[2]:.3f}).",
-                               "La desviación entre pliegues (≈ 0.10) es mucho mayor que las diferencias entre los "
-                               "mejores: hay zonas fáciles y difíciles para todos.",
-                               "En el test el orden cambia: CatBoost (0.585) y el EPL (0.583) quedan casi empatados."],
-                       conclusion="El EPL encabeza la validación, pero por poco: el grupo de cabeza está muy junto.",
+                       puntos=["Mismas 25 particiones para los 11 modelos.",
+                               f"El EPL tiene la mayor media ({lid.f1_cv.iloc[0]:.3f}); le siguen {lid.modelo.iloc[1]} "
+                               f"y {lid.modelo.iloc[2]} ({lid.f1_cv.iloc[2]:.3f}).",
+                               "Pero la variación entre zonas (±0.10) es mucho mayor que esa diferencia: hacen falta "
+                               "pruebas."],
+                       conclusion="Mejor media, pero por poco: hay que probarlo.",
                        metricas=["f1_macro", "ic95"], fuente=f"{E4C} · cap. 3")
 
 
@@ -396,13 +386,10 @@ def d_e4_cd():
         "e4-cd-ver", [("v2", "2: espacio elegido por validación"), ("v1", "1: espacio geográfico")], "v2"))),
         grafico(F4.fig_cd("v2"), "e4-cd-fig")])
     return diapositiva("8.9", "Prueba global: Friedman y diferencia crítica de Nemenyi", visual,
-                       puntos=[f"Friedman rechaza que todos tengan el mismo rango (χ² = {fr['chi2']:.1f}, "
-                               f"p = {FM.cientifico(fr['p'])}).",
-                               f"El EPL tiene el mejor rango medio ({r[0][1]:.2f}); {r[1][0]} ({r[1][1]:.2f}) y "
-                               f"{r[2][0]} ({r[2][1]:.2f}) le siguen.",
-                               f"La diferencia crítica es {fr['cd']:.2f}: todo lo que cae dentro de la franja no se "
-                               "distingue del EPL según Nemenyi.",
-                               "Las versiones 1 y 2 dan casi el mismo resultado."],
+                       puntos=[f"Ordenando los modelos en cada pliegue, el EPL tiene el mejor rango ({r[0][1]:.2f}).",
+                               f"Diferencia crítica de Nemenyi: {fr['cd']:.2f}. Lo que cae en la franja no se distingue "
+                               "del EPL.",
+                               f"{r[1][0]}, {r[2][0]} y {r[3][0]} caen dentro."],
                        conclusion="El EPL queda primero, pero Nemenyi no lo separa de los ensambles de árboles.",
                        metricas=["friedman"], fuente=f"{E4C} · cap. 6.2")
 
@@ -446,14 +433,10 @@ def d_e4_pruebas():
                    f"({x['d_cohen_pareada']:.2f}), aunque el δ de Cliff ({x['delta_cliff']:.3f}) es despreciable."],
                   color="warning", className="mt-3")])
     return diapositiva("8.11", f"Superioridad (R3): EPL frente a {_mejor()}", visual,
-                       puntos=["Las pruebas se aplican frente al mejor benchmark de la validación; las comparaciones con "
-                               "los 10 rivales se corrigen con Holm.",
-                               "Wilcoxon rechaza (p de Holm 0.032): el EPL gana en la mayoría de los pliegues.",
-                               "La t de Nadeau-Bengio corrige que los pliegues comparten entrenamiento y no rechaza "
-                               "(p ≈ 0.99 tras Holm); Nemenyi tampoco.",
-                               "La bayesiana da 95 % de probabilidad de que el EPL sea mejor por más de 0.01, pero no es "
-                               "una de las pruebas que cuenta la guía."],
-                       conclusion="Una de tres pruebas rechaza: la superioridad no queda demostrada y R3 no se cumple.",
+                       puntos=[f"Frente a {_mejor()}, tres pruebas corregidas por Holm.",
+                               f"Wilcoxon rechaza: el EPL gana en {x['pliegues_a_favor']} de 25 pliegues.",
+                               "La t de Nadeau-Bengio y Nemenyi no rechazan."],
+                       conclusion="Una de tres no alcanza: R3 no se cumple, y se reporta así.",
                        metricas=["holm", "cliff", "p_valor"], fuente=f"{E4C} · caps. 6.3 y 6.9")
 
 
@@ -474,15 +457,11 @@ def d_e4_base():
         className="g-2 mb-2")
     visual = html.Div([cifras, grafico(F4.fig_pliegues(F4.BASE_E1), alto=360)])
     return diapositiva("8.12", "Frente al modelo base del Entregable 1", visual,
-                       puntos=["El modelo base (logística multinomial sin vecindad física) se reentrenó en las mismas 25 "
-                               "particiones; en la repetición 0 reproduce el E3 exacto.",
-                               f"Wilcoxon p = {FM.cientifico(e['wilcoxon_p_holm'])}, t de Nadeau-Bengio "
-                               f"p = {e['t_NB_p_holm']:.4f}, Nemenyi p = {FM.cientifico(fr['nemenyi_p_epl_vs_base'])} y "
-                               f"bayesiana P(mejor) = {e['bayes']['P(EPL mejor)']:.2f}: las cuatro rechazan.",
-                               f"En el test gana en {t['bloques_a_favor']} de {t['n_bloques']} bloques y McNemar también "
-                               "rechaza.",
-                               "Buena parte de la mejora la explican la vecindad física y los modelos no lineales, que "
-                               "comparten los benchmarks."],
+                       puntos=["Frente al modelo base, la superioridad sí está demostrada.",
+                               f"Gana en {e['pliegues_a_favor']} de 25 pliegues, por {e['dif_media']:+.2f} de F1 en "
+                               "promedio.",
+                               f"En el test pasa de {t['f1'][F4.BASE_E1]:.2f} a {t['f1'][ORIGINAL]:.2f}.",
+                               "Las cuatro pruebas rechazan."],
                        conclusion="Frente al modelo base del proyecto la superioridad sí está demostrada.",
                        metricas=["f1_macro", "cliff"], fuente=f"{E4C} · cap. 6.3")
 
@@ -492,13 +471,10 @@ def d_e4_ablacion():
     pg = F4.variante("pesos_error_global")
     visual = grafico(F4.fig_ablacion())
     return diapositiva("8.13", "Reglas estándar y ablación: qué aporta cada pieza", visual,
-                       puntos=["Mismos 7 expertos, mismas particiones; solo cambia la regla de combinación o se retira "
-                               "un componente del EPL.",
-                               f"Lo que más pesa es el ajuste cruzado: sin él el F1 cae {sc['dif_media']:.3f} (aprender "
-                               "los pesos sobre datos ya vistos premia al experto que memoriza).",
-                               f"Los pesos por error global quedan a {abs(pg['dif_media']):.3f} del EPL: el campo local "
-                               "no aporta de forma medible en zonas nuevas.",
-                               "Las versiones con un solo espacio de competencia empatan con la versión 2."],
+                       puntos=["Quitando una pieza a la vez se ve qué funciona.",
+                               f"Lo que importa es el ajuste cruzado: sin él el F1 cae {sc['dif_media']:.3f}.",
+                               f"El campo local no aporta de forma medible en zonas nuevas: los pesos por error global "
+                               f"quedan a {abs(pg['dif_media']):.3f}."],
                        conclusion="Lo que funciona es combinar expertos con predicciones fuera de muestra; el campo "
                                   "local, no tanto.",
                        metricas=["ic95"], fuente=f"{E4C} · caps. 5.8 y 6.4")
@@ -515,15 +491,9 @@ def d_e4_campo():
         control("Experto", desplegable("e4-campo-exp", [(e, e) for e in c["expertos"]], exp_var, ancho=200))),
         grafico(F4.fig_campo(exp_var), "e4-campo-fig")])
     return diapositiva("8.14", "El espacio de competencia y el campo de pesos", visual,
-                       puntos=["Versión 2: el bucle interno elige dónde se definen las regiones. En los 25 pliegues eligió "
-                               + ", ".join(f"{F4.NOMBRE_ESPACIO[k]} {v}" for k, v in esp.items()) + " veces.",
-                               "Espacio de las variables: 2 componentes principales de las variables de la vivienda; "
-                               "anclas cercanas = viviendas parecidas en altura, tamaño y entorno "
-                               "(la ubicación entra como una variable más); las dos componentes explican el 37 % "
-                               "de la varianza.",
-                               f"{exp_var} es el experto cuyo peso más varía entre anclas. En los pesos globales, "
-                               "XGBoost (0.51) y Random Forest (0.20) suman el 70 %; SVM queda en 0.",
-                               "El tamaño y el color del punto son el peso del experto en esa ancla."],
+                       puntos=["Pesos globales: XGBoost (0.51) y Random Forest (0.20) suman el 70 %; la SVM queda en 0.",
+                               f"En cada región los pesos cambian; el que más varía es {exp_var}.",
+                               "Tamaño y color del punto = peso del experto en esa ancla."],
                        conclusion="El modelo aprende a confiar en expertos distintos según el tipo de vivienda.",
                        fuente=f"{E4C} · caps. 5 y 6.4")
 
@@ -544,15 +514,11 @@ def d_e4_test():
                                                         "f1"))),
                        grafico(F4.fig_lideres("test"), "e4-test-fig")])
     return diapositiva("8.15", "Test confirmatorio: 65 145 viviendas que nadie vio", visual,
-                       puntos=[f"CatBoost {t['f1_macro']['CatBoost']:.3f} y EPL {t['f1_macro'][ORIGINAL]:.3f}: "
-                               f"diferencia {d['dif_f1']:+.4f}, IC 95 % BCa por bloques [{d['ic95_bca_bloques'][0]:+.3f}, "
-                               f"{d['ic95_bca_bloques'][1]:+.3f}], permutación por bloques p = "
-                               f"{d['p_permutacion_signo_bloques']:.2f}.",
-                               f"McNemar rechaza a favor de CatBoost ({fmt(mc['c'])} viviendas solo acierta CatBoost frente a "
-                               f"{fmt(mc['b'])} solo el EPL), pero supone viviendas independientes y aquí el ICC es 0.99.",
-                               "DeLong: el EPL tiene mayor AUC en los estratos 1 a 4 y menor en 5 y 6.",
-                               "El test tiene 7 bloques y todo el estrato 6 cae en uno: los IC son anchos."],
-                       conclusion="En el test el EPL y CatBoost no se distinguen: no confirma la ventaja de la validación.",
+                       puntos=["El test se miró una sola vez.",
+                               f"EPL {t['f1_macro'][ORIGINAL]:.3f} y CatBoost {t['f1_macro']['CatBoost']:.3f}: empatados.",
+                               f"IC 95 % de la diferencia [{d['ic95_bca_bloques'][0]:+.3f}, "
+                               f"{d['ic95_bca_bloques'][1]:+.3f}]: incluye el cero."],
+                       conclusion="El test no confirma la ventaja de la validación.",
                        metricas=["f1_macro", "ic95", "icc"], fuente=f"{E4C} · cap. 6.5")
 
 
@@ -572,14 +538,9 @@ def d_e4_diagnostico():
                                                ("importancia", "Importancia")], "confusion"))),
         grafico(F4.fig_diagnostico(ORIGINAL, "confusion"), "e4-dg-fig")])
     return diapositiva("8.16", "Diagnóstico en el test de cada modelo", visual,
-                       puntos=[f"El {100 * cerca:.0f} % de las predicciones del EPL cae en el estrato real o en uno "
-                               "vecino; los errores grandes son raros.",
-                               "El estrato 1 es el que mejor se reconoce (79 %). Los altos se corren hacia abajo: el 5 "
-                               "va al 4 en el 42 % de los casos y el 6 al 5 en el 70 % (en el test hay solo 793 "
-                               "viviendas de estrato 6, todas en un bloque).",
-                               "Importancia: la misma estimación de Shapley por permutaciones para todos los modelos, "
-                               "así que se pueden comparar.",
-                               "En el EPL y en CatBoost encabezan la ubicación y el entorno (vecinos), no la vivienda."],
+                       puntos=[f"El {100 * cerca:.0f} % de las predicciones cae en el estrato real o en uno vecino.",
+                               "Los estratos altos se corren hacia abajo: el 6 se predice como 5 en el 70 %.",
+                               "En el test solo hay 793 viviendas de estrato 6, todas en un bloque."],
                        conclusion="El EPL se equivoca como los demás: entre estratos vecinos, sobre todo en los altos.",
                        metricas=["acc1", "ece", "auc"], fuente=f"{E4C} · caps. 6.5 y 6.8")
 
@@ -601,12 +562,10 @@ def d_e4_externos():
         "e4-ext", [(k, F4.NOMBRE_EXTERNO[k].split(" (")[0]) for k in e], "king_county"))),
         grafico(F4.fig_externos("king_county"), "e4-ext-fig", alto=380), tabla(resumen)])
     return diapositiva("8.17", "Tres conjuntos de datos adicionales (OpenML)", visual,
-                       puntos=["King County y California (vivienda, con coordenadas) y vino tinto (sin ubicación), con "
-                               "el mismo protocolo: 3 × 5 pliegues, 12 evaluaciones, semilla 42.",
-                               "California: el EPL gana a todos y tiene el mejor rango.",
-                               "King County: empata con LightGBM, Random Forest y CatBoost.",
-                               "Vino tinto: pierde frente a Random Forest; sin ubicación, el campo local tiene menos que "
-                               "aprovechar."],
+                       puntos=["Tres conjuntos públicos, con el mismo protocolo.",
+                               "California: gana.",
+                               "King County: empata.",
+                               "Vino tinto: pierde; sin ubicación, el campo de pesos tiene menos que aprovechar."],
                        conclusion="Fuera de Barranquilla el EPL gana una vez, empata una y pierde una.",
                        metricas=["f1_macro", "friedman"], fuente=f"{E4C} · cap. 6.6")
 
@@ -623,13 +582,9 @@ def d_e4_robustez():
         "e4-rob-vista", [("condiciones", "Condiciones adversas"), ("sensibilidad", "Sensibilidad")], "condiciones"))),
         grafico(F4.fig_robustez("condiciones"), "e4-rob-fig")])
     return diapositiva("8.18", "Robustez y sensibilidad", visual,
-                       puntos=["Condiciones: 20 % de etiquetas cambiadas, 25 % del entrenamiento y los estratos 5 y 6 "
-                               "reducidos; repetición 0 de la 5 × 5.",
-                               "El EPL supera a Random Forest y CatBoost en las cuatro condiciones; con los estratos altos "
-                               "reducidos, los pesos por error global quedan un poco arriba.",
-                               f"Tres semillas: {', '.join(f'{v:.3f}' for v in s)} (desviación "
-                               f"{r['sd_entre_semillas']:.4f}).",
-                               "Sensibilidad plana: moviendo J, h, k o λ el F1 medio va de 0.615 a 0.624."],
+                       puntos=["Con ruido, con menos datos o con menos estratos altos, el EPL sigue por encima de Random Forest y "
+                               "CatBoost.",
+                               f"Tres semillas: {', '.join(f'{v:.3f}' for v in s)}. No depende de la suerte."],
                        conclusion="El resultado no depende de una semilla ni de un ajuste fino de hiperparámetros.",
                        metricas=["f1_macro"], fuente=f"{E4C} · cap. 6.7")
 
@@ -645,13 +600,10 @@ def d_e4_complejidad():
         "e4-cx-serie", list(F4.SERIES_COMPLEJIDAD.items()), "combinador vs n", ancho=320))),
         grafico(F4.fig_complejidad("combinador vs n"), "e4-cx-fig")])
     return diapositiva("8.19", "Costo computacional", visual,
-                       puntos=["Teoría: el combinador cuesta O(n·M·k) por iteración, lineal en el número de viviendas.",
-                               f"Medido: pendiente log-log {c['pendientes']['combinador vs n']:.2f} en n (teoría: 1), "
-                               f"{c['pendientes']['combinador vs M']:.2f} en M y {c['pendientes']['combinador vs J']:.2f} "
-                               "en J.",
-                               "El EPL completo tarda 90 s con 7 943 viviendas; más del 99 % es entrenar los expertos 6 "
-                               "veces (ajuste cruzado).",
-                               "Predecir cuesta 0.3 ms por vivienda."],
+                       puntos=["Teoría: el combinador es lineal en el número de viviendas.",
+                               f"Medido: pendiente {c['pendientes']['combinador vs n']:.2f} (teoría: 1).",
+                               "El EPL completo tarda 90 s, casi todo entrenando los expertos.",
+                               "Predecir una vivienda cuesta 0.3 ms."],
                        conclusion="El combinador es barato; el costo está en los expertos.",
                        fuente=f"{E4C} · cap. 5.7")
 
@@ -835,14 +787,10 @@ def d_e4_veredicto():
                                         href="https://github.com/mcarocantillo/entregable4-ml-barranquilla",
                                         target="_blank", className="enlace-recurso")], className="recursos mt-3")])
     return diapositiva("8.21", "Veredicto del Entregable 4", visual,
-                       puntos=["Por la regla de la guía (sección 12.1), si R3 falla el tope de la nota es 4.0.",
-                               "Manipular particiones, semillas o pruebas para conseguir significancia no sería válido; "
-                               "se reporta el resultado desfavorable.",
-                               "Lo que sí queda demostrado: el EPL supera con claridad al modelo base del E1 y encabeza la "
-                               "validación, empatado con los mejores ensambles.",
-                               "Trabajo futuro: probarlo en zonas conocidas (interpolar dentro de barrios con datos), "
-                               "donde la información local sí ayudó en el E2."],
-                       conclusion="Modelo nuevo y propio, competitivo con los mejores, pero sin superioridad demostrada.",
+                       puntos=["R1 ✓ Nuevo para este problema.",
+                               "R2 ✓ Código propio con propiedades demostradas.",
+                               "R3 ✗ Mayor media, pero sin superioridad demostrada sobre los mejores."],
+                       conclusion="Un modelo nuevo, propio y competitivo con los mejores.",
                        fuente=f"{E4C} · caps. 6.9 y 8")
 
 
