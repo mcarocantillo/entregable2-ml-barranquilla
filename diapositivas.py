@@ -1292,31 +1292,63 @@ def _vk(e):
 # ===========================================================================
 def d_hipotesis():
     visual = html.Div([
+        html.Div("Objetivo", className="pregunta-grande"),
+        html.P("Predecir el estrato (1 a 6) de cada vivienda de Barranquilla con el catastro abierto, en zonas que el "
+               "modelo no vio, y comprobar si un modelo no usado antes en este problema supera al modelo base "
+               "(regresión logística multinomial).", style={"fontSize": "1.15rem"}),
         dbc.Row([
-            dbc.Col(html.Div([html.H5("La brecha"), html.Ul([
-                html.Li("Ningún estudio clasifica el estrato de una vivienda con datos catastrales."),
-                html.Li("El XGBoost geográfico, el mejor respaldado para datos espaciales, solo existe para regresión.")])],
-                className="caja-no"), md=6),
-            dbc.Col(html.Div([html.H5("Los modelos propuestos"), html.Ul([
-                html.Li("Principal: XGBoost geográfico adaptado por nosotros a clasificación multiclase (un global más "
-                        "modelos locales por zona, como la estratificación del DANE)."),
-                html.Li("Los demás candidatos originales de la revisión: Rotation Forest, SVM con TPE, RF + SVM y "
-                        "stacking.")])],
-                className="caja-si"), md=6)], className="g-3"),
-        html.Div("Hipótesis", className="pregunta-grande mt-3"),
-        html.Div("Los modelos originales de la revisión, encabezados por el XGBoost geográfico, superan al modelo base "
-                 "(regresión logística) en F1 macro.", className="respuesta-grande", style={"fontSize": "1.4rem"}),
-        html.P("Criterio fijado antes de ver resultados: superarlo por más de un error estándar de la diferencia pareada "
-               "en validación cruzada, y que el test (que se mira una sola vez) lo confirme. Después del E3 se agregaron "
-               "pruebas de significancia con corrección por comparaciones múltiples.", className="mt-2")])
+            dbc.Col(html.Div([html.H5("H1 · Entregables 2 y 3"),
+                              html.P("Los modelos de la revisión (XGBoost geográfico, Rotation Forest, stacking…) "
+                                     "superan al modelo base en F1 macro."),
+                              html.P("Resultado: sí, con la vecindad física; pero no a los convencionales con la misma "
+                                     "información.", className="nota-visual")], className="caja-si"), md=6),
+            dbc.Col(html.Div([html.H5("H2 · Entregable 4"),
+                              html.P("Un ensamble con pesos locales (EPL) supera al modelo base y a los mejores "
+                                     "benchmarks en F1 macro, con significancia estadística."),
+                              html.P("Resultado: supera al base (4 de 4 pruebas); frente a CatBoost, solo 1 de 3.",
+                                     className="nota-visual")], className="caja-no"), md=6)], className="g-3 mt-2")])
     return diapositiva("1.4", "Objetivo e hipótesis", visual,
-                       puntos=["Objetivo: usar modelos no aplicados antes a este problema (los candidatos de la "
-                               "revisión), encabezados por el XGBoost geográfico.",
-                               "Y comprobar si alguno es mejor que el modelo base.",
-                               "Modelo base: logística multinomial con las variables físicas y la ubicación (pestaña Modelos).",
-                               "Respuesta en las pestañas 6 (Resultados) y 8 (Conclusiones)."],
-                       conclusion="La revisión bibliográfica deja una brecha; los modelos originales la atacan.",
-                       fuente=f"{E2C} · cap. 1.4")
+                       puntos=["Criterio fijado antes de ver resultados: ganar en validación con pruebas pareadas "
+                               "corregidas por comparaciones múltiples, y que el test (mirado una sola vez) lo confirme.",
+                               "Métrica principal: F1 macro, porque los 6 estratos pesan igual y están desbalanceados."],
+                       conclusion="La brecha de la revisión se ataca con modelos nuevos para el problema, medidos contra "
+                                  "un modelo base propio.",
+                       fuente=f"{E2C} · cap. 1.4 · {DE4.E4C} · cap. 0")
+
+
+FORMULACION_PROBLEMA = r"""
+**Datos.** $\mathcal{D} = \{(x_i, s_i, y_i)\}_{i=1}^{n}$: $x_i \in \mathbb{R}^{16} \times \mathcal{C}^{3}$ variables
+del catastro (8 numéricas y 3 categóricas), la distancia al centro y 7 de vecindad (8 edificios más cercanos), $s_i \in \mathbb{R}^2$ ubicación en km y
+$y_i \in \{1, \dots, 6\}$ el estrato (variable objetivo, **ordinal**).
+
+**Tarea.** Clasificación supervisada multiclase: aprender $f: (x, s) \mapsto \hat p(\cdot \mid x, s) \in \Delta_6$ y
+predecir $\hat y = \arg\max_k \hat p(k \mid x, s)$.
+
+**Objetivo.** Minimizar el riesgo en **zonas nuevas**, donde la distancia al dato de entrenamiento más cercano es la
+del uso real:
+
+$$f^\star = \arg\min_{f \in \mathcal{F}} \; \mathbb{E}_{(x, s, y) \sim \mathcal{P}_{\text{zona nueva}}} \big[\ell\big(y, f(x, s)\big)\big]$$
+
+con $\ell$ la log-pérdida ponderada por clase al entrenar.
+
+**Métrica.** $\displaystyle F_1^{\text{macro}} = \frac{1}{6} \sum_{k=1}^{6} \frac{2\, P_k R_k}{P_k + R_k}$; secundarias:
+acierto a ±1 estrato, MAE ordinal, AUC y calibración (ECE).
+
+**Validación.** Partición espacial por bloques de 2 km (test = 7 bloques) y kNNDM en el entrenamiento, para que la
+distancia de validación imite la de predicción.
+"""
+
+
+def d_formulacion():
+    return diapositiva("1.5", "Formulación matemática del problema", DE4._md(FORMULACION_PROBLEMA),
+                       puntos=["Variables predictoras: área, habitaciones, baños, pisos, antigüedad, tipo, uso, régimen, "
+                               "ubicación y la vecindad física; objetivo: el estrato oficial.",
+                               "El estrato es ordinal: confundir 3 con 4 es menos grave que 1 con 6 (por eso el acierto "
+                               "a ±1 y el MAE ordinal).",
+                               "Las viviendas cercanas se parecen (I de Moran 0.92): validar al azar exageraría el "
+                               "desempeño, así que se valida por zonas."],
+                       conclusion="Clasificación ordinal de 6 clases evaluada donde se va a usar: en barrios sin datos.",
+                       fuente=f"{E1C} · caps. 1 y 6 · {DE4.E4C} · cap. 2", ancho_visual=9)
 
 
 def d_nuevo_vs_base():
@@ -1879,12 +1911,12 @@ def d_recursos():
 PESTANAS = [
     {"id": "contexto", "titulo": "Contexto: problema, revisión y datos", "corto": "Contexto", "diapositivas": [
         ("La pregunta", d_pregunta), ("Cómo asigna el DANE", d_dane), ("Revisión bibliográfica", d_bibliografia),
-        ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta),
-        ("Los datos", d_datos), ("Limpieza", d_embudo), ("Partición espacial", d_particion),
-        ("El proyecto final (E4)", DE4.d_e4_resumen)]},
+        ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis),
+        ("Formulación matemática", d_formulacion), ("Los datos", d_datos), ("Limpieza", d_embudo),
+        ("Partición espacial", d_particion)]},
     {"id": "eda", "titulo": "Análisis exploratorio", "corto": "EDA", "diapositivas": [
         ("Variable objetivo", d_objetivo), ("Faltantes e imposibles", d_calidad), ("Outliers", d_outliers),
-        ("Numéricas", d_numericas), ("Numéricas vs estrato", d_violin), ("Categóricas vs estrato", d_categoricas),
+        ("Numéricas", d_numericas), ("Transformación", d_transformar), ("Numéricas vs estrato", d_violin), ("Categóricas vs estrato", d_categoricas),
         ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
         ("PCA", d_pca), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia),
         ("Fuga de datos", d_fuga), ("El entorno", d_eda_entorno), ("El test", d_eda_test)]},

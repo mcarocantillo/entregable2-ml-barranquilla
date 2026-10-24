@@ -240,6 +240,39 @@ def fig_ablacion():
     return fig
 
 
+def fig_sobreajuste(vista="brechas"):
+    """F1 en el bucle interno, en los pliegues externos y en el test (o el EPL con y sin ajuste cruzado)."""
+    if vista == "ajuste":
+        v = variante("sin_ajuste_cruzado")
+        epl = v["media_rival"] + v["dif_media"]
+        x = ["EPL con ajuste cruzado<br>(predicciones fuera de muestra)", "EPL sin ajuste cruzado<br>(dentro de muestra)"]
+        fig = go.Figure(go.Bar(x=x, y=[epl, v["media_rival"]], marker_color=[NARANJA, GRIS],
+                               text=[f"{epl:.3f}", f"{v['media_rival']:.3f}"], textposition="outside",
+                               hovertemplate="%{x}: %{y:.3f}<extra></extra>"))
+        fig.update_layout(title=f"Sin ajuste cruzado el F1 cae {v['dif_media']:.3f} (IC 95 % [{v['IC95_BCa'][0]:.3f}, "
+                                f"{v['IC95_BCa'][1]:.3f}]; gana en {v['pliegues_a_favor']}/25)")
+        fig.update_yaxes(title="F1 macro (media de 25 pliegues)", range=[0.5, 0.65])
+        return _estilo(fig, alto=420, leyenda=False)
+    s = leer("sobreajuste.json")["modelos"]
+    orden = sorted(s, key=lambda m: s[m]["externo"])
+    fig = go.Figure()
+    for m in orden:
+        fig.add_trace(go.Scatter(x=[s[m]["test"], s[m]["interno"]], y=[m, m], mode="lines",
+                                 line=dict(color="#d9d8d3", width=3), showlegend=False, hoverinfo="skip"))
+    for clave, nombre, color, simbolo in [("interno", "Bucle interno (selección)", AZUL_CLARO, "circle-open"),
+                                          ("externo", "Pliegues externos (5 × 5)", AZUL, "circle"),
+                                          ("test", "Test", ROJO, "diamond")]:
+        fig.add_trace(go.Scatter(x=[s[m][clave] for m in orden], y=orden, mode="markers", name=nombre,
+                                 marker=dict(size=12, color=color, symbol=simbolo, line=dict(width=2, color=color)),
+                                 hovertemplate="%{y}: %{x:.3f}<extra>" + nombre + "</extra>"))
+    fig.update_layout(title="F1 macro: dónde se elige, dónde se valida y dónde se confirma")
+    fig.update_xaxes(title="F1 macro (media)")
+    fig.update_yaxes(showgrid=False)
+    fig = _estilo(fig, alto=460)
+    fig.update_layout(margin=dict(l=160))
+    return fig
+
+
 # ---------------------------------------------------------------------------
 # El modelo por dentro
 # ---------------------------------------------------------------------------
@@ -247,7 +280,7 @@ def fig_convergencia():
     h = modelos()["campo_epl"]["historia"]
     fig = go.Figure(go.Scatter(x=list(range(len(h))), y=h, mode="lines+markers", line=dict(color=NARANJA),
                                marker=dict(size=6), hovertemplate="Iteración %{x}: pérdida %{y:.5f}<extra></extra>"))
-    fig.update_layout(title="Convergencia del gradiente exponenciado (modelo final)")
+    fig.update_layout(title="Convergencia (modelo final)")
     fig.update_xaxes(title="Iteración")
     fig.update_yaxes(title="Log-pérdida ponderada + KL")
     return _estilo(fig, alto=380, leyenda=False)

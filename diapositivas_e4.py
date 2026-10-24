@@ -6,6 +6,7 @@ Mismo patrón que ``diapositivas.py`` (``componentes.diapositiva``: visual + «L
 los datos y las figuras están en ``figuras_e4.py``. La predicción en vivo usa el EPL serializado del E4.
 """
 import json
+import re
 
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -140,7 +141,7 @@ def d_e4_e3_vs_5x5():
                                "mejor combinación se eligió y se midió con los mismos 5 pliegues.",
                                "El orden se conserva: los ensambles de árboles siguen arriba y Naive Bayes abajo."],
                        conclusion="Elegir y reportar con los mismos pliegues infla el desempeño; la 5 × 5 lo corrige.",
-                       metricas=["knndm", "optimismo"], fuente=f"{E4C} · caps. 1 y 3")
+                       metricas=["knndm"], fuente=f"{E4C} · caps. 1 y 3")
 
 
 # ---------------------------------------------------------------------------
@@ -162,6 +163,143 @@ def d_e4_idea():
                                f"anclas, λ = {c['params']['lam']:.2f}. La pérdida baja en cada iteración."],
                        conclusion="Una regla de combinación local, convexa y entrenada sin fuga de información.",
                        fuente=f"{E4C} · cap. 5", ancho_visual=9)
+
+
+def _md(texto):
+    """Markdown con MathJax; las ecuaciones de bloque necesitan los $$ en líneas propias (remark-math)."""
+    texto = re.sub(r"^\$\$(.+)\$\$$", r"$$\n\1\n$$", texto, flags=re.M)
+    return dcc.Markdown(texto, mathjax=True, className="formulas")
+
+
+FORMULACION_EPL = r"""
+**Expertos.** $M = 7$ modelos de la guía con probabilidades $P_m(y\mid x)$ sobre $K = 6$ estratos.
+
+**Pesos que dependen de la región.** $z(x)$ = coordenadas en el *espacio de competencia*; $J$ anclas $a_j$ (K-medias)
+con un vector de pesos $w_j \in \Delta_M$ cada una:
+
+$$w(z) = \sum_{j \in N_k(z)} \kappa_j(z)\, w_j, \qquad \kappa_j(z) = \frac{e^{-\lVert z - a_j\rVert^2 / 2h^2}}{\sum_{l \in N_k(z)} e^{-\lVert z - a_l\rVert^2 / 2h^2}}$$
+
+**Predicción** (una mezcla convexa: sigue siendo una distribución):
+
+$$p(y \mid x) = \sum_{m=1}^{M} w_m\big(z(x)\big)\, P_m(y \mid x)$$
+
+**Función de pérdida.** Con $q_{im} = \max\{P_m^{\text{oof}}(y_i \mid x_i), \varepsilon\}$ (probabilidad *fuera de muestra*
+de la clase observada), $\alpha_i$ el peso de su clase y $r_i(W) = \sum_j K_{ij}\, w_j^\top q_i$:
+
+$$L(W) = -\frac{1}{\sum_i \alpha_i} \sum_{i=1}^{n} \alpha_i \log r_i(W) \;+\; \frac{\lambda}{J} \sum_{j=1}^{J} \mathrm{KL}(w_j \,\Vert\, \pi)$$
+
+$\pi$ = pesos globales (el mismo problema con $J = 1$, $\lambda = 0$).
+"""
+
+OPTIMIZACION_EPL = r"""
+**Principio de aprendizaje: gradiente exponenciado** (descenso espejo con la entropía; mantiene cada $w_j$ en el
+símplex sin proyecciones):
+
+$$g_{jm} = \frac{\partial L}{\partial w_{jm}} = -\frac{1}{\sum_i \alpha_i} \sum_i \alpha_i \frac{K_{ij}\, q_{im}}{r_i} + \frac{\lambda}{J}\Big(\log\frac{w_{jm}}{\pi_m} + 1\Big)$$
+
+$$w_{jm}^{(t+1)} = \frac{w_{jm}^{(t)}\, e^{-\eta g_{jm}}}{\sum_{m'} w_{jm'}^{(t)}\, e^{-\eta g_{jm'}}}$$
+
+Paso adaptativo: si $L$ no baja, $\eta \leftarrow \eta/2$ y se repite; si baja, $\eta \leftarrow 1.5\,\eta$.
+
+**Propiedades (demostradas en el libro, cap. 5.3):**
+
+1. *Convexidad y unicidad.* $L$ es convexa en $\Delta_M^J$ ($-\log$ de una función lineal positiva, más KL); con
+   $\lambda > 0$ es estrictamente convexa: el mínimo existe y es **único**.
+2. *Descenso monótono.* $L(W^{(t)})$ no crece y converge; con paso fijo,
+   $L(\bar W_T) - L^\star \le \dfrac{J \log M}{\eta T} + \dfrac{\eta G^2}{2}$.
+3. *Nunca peor que el mejor experto* en la log-pérdida fuera de muestra: $L(W^\star) \le L_{\text{datos}}(\pi) \le \min_m L_{\text{datos}}(e_m)$.
+4. *Complejidad.* Entrenar: $O\big((B+1)\sum_m C_m + nJdR + TnkM\big)$; predecir: $O\big(\sum_m I_m + \log J + kM\big)$.
+"""
+
+GENERALIZACION_EPL = r"""
+**Regularización.** Tres frenos al sobreajuste del combinador: (i) $\lambda\,\mathrm{KL}(w_j\Vert\pi)$ encoge hacia los
+pesos globales las anclas con pocos datos; (ii) el núcleo ($h$, $k$) suaviza los pesos entre anclas vecinas; (iii)
+pocas regiones ($J$) frente a $n \approx 8\,000$ viviendas: $J \times M \le 560$ parámetros.
+
+**Generalización.** Los pesos se aprenden con predicciones **fuera de muestra por bloques espaciales de 1 km**
+(ajuste cruzado): sin él, el combinador premia al experto que memoriza y el F1 cae 0.054.
+
+**Supuestos.** (a) Las probabilidades fuera de muestra imitan las que el experto dará en zonas nuevas; (b) las
+viviendas de bloques distintos son aproximadamente independientes; (c) $q_{im} \ge \varepsilon$ (el piso acota el
+gradiente); (d) la competencia de cada experto varía de forma suave en el espacio $z$.
+"""
+
+
+def d_e4_formulacion():
+    return diapositiva("8.5", "Fundamentos (1): el modelo y su función de pérdida", _md(FORMULACION_EPL),
+                       puntos=["Cada vivienda recibe su propio vector de pesos sobre los 7 expertos, mezcla suave de los "
+                               "pesos de las anclas cercanas en el espacio de competencia.",
+                               "La pérdida es la log-verosimilitud negativa ponderada por clase (para el F1 macro) de la "
+                               "mezcla, evaluada con probabilidades fuera de muestra.",
+                               "El término λ·KL es la regularización: acerca los pesos de cada ancla a los globales π.",
+                               "Versión 2: z es geográfico (km), 2 componentes principales de las variables o la clase "
+                               "esperada y el desacuerdo entre expertos, según elija la validación."],
+                       conclusion="Un problema de máxima verosimilitud regularizada sobre el símplex.",
+                       fuente=f"{E4C} · cap. 5.2", ancho_visual=9)
+
+
+def d_e4_optimizacion():
+    visual = dbc.Row([dbc.Col(_md(OPTIMIZACION_EPL), lg=8), dbc.Col(grafico(F4.fig_convergencia(), alto=340), lg=4)],
+                     className="g-2")
+    return diapositiva("8.6", "Fundamentos (2): optimización y propiedades", visual,
+                       puntos=["El gradiente exponenciado es el descenso espejo natural del símplex: actualiza los pesos "
+                               "multiplicativamente y los renormaliza.",
+                               "Por convexidad, no hay mínimos locales: el resultado no depende del punto de partida.",
+                               "La proposición 3 garantiza que el combinador no empeora la log-pérdida del mejor experto "
+                               "en el entrenamiento; no garantiza un mejor F1 en datos nuevos (eso se prueba después).",
+                               "El costo lo dominan los expertos (el término (B + 1)ΣC_m); el combinador es lineal en n."],
+                       conclusion="Óptimo único, descenso garantizado y costo lineal en el número de viviendas.",
+                       fuente=f"{E4C} · caps. 5.2 y 5.3", ancho_visual=9)
+
+
+def d_e4_generalizacion():
+    hp = pd.DataFrame([
+        ("J (anclas)", "4 a 80 (log)", "Pocas: casi global; muchas: pesos ruidosos", "16"),
+        ("h (ancho de banda)", "0.25 a 4 (log)", "Escala de la ciudad (diagonal ≈ 20)", "1.38"),
+        ("k (anclas vecinas)", "1 a 10", "Cuántas regiones se mezclan", "1"),
+        ("λ (penalización KL)", "10⁻³ a 10 (log)", "De pesos libres a pesos globales", "0.12"),
+        ("Peso de clase", "balanceado o ninguno", "El F1 macro pesa igual los 6 estratos", "balanceado"),
+        ("Espacio de competencia", "geográfico, variables, probabilidades", "Dónde varía la competencia", "variables"),
+    ], columns=["Hiperparámetro", "Rango buscado", "Por qué", "Modelo final"])
+    visual = dbc.Row([dbc.Col(_md(GENERALIZACION_EPL), lg=6),
+                      dbc.Col([tabla(hp), html.P("Búsqueda bayesiana (TPE, Optuna) con 12 evaluaciones y 3 pliegues "
+                                                 "internos kNNDM, el mismo presupuesto que los benchmarks; fijos: "
+                                                 "ε = 10⁻⁴, η₀ = 1, tolerancia 10⁻⁷, bloques de 1 km.",
+                                                 className="nota-visual")], lg=6)], className="g-2")
+    return diapositiva("8.7", "Fundamentos (3): regularización, supuestos e hiperparámetros", visual,
+                       puntos=["La capacidad del combinador es pequeña y está regularizada; el riesgo de sobreajuste "
+                               "está en los expertos, que ya se validaron en el E3.",
+                               "Los rangos van de un extremo con sentido al otro (casi global ↔ muy local) en escala "
+                               "logarítmica.",
+                               "La sensibilidad es plana: moviendo J, h, k o λ el F1 va de 0.615 a 0.624.",
+                               "El supuesto (a) es el que se rompe en el test: zonas con estructura distinta."],
+                       conclusion="Generaliza por diseño (ajuste cruzado + KL + núcleo), no por suerte en la búsqueda.",
+                       fuente=f"{E4C} · caps. 5 y 6.7", ancho_visual=9)
+
+
+def d_e4_sobreajuste():
+    s = F4.leer("sobreajuste.json")["modelos"]
+    e = s[ORIGINAL]
+    visual = html.Div([controles(control("Vista", radio(
+        "e4-sa-vista", [("brechas", "Interno → externo → test"), ("ajuste", "Sin ajuste cruzado")], "brechas"))),
+        grafico(F4.fig_sobreajuste("brechas"), "e4-sa-fig")])
+    return diapositiva("8.20", "Diagnóstico de sobreajuste", visual,
+                       puntos=[f"EPL: {e['interno']:.3f} en el bucle interno (donde se eligen los hiperparámetros), "
+                               f"{e['externo']:.3f} en los pliegues externos y {e['test']:.3f} en el test.",
+                               "Interno → externo (0.01 a 0.04 en todos los modelos): optimismo de elegir entre 12 "
+                               "configuraciones. Externo → test: zonas con otra composición (estrato 6 en un solo bloque).",
+                               "La brecha del EPL es como la de CatBoost o Random Forest: el combinador no sobreajusta "
+                               "más que sus expertos. SVM y XGBoost geográfico son los que más caen en el test.",
+                               "Sin ajuste cruzado (pesos aprendidos con predicciones dentro de muestra) el F1 cae 0.054: "
+                               "ese sí es sobreajuste."],
+                       conclusion="La validación anidada absorbe el sobreajuste de la búsqueda; el ajuste cruzado evita el "
+                                  "del combinador.",
+                       metricas=["f1_macro"], fuente=f"{E4C} · caps. 3 y 6")
+
+
+@callback(Output("e4-sa-fig", "figure"), Input("e4-sa-vista", "value"))
+def _sa(v):
+    return F4.fig_sobreajuste(v)
 
 
 def d_e4_implementacion():
@@ -716,10 +854,13 @@ def d_e4_veredicto():
 # Diapositivas del E4 que van en la pestaña Modelos (el resumen va en Contexto y el veredicto en Conclusiones).
 DIAPOSITIVAS_MODELOS = [
     ("Correcciones del E3", d_e4_correcciones), ("Validación repetida 5 × 5", d_e4_e3_vs_5x5),
-    ("El modelo original (EPL)", d_e4_idea), ("Implementación propia (R2)", d_e4_implementacion),
+    ("El modelo original (EPL)", d_e4_idea), ("Fundamentos: modelo y pérdida", d_e4_formulacion),
+    ("Fundamentos: optimización", d_e4_optimizacion), ("Fundamentos: regularización", d_e4_generalizacion),
+    ("Implementación propia (R2)", d_e4_implementacion),
     ("Novedad (R1)", d_e4_literatura), ("Los 11 modelos", d_e4_lideres), ("Friedman y Nemenyi", d_e4_cd),
     ("Superioridad (R3)", d_e4_pruebas), ("Frente al modelo base", d_e4_base),
-    ("Reglas estándar y ablación", d_e4_ablacion), ("Campo de pesos", d_e4_campo), ("Test confirmatorio", d_e4_test),
+    ("Reglas estándar y ablación", d_e4_ablacion), ("Campo de pesos", d_e4_campo),
+    ("Diagnóstico de sobreajuste", d_e4_sobreajuste), ("Test confirmatorio", d_e4_test),
     ("Diagnóstico en el test", d_e4_diagnostico), ("Conjuntos externos", d_e4_externos),
     ("Robustez y sensibilidad", d_e4_robustez), ("Costo computacional", d_e4_complejidad),
     ("Predicción en vivo", d_e4_prediccion),
