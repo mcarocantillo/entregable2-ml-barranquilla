@@ -14,7 +14,6 @@ lateral, con los botones o con las flechas del teclado. El contenido está en ``
 Para Render: ``gunicorn app:server``.
 """
 import os
-import threading
 
 # Un hilo de BLAS: reproduce exactamente las probabilidades del modelo serializado y ahorra memoria en Render.
 for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
@@ -144,20 +143,7 @@ def pie_navegacion(pid, i):
 
 
 
-_CONSTRUIDAS = {}  # las diapositivas no cambian: se construyen una vez y se reutilizan al volver a la pestaña
-# construir() usa variables globales de componentes (número, quién presenta): un candado evita que dos hilos de
-# gunicorn (o el precalentado) se las pisen.
-_CANDADO = threading.Lock()
-
-
 def construir(pid, i):
-    with _CANDADO:
-        if (pid, i) not in _CONSTRUIDAS:
-            _CONSTRUIDAS[(pid, i)] = _construir(pid, i)
-        return _CONSTRUIDAS[(pid, i)]
-
-
-def _construir(pid, i):
     titulo, funcion, *extra = PESTANAS[pid]["diapositivas"][i]
     # Numeración automática según la posición; en la presentación de 20 min, la de la pestaña de origen.
     pid_n, i_n = extra[0]["origen"] if extra else (pid, i)
@@ -167,29 +153,14 @@ def _construir(pid, i):
     CMP.QUIEN_ACTUAL = (q, DP.NOMBRE_PRESENTA[q]) if q else None
     try:
         return funcion()
+    except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
+        return dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
     finally:
         CMP.NUMERO_ACTUAL, CMP.COMPACTA, CMP.PUNTOS, CMP.QUIEN_ACTUAL = None, False, None, None
 
 
-def precalentar():
-    """Construye todas las diapositivas al arrancar (en segundo plano), para que el primer cambio de pestaña no espere."""
-    for pid, p in PESTANAS.items():
-        for i in range(len(p["diapositivas"])):
-            try:
-                construir(pid, i)
-            except Exception:  # se reintenta (y se muestra el error) cuando alguien abra esa diapositiva
-                pass
-
-
-def diapositiva_segura(pid, i):
-    try:
-        return construir(pid, i)
-    except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
-        return dbc.Alert(f"No se pudo construir «{PESTANAS[pid]['diapositivas'][i][0]}»: {e}", color="danger")
-
-
 def cuerpo_diapositiva(pid, i):
-    return html.Div([diapositiva_segura(pid, i), pie_navegacion(pid, i)], className="diapo-marco")
+    return html.Div([construir(pid, i), pie_navegacion(pid, i)], className="diapo-marco")
 
 
 # Vista continua: todas las diapositivas de la pestaña una debajo de otra; el menú salta a cada una.
@@ -202,7 +173,7 @@ def menu_continuo(pid):
 
 
 def cuerpo_continuo(pid):
-    return html.Div([html.Section(diapositiva_segura(pid, i), id=f"d-{pid}-{i}", className="diapo-marco diapo-continua")
+    return html.Div([html.Section(construir(pid, i), id=f"d-{pid}-{i}", className="diapo-marco diapo-continua")
                      for i in range(len(PESTANAS[pid]["diapositivas"]))])
 
 
@@ -259,7 +230,6 @@ app.clientside_callback(
     }""",
     Output("btn-presentar", "children"), Input("btn-presentar", "n_clicks"), prevent_initial_call=True)
 
-threading.Thread(target=precalentar, daemon=True).start()
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0", port=8050)
