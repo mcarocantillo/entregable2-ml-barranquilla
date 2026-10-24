@@ -94,6 +94,37 @@ def _color(nombre):
 
 
 # ---------------------------------------------------------------------------
+# Revisión de literatura
+# ---------------------------------------------------------------------------
+def fig_literatura():
+    """Registros relevantes por base y cadena (23-oct-2026); el texto da relevantes / revisados y los resultados."""
+    lit = leer("literatura.json")
+    m = [f for f in lit["matriz"] if f[2] == "23-oct-2026"]
+    bases = list(dict.fromkeys(f[0] for f in m))
+    cadenas = sorted({f[1] for f in m})
+    celda = {(f[0], f[1]): f for f in m}
+    z, texto, notas = [], [], []
+    for b in bases:
+        fila_z, fila_t, fila_n = [], [], []
+        for c in cadenas:
+            f = celda.get((b, c))
+            fila_z.append(int(f[5]) if f else None)
+            fila_t.append(f"{f[5]} / {f[4]}<br>({f[3]})" if f else "—")
+            fila_n.append(f[6] if f else "")
+        z.append(fila_z), texto.append(fila_t), notas.append(fila_n)
+    fig = go.Figure(go.Heatmap(
+        z=z, x=cadenas, y=bases,
+        text=texto, texttemplate="%{text}", customdata=notas, colorscale=[[0, "#f0efec"], [1, NARANJA]], zmin=0,
+        colorbar=dict(title="Relevantes", thickness=12),
+        hovertemplate="%{y}, %{x}<br>%{customdata}<extra></extra>"))
+    fig.update_layout(title="Relevantes / revisados (resultados) por base y cadena")
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    fig = _estilo(fig, alto=330, leyenda=False)
+    fig.update_layout(margin=dict(l=120, t=60))
+    return fig
+
+
+# ---------------------------------------------------------------------------
 # Corrección del E3 y validación repetida
 # ---------------------------------------------------------------------------
 def fig_e3_vs_5x5(e3_mejores):

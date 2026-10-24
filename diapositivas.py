@@ -135,7 +135,35 @@ def d_datos():
                        fuente=f"{E1C} · cap. 1.3")
 
 
-def d_bibliografia():
+CERCANOS_E4 = pd.DataFrame([
+    ["Problema", "Cantillo-García, Guzmán y Arellana (2019), DYNA",
+     "Estiman el estrato con un logit ordenado y variables del hogar (ingreso, tamaño, vehículos) en Bogotá, Medellín, "
+     "Cali y Barranquilla", "Usa encuestas del hogar, no el catastro; un solo modelo, sin validación espacial"],
+    ["Problema", "Chica-Olmo, Sánchez y Sepúlveda-Murillo (2020), Cities",
+     "Evalúan si el estrato refleja la calidad de vida (logit multinivel, Medellín)",
+     "El estrato es el criterio que se evalúa, no la salida de un clasificador"],
+    ["Problema", "Vargas-Calderón y Camargo (2022), JORS; tesis colombianas de avalúo",
+     "XGBoost para el precio de la vivienda en Bogotá", "El estrato es una variable de entrada, no el objetivo"],
+    ["Problema", "Arias Cupitra y Moreno Moreno (2025), trabajo de grado",
+     "Zonas homogéneas físicas con inteligencia artificial (Entrerríos, Antioquia)",
+     "Primer paso de la metodología del DANE, no la asignación del estrato"],
+    ["Método", "Zhou y Lin (2026), arXiv",
+     "Combinación convexa distinta por región para regresión y diagnóstico de cuándo supera a la mezcla fija",
+     "El EPL clasifica (6 clases ordenadas), suaviza las regiones con un núcleo, encoge hacia los pesos globales y "
+     "elige el espacio por validación"],
+    ["Método", "Zeng et al. (2026), IEEE Trans. Power Systems",
+     "Pesos de un ensamble espaciotemporal por gradiente exponenciado, en línea (carga eléctrica)",
+     "El EPL aprende fuera de línea, con un vector de pesos por ancla y ajuste cruzado por bloques"],
+    ["Método", "Liu (2024), IJAEOG",
+     "Ensamble con ponderación espacial local y explicabilidad (datos sintéticos)",
+     "Regla derivada de una pérdida convexa con óptimo único; espacio de competencia elegido por validación"],
+    ["Método", "Grekousis (2025), J. Geographical Systems",
+     "XGBoost geográfico: promedio con peso fijo entre un modelo global y modelos locales (regresión)",
+     "Base del modelo nuevo del E2/E3; el EPL aprende los pesos por ancla y por experto"],
+], columns=["Cercano al", "Trabajo", "Qué hace", "Diferencia con este proyecto"])
+
+
+def _bib_e12():
     usados = pd.DataFrame([
         ["Precio de la vivienda (regresión)", "XGBoost, Random Forest, SVR, árbol, Gradient Boosting, lineal"],
         ["Submercados y valorización de vivienda", "XGBoost + SHAP"],
@@ -154,20 +182,62 @@ def d_bibliografia():
         ["8", "Stacking", "Un metamodelo combina varios modelos", "Sí"],
         ["9", "NSGA-II", "Hiperparámetros y variables a la vez", "No: selector de variables"],
     ], columns=["#", "Candidato original (Tabla III)", "Idea", "¿Se probó?"])
-    visual = html.Div([
+    return html.Div([
         dbc.Row([dbc.Col(kpi("0", "estudios que clasifiquen el estrato con el catastro", "Scopus, 5-oct-2026"), md=4),
                  dbc.Col(kpi("1998", "antecedente más cercano", "logística con datos censales agregados"), md=4),
                  dbc.Col(kpi("5 de 9", "candidatos originales probados", "los otros: optimizadores o selectores"), md=4)],
                 className="g-3 mb-3"),
         tabla(t), html.Div(tabla(usados), className="mt-3")])
-    return diapositiva("1.4", "Revisión bibliográfica: la brecha y los candidatos", visual,
+
+
+def _bib_e4():
+    lit = F4.leer("literatura.json")
+    m = [f for f in lit["matriz"] if f[2] == "23-oct-2026"]
+    revisados = sum(int(f[4]) for f in m)
+    relevantes = sum(int(f[5]) for f in m)
+    return html.Div([
+        dbc.Row([dbc.Col(kpi("4 × 6", "bases × cadenas de búsqueda", "Scopus, Web of Science, Google Scholar y arXiv; "
+                                                                      "23-oct-2026"), md=4),
+                 dbc.Col(kpi(f"{revisados}", "registros revisados (título y resumen)",
+                             f"{relevantes} relevantes: mismo método o mismo problema"), md=4),
+                 dbc.Col(kpi("0", "estudios que predicen el estrato de viviendas", "con el catastro, con cualquier modelo"),
+                         md=4)], className="g-3 mb-3"),
+        grafico(F4.fig_literatura(), alto=330),
+        html.P([html.B("Cadenas: "), "; ".join(f"{k}: {v.lower()}" for k, v in lit["cadenas"].items()), "."],
+               className="nota-visual")])
+
+
+def _bib_cercanos():
+    return html.Div([
+        html.P("Los trabajos más cercanos de la revisión del Entregable 4, al problema (el estrato) y al método (combinar "
+               "modelos con pesos que cambian según la región):", className="nota-visual"),
+        tabla(CERCANOS_E4, alto=470)])
+
+
+VISTAS_BIB = {"e12": _bib_e12, "e4": _bib_e4, "cercanos": _bib_cercanos}
+
+
+def d_bibliografia():
+    visual = html.Div([controles(control("Revisión", radio(
+        "bib-vista", [("e12", "Entregables 1 y 2: candidatos"), ("e4", "Entregable 4: búsqueda de novedad"),
+                      ("cercanos", "Trabajos más cercanos")], "e12"))),
+        html.Div(_bib_e12(), id="bib-contenido")])
+    return diapositiva("1.4", "Revisión bibliográfica: la brecha, los candidatos y la novedad", visual,
                        puntos=["Los trabajos cercanos usan XGBoost, Random Forest, SVR o la logística, pero para el "
                                "precio de la vivienda o con datos agregados por zona, no para el estrato.",
                                "La Tabla III reúne nueve modelos que reducen el error frente a los clasificadores "
                                "convencionales y nunca se aplicaron a este problema: los candidatos originales.",
-                               "El mejor respaldado, el XGBoost geográfico, solo existía para regresión."],
+                               "En el E4 la búsqueda se amplió a 4 bases y 6 cadenas: tampoco hay estudios que predigan el "
+                               "estrato de cada vivienda; donde aparece, es una entrada o se estima con datos del hogar.",
+                               "Al método sí hay trabajos afines (pesos por región, gradiente exponenciado, ponderación "
+                               "espacial): por eso la novedad del modelo original se declara con precisión."],
                        conclusion="Nadie ha clasificado el estrato con variables catastrales: esa es la brecha.",
-                       fuente=f"{E2C} · caps. 1.3 y 9.1")
+                       fuente=f"{E2C} · caps. 1.3 y 9.1 · {DE4.E4C} · cap. 4")
+
+
+@callback(Output("bib-contenido", "children"), Input("bib-vista", "value"))
+def _bib(v):
+    return VISTAS_BIB[v]()
 
 
 def d_vacio():
@@ -199,8 +269,9 @@ def d_vacio():
                                "de método: los 9 modelos originales nunca se aplicaron a este problema.",
                                "El DANE usa insumos que el catastro abierto no publica: la pregunta es cuánto del estrato "
                                "se recupera con la parte pública.",
-                               "Web of Science lo confirma: la consulta, sin refinar, no devuelve ningún documento. "
-                               "Falta revisar SciELO, Redalyc y tesis colombianas."],
+                               "Web of Science lo confirma: la consulta, sin refinar, no devuelve ningún documento. En "
+                               "el E4 se repitió en 4 bases con 6 cadenas, en inglés y en español (con tesis colombianas): "
+                               "el vacío se mantiene. Faltan SciELO y Redalyc."],
                        conclusion="Sin cifras externas con las que compararse, todo se mide contra un modelo base propio y "
                                   "con el mismo protocolo espacial.",
                        fuente=f"{E2C} · caps. 1.1 a 1.4")
