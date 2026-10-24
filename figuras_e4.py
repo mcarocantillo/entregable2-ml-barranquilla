@@ -286,6 +286,51 @@ def fig_convergencia():
     return _estilo(fig, alto=380, leyenda=False)
 
 
+COLOR_EXPERTO = {"XGBoost": NARANJA, "Random Forest": AZUL, "KNN": VERDE, "Naive Bayes": "#9b6bd6",
+                 "Logística L1/L2": "#e8b53a", "Árbol de decisión": ROJO, "SVM": GRIS}
+
+
+def fig_anclas():
+    """Las J anclas del modelo final: dónde están (con las viviendas de entrenamiento) y qué pesos lleva cada una."""
+    from plotly.subplots import make_subplots
+    c, v = modelos()["campo_epl"], leer("anclas_viviendas.json")
+    anclas, pesos, z = np.array(c["anclas"]), np.array(c["pesos"]), np.array(v["z"])
+    orden = np.argsort(-pesos[:, c["expertos"].index("XGBoost")])       # A1 = el ancla que más le cree a XGBoost
+    etiqueta = {int(j): f"A{i + 1}" for i, j in enumerate(orden)}
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.52, 0.48], horizontal_spacing=0.09,
+                        subplot_titles=(f"Dónde están las {len(anclas)} anclas", "Pesos de los expertos en cada ancla"))
+    for e in sorted(set(v["estrato"])):
+        s = np.array(v["estrato"]) == e
+        fig.add_trace(go.Scatter(x=z[s, 0], y=z[s, 1], mode="markers", name=f"Estrato {e}", showlegend=False,
+                                 marker=dict(size=4, color=ESTRATOS[e - 1], opacity=0.4),
+                                   hovertemplate=f"vivienda de estrato {e}<extra></extra>"), 1, 1)
+    n = v["viviendas_por_ancla"]
+    fig.add_trace(go.Scatter(
+        x=anclas[:, 0], y=anclas[:, 1], mode="markers+text", text=[etiqueta[j] for j in range(len(anclas))],
+        textfont=dict(color="white", size=8), showlegend=False,
+        marker=dict(size=19, color=NARANJA, line=dict(width=1.5, color="white")),
+        customdata=[[n[j], c["expertos"][int(np.argmax(pesos[j]))], pesos[j].max()] for j in range(len(anclas))],
+        hovertemplate="%{text}: %{customdata[0]} viviendas le corresponden<br>"
+                      "más peso: %{customdata[1]} (%{customdata[2]:.2f})<extra></extra>"), 1, 1)
+    filas = [etiqueta[int(j)] for j in orden] + ["Global π"]
+    for m, nombre in enumerate(c["expertos"]):
+        valores = list(pesos[orden, m]) + [c["pesos_globales"][m]]
+        fig.add_trace(go.Bar(x=filas, y=valores, name=nombre, marker_color=COLOR_EXPERTO.get(nombre, GRIS),
+                             legendgroup="expertos", hovertemplate=f"%{{x}} · {nombre}: %{{y:.2f}}<extra></extra>"),
+                      1, 2)
+    fig.update_layout(barmode="stack")
+    fig.update_xaxes(title="Comp. 1: altura y entorno", row=1, col=1)
+    fig.update_yaxes(title="Comp. 2: tamaño y centro", row=1, col=1)
+    fig.update_xaxes(tickangle=-90, tickfont_size=11, dtick=1, row=1, col=2)
+    fig.update_yaxes(title="Peso (cada barra suma 1)", range=[0, 1], row=1, col=2)
+    fig = _estilo(fig, alto=500)
+    fig.update_annotations(font_size=14, yshift=8)
+    fig.update_xaxes(title_standoff=6)
+    fig.update_layout(legend=dict(orientation="v", y=1, yanchor="top", x=1.02, xanchor="left", font_size=12),
+                      margin=dict(t=50, b=70, r=150))
+    return fig
+
+
 def fig_campo(experto=None):
     """Peso de un experto en cada ancla del espacio de competencia del modelo final."""
     c = modelos()["campo_epl"]

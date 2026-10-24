@@ -26,23 +26,6 @@ FISICAS = ["area_construida", "area_catastral_terreno", "total_habitaciones", "t
            "antiguedad", "planta_ubicacion", "altura"]
 ENTRADAS = FISICAS + CATEGORICAS + ["x_km", "y_km"]
 
-PSEUDOCODIGO = """Entrada: datos (X, s, y); M expertos; J anclas; ancho h; k anclas vecinas; λ; espacio de competencia
-Salida:  expertos f_1..f_M; anclas a_1..a_J; pesos W = (w_1..w_J), cada w_j en el símplex Δ_M
-
-1  Bloques espaciales de 1 km → B pliegues
-2  para cada pliegue y experto m: ajustar f_m sin el pliegue; q_im ← P_m(y_i | x_i)   (fuera de muestra)
-3  reajustar cada f_m con todos los datos
-4  z_i ← coordenadas de competencia (geográficas | 2 CP de x | clase esperada y desacuerdo)
-5  a_1..a_J ← K-medias(z);   K_ij ← núcleo gaussiano normalizado sobre las k anclas más cercanas
-6  π ← argmin_{w∈Δ_M}  −Σ_i α_i log(wᵀq_i)                   (gradiente exponenciado, J = 1)
-7  W ← π en cada ancla;  η ← η_0
-8  repetir
-9      g_j ← −Σ_i α_i K_ij q_i / r_i  +  (λ/J)·log(w_j / π)        con  r_i = Σ_j K_ij w_jᵀ q_i
-10     w_j ← w_j ⊙ exp(−η g_j) / Σ (w_j ⊙ exp(−η g_j))
-11     si L(W) no bajó: deshacer y η ← η/2;  si bajó: η ← 1.5 η
-12 hasta que la mejora relativa de L(W) < tol
-Predicción: w(z) = Σ_j K_j(z) w_j;   p(y | x) = Σ_m w_m(z) f_m(y | x)"""
-
 DIFERENCIAS = pd.DataFrame([
     ("Promedio simple o voto", "Pesos iguales", "Pesos aprendidos y distintos según la región"),
     ("Pesos globales por gradiente exponenciado (Helmbold et al., 1997)", "Un solo vector de pesos",
@@ -149,18 +132,27 @@ def d_e4_e3_vs_5x5():
 # ---------------------------------------------------------------------------
 def d_e4_idea():
     c = _m()["campo_epl"]
-    visual = dbc.Row([
-        dbc.Col(html.Pre(PSEUDOCODIGO, className="pseudocodigo"), lg=7),
-        dbc.Col(grafico(F4.fig_convergencia()), lg=5)], className="g-2")
+    J = c["params"]["n_anclas"]
+    lider = [c["expertos"][int(np.argmax(w))] for w in c["pesos"]]
+    pasos =[("7 expertos", "Los 7 modelos de la guía predicen cada vivienda sin haberla visto (bloques de 1 km)"),
+             (f"J = {J} anclas", "Se resume cada vivienda en 2 componentes y K-medias pone las anclas en el centro "
+                                  "de cada grupo"),
+             ("Pesos por ancla", "Cada ancla aprende cuánto creerle a cada experto; si tiene pocos datos, se acerca "
+                                 "a los pesos globales π"),
+             ("Predecir", "Una vivienda nueva usa los pesos de su ancla más cercana y mezcla las 7 probabilidades")]
+    flujo = html.Div([html.Div([html.Div(f"{i + 1}", className="paso-num"), html.Div(t, className="paso-titulo"),
+                                html.Div(d, className="paso-desc")], className="paso") for i, (t, d) in enumerate(pasos)],
+                     className="flujo mb-2")
+    visual = html.Div([flujo, grafico(F4.fig_anclas(), minimo=420)])
     return diapositiva("8.4", "El modelo original: ensamble con pesos locales (EPL)", visual,
-                       puntos=["Combina las probabilidades de los 7 modelos de la guía con pesos que cambian según la "
-                               "región del espacio de competencia (las «anclas»).",
-                               "Los pesos minimizan una log-pérdida ponderada por clase más una penalización KL hacia los "
-                               "pesos globales: problema convexo, estrictamente convexo con λ > 0 (óptimo único).",
-                               "Se aprenden con predicciones fuera de muestra por bloques de 1 km (ajuste cruzado): así no "
-                               "se premia al experto que memoriza.",
-                               f"Modelo final: espacio {F4.NOMBRE_ESPACIO[c['espacio']]}, J = {c['params']['n_anclas']} "
-                               f"anclas, λ = {c['params']['lam']:.2f}. La pérdida baja en cada iteración."],
+                       puntos=["Izquierda: cada punto es una vivienda de entrenamiento en el plano de las 2 componentes "
+                               f"(azul más oscuro = estrato más alto); los círculos naranja son las J = {J} anclas.",
+                               "Derecha: cada barra es un ancla y sus colores son los pesos de los 7 expertos (suman 1). "
+                               "La última barra son los pesos globales π.",
+                               f"XGBoost tiene el mayor peso en {lider.count('XGBoost')} de las {J} anclas; en las otras "
+                               f"mandan {' y '.join(sorted(set(lider) - {'XGBoost'}))}: esa es la parte «local».",
+                               f"Los pesos minimizan una log-pérdida con penalización KL hacia π (λ = "
+                               f"{c['params']['lam']:.2f}): problema convexo con óptimo único."],
                        conclusion="Una regla de combinación local, convexa y entrenada sin fuga de información.",
                        fuente=f"{E4C} · cap. 5", ancho_visual=9)
 
