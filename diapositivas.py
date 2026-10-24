@@ -11,14 +11,14 @@ import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from dash import Input, Output, callback, dcc, html
+from dash import Input, Output, dcc, html
 
 import figuras as F
 import diapositivas_e4 as DE4
 import figuras_e4 as F4
 import figuras_mejoras as FM
 import figuras_proyecto as FP
-from componentes import (control, controles, desplegable, diapositiva, fmt, grafico, interruptor, kpi, radio, tabla)
+from componentes import (callback, control, controles, desplegable, diapositiva, fmt, grafico, interruptor, kpi, radio, tabla)
 
 # El dashboard muestra el modelo base de la versión 3 (validación kNNDM, entrenamiento sin buffer), que calcula
 # proyecto/preparar_base_v3.py en datos/base_v3/. Los archivos de datos/ (versión 2) los sigue usando el libro del E2.
@@ -377,7 +377,7 @@ def d_dependencia():
                  dbc.Col(kpi(f"{GX['deff']:.0f}", "efecto de diseño", "deff = 1 + (m̃ − 1)·ICC"), md=4),
                  dbc.Col(kpi(f"≈ {fmt(round(GX['n_ef'], -2))}", "tamaño efectivo", f"de {fmt(E1['viviendas'])} filas"), md=4)],
                 className="g-3 mb-2"),
-        grafico(F.fig_kish(GX["icc"], GX["m_pond"]), "kish-fig"),
+        grafico(F.fig_kish(round(GX["icc"], 3), GX["m_pond"]), "kish-fig"),
         control("Prueba otro ICC", dcc.Slider(id="kish-icc", min=0, max=1, step=0.001, value=round(GX["icc"], 3),
                                               marks={0: "0", 0.25: "0.25", 0.5: "0.5", 0.75: "0.75", 1: "1"},
                                               tooltip={"placement": "bottom"}))])

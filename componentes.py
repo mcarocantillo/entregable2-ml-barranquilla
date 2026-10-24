@@ -2,13 +2,20 @@
 
 Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo (200177329)
 """
+from functools import partial
+
+import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import dcc, html
 
 from glosario import GLOSARIO
 
-GRAF = {"displaylogo": False, "toImageButtonOptions": {"format": "png", "scale": 2},
+# Callbacks de las diapositivas: cada diapositiva ya trae su gráfica inicial, así que no se recalcula al abrir la
+# pestaña (antes se disparaban ~25 callbacks a la vez en cada cambio de pestaña); solo responden a los controles.
+callback = partial(dash.callback, prevent_initial_call=True)
+
+GRAF ={"displaylogo": False, "toImageButtonOptions": {"format": "png", "scale": 2},
         "modeBarButtonsToRemove": ["lasso2d", "select2d", "autoScale2d"]}
 
 

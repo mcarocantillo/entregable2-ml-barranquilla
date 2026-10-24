@@ -230,13 +230,20 @@ def fig_numerica(var, log=True, particion="train"):
     v = base_eda(particion)[[var, "estrato_num"]].dropna()
     fig = make_subplots(rows=1, cols=2, column_widths=[0.42, 0.58], horizontal_spacing=0.09,
                         subplot_titles=("Distribución", "Por estrato"))
+    # Histograma y cajas precalculados: mandar las ~257 000 viviendas al navegador pesaba 2.7 MB.
     x = np.log1p(v[var]) if log else v[var]
-    fig.add_trace(go.Histogram(x=x, nbinsx=60, marker_color="#3987e5", marker_line_color="white",
-                               marker_line_width=1, hovertemplate="%{x}: %{y:,}<extra></extra>"), 1, 1)
+    conteo, bordes = np.histogram(x, bins=60)
+    fig.add_trace(go.Bar(x=(bordes[:-1] + bordes[1:]) / 2, y=conteo, width=np.diff(bordes), marker_color="#3987e5",
+                         marker_line_color="white", marker_line_width=1,
+                         hovertemplate="%{x:.2f}: %{y:,}<extra></extra>"), 1, 1)
     for k in CLASES:
         xs = v.loc[v.estrato_num == k, var]
-        fig.add_trace(go.Box(y=np.log1p(xs) if log else xs, name=f"E{k}", marker_color=COLOR_ESTRATO[k],
-                             boxpoints=False, line_width=1.5), 1, 2)
+        xs = (np.log1p(xs) if log else xs).to_numpy()
+        q1, med, q3 = np.percentile(xs, [25, 50, 75])
+        ric = q3 - q1
+        fig.add_trace(go.Box(x=[f"E{k}"], q1=[q1], median=[med], q3=[q3],
+                             lowerfence=[xs[xs >= q1 - 1.5 * ric].min()], upperfence=[xs[xs <= q3 + 1.5 * ric].max()],
+                             name=f"E{k}", marker_color=COLOR_ESTRATO[k], boxpoints=False, line_width=1.5), 1, 2)
     eje = f"log(1 + {NUMERICAS[var]})" if log else NUMERICAS[var]
     fig.update_xaxes(title_text=eje, row=1, col=1)
     fig.update_yaxes(title_text="viviendas", row=1, col=1)

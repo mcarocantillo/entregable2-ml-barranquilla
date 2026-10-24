@@ -11,12 +11,12 @@ import re
 import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
-from dash import Input, Output, State, callback, dcc, html, no_update
+from dash import Input, Output, State, dcc, html, no_update
 from scipy.spatial import cKDTree
 
 import figuras_e4 as F4
 import figuras_mejoras as FM
-from componentes import control, controles, desplegable, diapositiva, fmt, grafico, kpi, radio, tabla
+from componentes import callback, control, controles, desplegable, diapositiva, fmt, grafico, kpi, radio, tabla
 
 E4C = "Entregable 4"
 LIBRO_E4 = "https://mcarocantillo.github.io/entregable4-ml-barranquilla/"
