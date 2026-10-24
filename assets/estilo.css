@@ -234,3 +234,10 @@ html { scroll-behavior: smooth; }
 .formulas { font-size: .98rem; line-height: 1.5; }
 .formulas p { margin-bottom: .5rem; }
 .formulas mjx-container[display="true"] { margin: .45rem 0 !important; overflow-x: auto; overflow-y: hidden; }
+/* Quién presenta cada diapositiva en la sustentación (M = María Carolina, J = Juan Camilo) */
+.diapo-quien, .menu-quien { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px;
+  font-weight: 700; line-height: 1; }
+.diapo-quien { width: 1.25rem; height: 1.25rem; font-size: .68rem; margin: 0 .45rem 0 .35rem; color: #fff;
+  background: var(--azul-oscuro); vertical-align: middle; }
+.menu-quien { width: 1rem; height: 1rem; font-size: .58rem; color: var(--azul-oscuro);
+  border: 1px solid var(--azul-oscuro); flex: none; align-self: center; }

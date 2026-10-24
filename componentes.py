@@ -151,6 +151,7 @@ def glosario_completo(filtro=""):
 NUMERO_ACTUAL = None   # lo fija app.py según la posición de la diapositiva (numeración automática)
 COMPACTA = False       # presentación de 20 min: solo los puntos elegidos y la frase final, sin fichas de lectura
 PUNTOS = None          # índices de los puntos que se muestran en modo compacto (por defecto, los dos primeros)
+QUIEN_ACTUAL = None    # quién presenta la diapositiva en la sustentación (("M", "María Carolina")), lo fija app.py
 
 
 def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=None, fuente=None, ancho_visual=8):
@@ -186,7 +187,9 @@ def diapositiva(numero, titulo, visual, puntos=None, conclusion=None, metricas=N
                 fichas.append(ficha(clave, valor, texto, absoluto))
         panel.append(html.Div([html.Div("¿Cómo se lee?", className="panel-titulo")] + fichas, className="panel-bloque"))
     numero = NUMERO_ACTUAL or numero
-    cab = html.Div([html.Div([html.Span(numero, className="diapo-num"),
+    quien = (html.Span(QUIEN_ACTUAL[0], className="diapo-quien", title=f"Presenta {QUIEN_ACTUAL[1]}")
+             if QUIEN_ACTUAL else None)
+    cab = html.Div([html.Div([html.Span(numero, className="diapo-num"), quien,
                               html.Span(fuente, className="diapo-fuente") if fuente else None], className="diapo-kicker"),
                     html.H2(titulo, className="diapo-titulo")], className="diapo-cab")
     if not panel:

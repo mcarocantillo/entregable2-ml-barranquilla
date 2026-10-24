@@ -1917,16 +1917,33 @@ PESTANAS = [
     {"id": "eda", "titulo": "Análisis exploratorio", "corto": "EDA", "diapositivas": [
         ("Variable objetivo", d_objetivo), ("Faltantes e imposibles", d_calidad), ("Outliers", d_outliers),
         ("Numéricas", d_numericas), ("Transformación", d_transformar), ("Categóricas vs estrato", d_categoricas),
-        ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia),
-        ("Fuga de datos", d_fuga), ("El entorno", d_eda_entorno), ("El test", d_eda_test)]},
-    {"id": "modelos", "titulo": "Modelos: del modelo base al modelo original", "corto": "Modelos", "diapositivas": [
+        ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Mapa", d_mapa),
+        ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia), ("Fuga de datos", d_fuga),
+        ("El entorno", d_eda_entorno), ("El test", d_eda_test)]},
+    # En el orden del guion de la sustentación: fundamentos del EPL, implementación y diseño experimental, resultados.
+    {"id": "modelos", "titulo": "Modelos: fundamentos, diseño experimental y resultados", "corto": "Modelos",
+     "diapositivas": [
+        ("E4 · El modelo original (EPL)", DE4.d_e4_idea), ("E4 · Fundamentos: modelo y pérdida", DE4.d_e4_formulacion),
+        ("E4 · Fundamentos: optimización", DE4.d_e4_optimizacion),
+        ("E4 · Fundamentos: regularización", DE4.d_e4_generalizacion), ("E4 · Campo de pesos", DE4.d_e4_campo),
+        ("E4 · Costo computacional", DE4.d_e4_complejidad),
+        ("E2 · Validar a la distancia correcta", d_v3_validacion), ("E2 · La vecindad física", d_vecindad_knn),
+        ("E2 · Modelos de la revisión", d_candidatos), ("E3 · Pipeline combinatorio", d_e3_diseno),
+        ("E3 · Optimizadores", d_e3_optimizadores), ("E3 · Balanceo", d_e3_balanceo),
+        ("E4 · Correcciones del E3", DE4.d_e4_correcciones), ("E4 · Validación repetida 5 × 5", DE4.d_e4_e3_vs_5x5),
+        ("E4 · Implementación propia (R2)", DE4.d_e4_implementacion), ("E4 · Predicción en vivo", DE4.d_e4_prediccion),
         ("Base · Frente a líneas base", d_comparacion), ("Base · ¿Diferencias reales?", d_significancia),
-        ("E2 · Modelos de la revisión", d_candidatos), ("E2 · Validar a la distancia correcta", d_v3_validacion),
-        ("E2 · La vecindad física", d_vecindad_knn), ("E2 · Todos los originales", d_originales),
-        ("E3 · Pipeline combinatorio", d_e3_diseno), ("E3 · Optimizadores", d_e3_optimizadores),
-        ("E3 · Balanceo", d_e3_balanceo),
-    ] + [(f"E4 · {t}", f) for t, f in DE4.DIAPOSITIVAS_MODELOS]},
+        ("E2 · Todos los originales", d_originales), ("E4 · Los 11 modelos", DE4.d_e4_lideres),
+        ("E4 · Friedman y Nemenyi", DE4.d_e4_cd), ("E4 · Superioridad (R3)", DE4.d_e4_pruebas),
+        ("E4 · Frente al modelo base", DE4.d_e4_base), ("E4 · Reglas estándar y ablación", DE4.d_e4_ablacion),
+        ("E4 · Diagnóstico de sobreajuste", DE4.d_e4_sobreajuste), ("E4 · Test confirmatorio", DE4.d_e4_test),
+        ("E4 · Diagnóstico en el test", DE4.d_e4_diagnostico), ("E4 · Robustez y sensibilidad", DE4.d_e4_robustez)]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
-        ("Veredicto del E4", DE4.d_e4_veredicto), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
-        ("Próximos pasos", d_pasos)]},
+        ("Veredicto del E4", DE4.d_e4_veredicto), ("Conjuntos externos", DE4.d_e4_externos), ("Respuesta", d_respuesta),
+        ("Limitaciones", d_limitaciones), ("Próximos pasos", d_pasos)]},
 ]
+
+# Quién presenta cada diapositiva en la sustentación (M = María Carolina, J = Juan Camilo), en el orden de cada pestaña.
+PRESENTA = {"contexto": "MMMMMMJJJ", "eda": "J" * 14, "modelos": "M" * 6 + "J" * 22, "conclusiones": "MMMMM"}
+NOMBRE_PRESENTA = {"M": "María Carolina", "J": "Juan Camilo"}
+assert all(len(PRESENTA[p["id"]]) == len(p["diapositivas"]) for p in PESTANAS)

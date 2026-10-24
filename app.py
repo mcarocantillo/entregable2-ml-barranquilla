@@ -116,9 +116,16 @@ def num_menu(p, i):
     return f"{extra[0]['minutos']:g}′" if extra else f"{i + 1:02d}"
 
 
+def quien_menu(pid, i):
+    """Letra de quien presenta la diapositiva en la sustentación (M o J), junto al número del menú."""
+    q = DP.PRESENTA.get(pid, "")[i:i + 1]
+    return html.Span(q, className="menu-quien", title=f"Presenta {DP.NOMBRE_PRESENTA[q]}") if q else None
+
+
 def menu(pid, activo):
     p = PESTANAS[pid]
-    return html.Div([html.Button([html.Span(num_menu(p, i), className="menu-num"), html.Span(t, className="menu-texto")],
+    return html.Div([html.Button([html.Span(num_menu(p, i), className="menu-num"), quien_menu(pid, i),
+                                  html.Span(t, className="menu-texto")],
                                  id={"type": "menu", "i": i}, n_clicks=0,
                                  className="menu-item" + (" activo" if i == activo else ""))
                      for i, (t, *_) in enumerate(p["diapositivas"])], className="menu")
@@ -142,12 +149,14 @@ def construir(pid, i):
     pid_n, i_n = extra[0]["origen"] if extra else (pid, i)
     CMP.NUMERO_ACTUAL = f"{ORDEN[pid_n]}.{i_n + 1}"
     CMP.COMPACTA, CMP.PUNTOS = bool(extra), (extra[0]["puntos"] if extra else None)
+    q = DP.PRESENTA.get(pid_n, "")[i_n:i_n + 1]
+    CMP.QUIEN_ACTUAL = (q, DP.NOMBRE_PRESENTA[q]) if q else None
     try:
         return funcion()
     except Exception as e:  # una diapositiva con un error no debe tumbar la presentación
         return dbc.Alert(f"No se pudo construir «{titulo}»: {e}", color="danger")
     finally:
-        CMP.NUMERO_ACTUAL, CMP.COMPACTA, CMP.PUNTOS = None, False, None
+        CMP.NUMERO_ACTUAL, CMP.COMPACTA, CMP.PUNTOS, CMP.QUIEN_ACTUAL = None, False, None, None
 
 
 def cuerpo_diapositiva(pid, i):
@@ -157,7 +166,8 @@ def cuerpo_diapositiva(pid, i):
 # Vista continua: todas las diapositivas de la pestaña una debajo de otra; el menú salta a cada una.
 def menu_continuo(pid):
     p = PESTANAS[pid]
-    return html.Div([html.A([html.Span(num_menu(p, i), className="menu-num"), html.Span(t, className="menu-texto")],
+    return html.Div([html.A([html.Span(num_menu(p, i), className="menu-num"), quien_menu(pid, i),
+                             html.Span(t, className="menu-texto")],
                             href=f"#d-{pid}-{i}", className="menu-item menu-enlace")
                      for i, (t, *_) in enumerate(p["diapositivas"])], className="menu")
 
