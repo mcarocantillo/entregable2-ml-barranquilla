@@ -527,8 +527,8 @@ def d_e4_campo():
                                + ", ".join(f"{F4.NOMBRE_ESPACIO[k]} {v}" for k, v in esp.items()) + " veces.",
                                "Espacio de las variables: 2 componentes principales de las variables de la vivienda; "
                                "anclas cercanas = viviendas parecidas, no vecinas.",
-                               f"{exp_var} es el experto cuyo peso más varía entre anclas; Random Forest y XGBoost "
-                               "concentran casi todo el peso global.",
+                               f"{exp_var} es el experto cuyo peso más varía entre anclas. En los pesos globales, "
+                               "XGBoost (0.51) y Random Forest (0.20) suman el 70 %; SVM queda en 0.",
                                "El tamaño y el color del punto son el peso del experto en esa ancla."],
                        conclusion="El modelo aprende a confiar en expertos distintos según el tipo de vivienda.",
                        fuente=f"{E4C} · caps. 5 y 6.4")
@@ -858,7 +858,7 @@ DIAPOSITIVAS_MODELOS = [
     ("El modelo original (EPL)", d_e4_idea), ("Fundamentos: modelo y pérdida", d_e4_formulacion),
     ("Fundamentos: optimización", d_e4_optimizacion), ("Fundamentos: regularización", d_e4_generalizacion),
     ("Implementación propia (R2)", d_e4_implementacion),
-    ("Novedad (R1)", d_e4_literatura), ("Los 11 modelos", d_e4_lideres), ("Friedman y Nemenyi", d_e4_cd),
+    ("Los 11 modelos", d_e4_lideres), ("Friedman y Nemenyi", d_e4_cd),
     ("Superioridad (R3)", d_e4_pruebas), ("Frente al modelo base", d_e4_base),
     ("Reglas estándar y ablación", d_e4_ablacion), ("Campo de pesos", d_e4_campo),
     ("Diagnóstico de sobreajuste", d_e4_sobreajuste), ("Test confirmatorio", d_e4_test),

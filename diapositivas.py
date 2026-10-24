@@ -1916,20 +1916,17 @@ PESTANAS = [
         ("Partición espacial", d_particion)]},
     {"id": "eda", "titulo": "Análisis exploratorio", "corto": "EDA", "diapositivas": [
         ("Variable objetivo", d_objetivo), ("Faltantes e imposibles", d_calidad), ("Outliers", d_outliers),
-        ("Numéricas", d_numericas), ("Transformación", d_transformar), ("Numéricas vs estrato", d_violin), ("Categóricas vs estrato", d_categoricas),
-        ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
-        ("PCA", d_pca), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia),
+        ("Numéricas", d_numericas), ("Transformación", d_transformar), ("Categóricas vs estrato", d_categoricas),
+        ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia),
         ("Fuga de datos", d_fuga), ("El entorno", d_eda_entorno), ("El test", d_eda_test)]},
     {"id": "modelos", "titulo": "Modelos: del modelo base al modelo original", "corto": "Modelos", "diapositivas": [
         ("Base · Frente a líneas base", d_comparacion), ("Base · ¿Diferencias reales?", d_significancia),
-        ("Base · Errores por estrato", d_confusion), ("Base · Coeficientes", d_coeficientes),
-        ("E2 · Modelos de la revisión", d_candidatos), ("E2 · XGBoost geográfico", d_geoxgb_como),
-        ("E2 · Validar a la distancia correcta", d_v3_validacion), ("E2 · La vecindad física", d_vecindad_knn),
-        ("E2 · Todos los originales", d_originales), ("E2 · Dos escenarios", d_nuevo_vs_base),
+        ("E2 · Modelos de la revisión", d_candidatos), ("E2 · Validar a la distancia correcta", d_v3_validacion),
+        ("E2 · La vecindad física", d_vecindad_knn), ("E2 · Todos los originales", d_originales),
         ("E3 · Pipeline combinatorio", d_e3_diseno), ("E3 · Optimizadores", d_e3_optimizadores),
-        ("E3 · Balanceo", d_e3_balanceo), ("E3 · Test de los finalistas", d_e3_test), ("E3 · SHAP", d_e3_shap),
+        ("E3 · Balanceo", d_e3_balanceo),
     ] + [(f"E4 · {t}", f) for t, f in DE4.DIAPOSITIVAS_MODELOS]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
-        ("Veredicto del E4", DE4.d_e4_veredicto), ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta),
-        ("Limitaciones", d_limitaciones), ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
+        ("Veredicto del E4", DE4.d_e4_veredicto), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
+        ("Próximos pasos", d_pasos)]},
 ]
