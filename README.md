@@ -10,10 +10,11 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 
 | Ruta | Contenido |
 |---|---|
-| `app.py` | Dashboard final en Dash Plotly: portada, 6 pestañas (Contexto, Datos y calidad, Análisis exploratorio, Modelo base, Más allá del modelo base, Conclusiones) y glosario de métricas. Cada pestaña es una secuencia de diapositivas con gráficas interactivas; se navega con el menú, los botones o las flechas del teclado, y tiene un modo presentación |
+| `app.py` | Dashboard final en Dash Plotly: portada, 4 pestañas (Contexto, EDA, Modelos y Conclusiones, con los Entregables 1 a 4) y glosario de métricas. Cada pestaña es una secuencia de diapositivas con gráficas interactivas; se navega con el menú, los botones o las flechas del teclado, y tiene un modo presentación |
 | `diapositivas.py` | Contenido de las diapositivas (visual, lectura breve, conclusión y fichas de métricas) y sus controles |
 | `componentes.py`, `glosario.py` | Componentes visuales y el glosario: qué mide cada métrica y cómo saber si su valor es bueno (escala de colores con los umbrales) |
-| `figuras.py`, `figuras_proyecto.py` | Todas las figuras: las del Entregable 2 (las usa también el libro) y las de los capítulos del Entregable 1, la vecindad y los escenarios |
+| `figuras.py`, `figuras_proyecto.py`, `figuras_mejoras.py` | Las figuras de los Entregables 1 a 3: las del Entregable 2 (las usa también el libro), las de los capítulos del Entregable 1, la vecindad, los escenarios y el Entregable 3 |
+| `diapositivas_e4.py`, `figuras_e4.py` | Entregable 4 (proyecto final): modelo original EPL, validación repetida 5 × 5, pruebas de superioridad, test, conjuntos externos, robustez, costo y predicción en vivo. Los resultados y el modelo serializado están en `datos/e4/`, copiados de [entregable4-ml-barranquilla](https://github.com/mcarocantillo/entregable4-ml-barranquilla) |
 | `proyecto/` | Preparan `datos/proyecto/`: tablas de los cuadernos del Entregable 1 (`extraer_tablas_e1.py`), PCA, outliers, K-Means, t-SNE, LISA, mapa de la partición y búsqueda de C (`preparar_proyecto.py`) y recuperación por manzana (`preparar_manzanas.py`); ya están ejecutados |
 | `generar_portada.py` | Genera la infografía de la escala de estratos (`assets/escala_estratos.svg`) |
 | `correr_local.py` | Arranca el dashboard en local en el puerto indicado |
@@ -22,7 +23,7 @@ Autores: María Carolina Cantillo Orozco (200179105) y Juan Camilo Oñoro Araujo
 | `entrenar_avanzados.py`, `avanzados.py` | Entrenan y evalúan los modelos de la revisión bibliográfica (XGBoost geográfico adaptado a clasificación, XGBoost, Rotation Forest, SVM RBF + TPE); ya están ejecutados. Para volver a correrlos se necesita además `requirements-entrenamiento.txt` |
 | `datos/` | Datos y resultados que usa el dashboard (332 718 viviendas, sin número predial; el 96.9 % con coordenadas, incluidas las ubicadas por el centroide de su manzana); en `datos/vecindad/`, los resultados del capítulo 5 del libro |
 | `vecindad/` | Capítulo 5: variables de vecindad física y escenario de zonas conocidas; `07_vecindad_knn.py`: versión 3 (capítulo 6, grafo KNN y validación kNNDM). Ver su `README.md` |
-| `src/` | Módulos del Entregable 1 (necesarios para cargar el modelo) |
+| `src/`, `e1/`, `estrato3/` | Módulos del Entregable 1 y, para cargar el modelo original del E4, `src/original_model.py`, `src/explicacion.py` y los paquetes `e1` y `estrato3` del E4 (mismas rutas de importación que el archivo serializado) |
 | `assets/` | Estilos, navegación con el teclado e imágenes. La portada (`portada_satelite.jpg`) es una imagen de la ESA: *contains modified Copernicus Sentinel data (2021), processed by ESA* |
 | `requirements.txt`, `render.yaml`, `.python-version` | Configuración para Render |
 | `libro/` | Fuentes del Jupyter Book (cuadernos, referencias, configuración) |

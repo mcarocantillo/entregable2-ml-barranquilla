@@ -8,5 +8,8 @@ numpy==2.4.4
 scipy==1.17.1
 scikit-learn==1.8.0
 joblib==1.5.3
+# El modelo original del E4 (datos/e4/epl__original.joblib) incluye XGBoost y un pipeline de imbalanced-learn
+xgboost==3.2.0
+imbalanced-learn==0.14.2
 pyarrow==25.0.1
 gunicorn==26.2.0

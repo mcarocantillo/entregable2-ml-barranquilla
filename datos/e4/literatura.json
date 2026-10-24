@@ -1,0 +1,237 @@
+{
+ "cadenas": {
+  "C1": "Problema: estrato + aprendizaje automático + catastro o vivienda",
+  "C2": "Familia del modelo + problema",
+  "C3": "Regla de combinación (sin restringir la aplicación)",
+  "C4": "Ensambles geográficamente ponderados",
+  "C5": "Selección dinámica con información espacial",
+  "C6": "Español"
+ },
+ "columnas": [
+  "Base",
+  "Cadena",
+  "Fecha",
+  "Resultados",
+  "Revisados",
+  "Relevantes",
+  "Observación"
+ ],
+ "matriz": [
+  [
+   "Scopus",
+   "C1",
+   "23-oct-2026",
+   "10",
+   "10",
+   "2",
+   "Ninguno predice el estrato de viviendas con catastro; el más cercano estima el estrato con variables del hogar (logit ordenado)"
+  ],
+  [
+   "Scopus",
+   "C2",
+   "23-oct-2026",
+   "16",
+   "16",
+   "4",
+   "Mezclas de expertos neuronales o para avalúo catastral (regresión); ninguna para el estrato"
+  ],
+  [
+   "Scopus",
+   "C3",
+   "23-oct-2026",
+   "1",
+   "1",
+   "1",
+   "Ensamble espaciotemporal en línea con gradiente exponenciado, para carga eléctrica"
+  ],
+  [
+   "Scopus",
+   "C4",
+   "23-oct-2026",
+   "7",
+   "7",
+   "6",
+   "GWR o ponderación espacial combinada con aprendizaje automático (otras aplicaciones)"
+  ],
+  [
+   "Scopus",
+   "C5",
+   "23-oct-2026",
+   "33",
+   "10",
+   "7",
+   "Selección dinámica en teledetección, tráfico, deslizamientos y clasificación desbalanceada"
+  ],
+  [
+   "Scopus",
+   "C6",
+   "23-oct-2026",
+   "0",
+   "0",
+   "0",
+   "—"
+  ],
+  [
+   "Web of Science",
+   "C1",
+   "23-oct-2026",
+   "5",
+   "5",
+   "0",
+   "Los mismos registros sin relación de Scopus C1"
+  ],
+  [
+   "Web of Science",
+   "C2",
+   "23-oct-2026",
+   "13",
+   "13",
+   "3",
+   "Mezclas de expertos; una con compuerta entrenada con predicciones fuera de muestra (imágenes)"
+  ],
+  [
+   "Web of Science",
+   "C3",
+   "23-oct-2026",
+   "1",
+   "1",
+   "1",
+   "Zeng et al. (2026), el mismo de Scopus"
+  ],
+  [
+   "Web of Science",
+   "C4",
+   "23-oct-2026",
+   "7",
+   "7",
+   "4",
+   "Los mismos ensambles geográficamente ponderados de Scopus"
+  ],
+  [
+   "Web of Science",
+   "C5",
+   "23-oct-2026",
+   "16",
+   "16",
+   "13",
+   "Selección dinámica con información espacial; ninguna para vivienda ni estrato"
+  ],
+  [
+   "Web of Science",
+   "C6",
+   "23-oct-2026",
+   "0",
+   "0",
+   "0",
+   "—"
+  ],
+  [
+   "Web of Science (E2)",
+   "Aplicación",
+   "19-oct-2026",
+   "0",
+   "0",
+   "0",
+   "TS=(estrato socioeconómico AND (datos catastrales OR características de la vivienda))"
+  ],
+  [
+   "Google Scholar",
+   "C1",
+   "23-oct-2026",
+   "12",
+   "12",
+   "2",
+   "El estrato aparece como variable de entrada (precios, avalúos), no como objetivo"
+  ],
+  [
+   "Google Scholar",
+   "C2",
+   "23-oct-2026",
+   "13",
+   "13",
+   "1",
+   "Aprendizaje automático geográficamente ponderado (salud)"
+  ],
+  [
+   "Google Scholar",
+   "C3",
+   "23-oct-2026",
+   "376",
+   "10",
+   "4",
+   "Pesos de ensambles por gradiente exponenciado (en línea) y una combinación convexa por regiones en regresión (Zhou y Lin, 2026)"
+  ],
+  [
+   "Google Scholar",
+   "C4",
+   "23-oct-2026",
+   "5 550",
+   "10",
+   "4",
+   "Rezagos espaciales y XGBoost o random forest geográficamente ponderados"
+  ],
+  [
+   "Google Scholar",
+   "C5",
+   "23-oct-2026",
+   "185",
+   "10",
+   "2",
+   "Selección dinámica en imágenes hiperespectrales y fusión ponderada"
+  ],
+  [
+   "Google Scholar",
+   "C6",
+   "23-oct-2026",
+   "45",
+   "10",
+   "2",
+   "Tesis colombianas: zonas homogéneas con IA; el estrato como entrada de modelos de precio"
+  ],
+  [
+   "arXiv",
+   "C1",
+   "23-oct-2026",
+   "2",
+   "2",
+   "0",
+   "Sin relación"
+  ],
+  [
+   "arXiv",
+   "C2",
+   "23-oct-2026",
+   "16",
+   "16",
+   "0",
+   "Mezclas de expertos neuronales (imágenes médicas, lenguaje)"
+  ],
+  [
+   "arXiv",
+   "C3",
+   "23-oct-2026",
+   "0",
+   "0",
+   "0",
+   "—"
+  ],
+  [
+   "arXiv",
+   "C4",
+   "23-oct-2026",
+   "1",
+   "1",
+   "1",
+   "Liu (2024): ensamble con ponderación espacial local y explicabilidad"
+  ],
+  [
+   "arXiv",
+   "C5",
+   "23-oct-2026",
+   "0",
+   "0",
+   "0",
+   "—"
+  ]
+ ]
+}

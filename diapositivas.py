@@ -14,6 +14,8 @@ import plotly.graph_objects as go
 from dash import Input, Output, callback, dcc, html
 
 import figuras as F
+import diapositivas_e4 as DE4
+import figuras_e4 as F4
 import figuras_mejoras as FM
 import figuras_proyecto as FP
 from componentes import (control, controles, desplegable, diapositiva, fmt, grafico, interruptor, kpi, radio, tabla)
@@ -225,13 +227,17 @@ def d_ruta():
                            "computacional, pruebas estadísticas y SHAP")], className="hito"),
         html.Div([html.Div("Después del E3 (19-oct-2026)", className="hito-titulo"),
                   html.Div("Todos los modelos originales de la revisión con todos los datos, pruebas de significancia "
-                           "y EDA mejorado")], className="hito destacado"),
+                           "y EDA mejorado")], className="hito"),
+        html.Div([html.Div("Entregable 4 (proyecto final)", className="hito-titulo"),
+                  html.Div("Modelo original (ensamble con pesos locales), validación repetida 5 × 5, pruebas de "
+                           "superioridad, test confirmatorio, conjuntos externos y predicción en vivo")],
+                 className="hito destacado"),
     ], className="hitos")
     return diapositiva("1.5", "Cómo se trabajó", html.Div([flujo(pasos), hitos]),
                        puntos=["Las reglas que miran una sola fila se aplican antes de partir.",
                                "Todo lo que se aprende de los datos se calcula solo con entrenamiento.",
                                "El test son zonas completas que el modelo nunca vio."],
-                       conclusion="El orden de los pasos evita la fuga de datos.", fuente="Entregables 1, 2 y 3")
+                       conclusion="El orden de los pasos evita la fuga de datos.", fuente="Entregables 1 a 4")
 
 
 # ===========================================================================
@@ -350,7 +356,7 @@ def d_particion():
                                f"Test: {fmt(R['n_test'])} viviendas en {R['bloques_test']} bloques (20 %). Un algoritmo "
                                "reparte los bloques para equilibrar los estratos: por eso quedan dispersos por la ciudad.",
                                f"Los bloques son muy desiguales ({fmt(min(tam))} a {fmt(max(tam))} viviendas): el test tiene "
-                               "más estrato 1 y todo su estrato 6 en un solo bloque (3.22).",
+                               "más estrato 1 y todo su estrato 6 en un solo bloque (EDA: el test).",
                                f"El modelo entrena con las {fmt(R['n_train'])} viviendas restantes. El buffer de 1 km de la "
                                f"versión anterior quitaba {fmt(excl)} (vista «Buffer de la versión anterior»)."],
                        conclusion="Así se mide lo que importa: predecir en barrios sin datos.",
@@ -608,7 +614,7 @@ def d_moran():
     return diapositiva("3.16", "Autocorrelación espacial: los vecinos se parecen", grafico(F.fig_correlograma()),
                        puntos=[f"I de Moran del estrato: {m['I']:.2f} (8 edificios vecinos, p = {m['p']:.3f}).",
                                "El parecido baja con la distancia y se vuelve débil hacia los 2.6 km.",
-                               "Por eso se valida separando zonas, a la distancia a la que se predice (kNNDM, pestaña 5)."],
+                               "Por eso se valida separando zonas, a la distancia a la que se predice (kNNDM, pestaña Modelos)."],
                        conclusion="Validar con filas al azar sería hacer trampa: hay que separar zonas.",
                        metricas=[("moran", m["I"]), "correlograma"], fuente=f"{E1C} · cap. 8.4")
 
@@ -660,7 +666,7 @@ def d_eda_entorno():
                                f"{area['vecinos']:.2f} frente a {area['propia']:.2f}.",
                                f"Hasta la distancia media a los vecinos (una medida de densidad) tiene η² = "
                                f"{d['eta2_distancia_vecinos']:.2f}.",
-                               "Con estas variables, el F1 de test de la logística sube de 0.49 a 0.57 (pestaña 6)."],
+                               "Con estas variables, el F1 de test de la logística sube de 0.49 a 0.57 (pestaña Modelos)."],
                        conclusion="El estrato es una propiedad de la zona: describir el entorno informa más que describir "
                                   "la vivienda.",
                        metricas=[("eta2", ban["vecinos"], f"{ban['vecinos']:.2f} (baños de los vecinos)")],
@@ -680,7 +686,7 @@ def d_eda_fronteras():
                                f"más homogéneos ({fr['2']['pct_frontera']:.0f}–{fr['1']['pct_frontera']:.0f} %).",
                                f"El {d['pct_un_solo_estrato']:.0f} % de esas diferencias es de un solo estrato.",
                                "Explica por qué los errores son casi siempre de un estrato, el 5 es el más difícil y "
-                               "ADASYN es el peor balanceo (pestaña 7)."],
+                               "ADASYN es el peor balanceo (Entregable 3, pestaña Modelos)."],
                        conclusion="La dificultad está donde las zonas se tocan, no repartida por la ciudad.",
                        fuente=f"{E1C} · cap. 15.3 (v3)")
 
@@ -728,7 +734,7 @@ def d_protocolo():
                                f"zonas nuevas (kNNDM), {e:.2f}; en el test, {T['f1_macro'][B]:.2f}.",
                                "La diferencia es fuga: con filas al azar, cada vivienda de validación tiene vecinas casi "
                                "idénticas (las de su edificio) en el entrenamiento.",
-                               "kNNDM no exagera ni castiga: valida a la misma distancia a la que se predice (5.5)."],
+                               "kNNDM no exagera ni castiga: valida a la misma distancia a la que se predice."],
                        conclusion="Validar como se va a usar el modelo: en barrios sin datos.",
                        metricas=[("optimismo", a - e), "knndm"], fuente=f"{E1C} · caps. 10.2 y 14")
 
@@ -1236,7 +1242,7 @@ def d_hipotesis():
                        puntos=["Objetivo: usar modelos no aplicados antes a este problema (los candidatos de la "
                                "revisión), encabezados por el XGBoost geográfico.",
                                "Y comprobar si alguno es mejor que el modelo base.",
-                               "Modelo base: logística multinomial con las variables físicas y la ubicación (pestaña 4).",
+                               "Modelo base: logística multinomial con las variables físicas y la ubicación (pestaña Modelos).",
                                "Respuesta en las pestañas 6 (Resultados) y 8 (Conclusiones)."],
                        conclusion="La revisión bibliográfica deja una brecha; los modelos originales la atacan.",
                        fuente=f"{E2C} · cap. 1.4")
@@ -1267,7 +1273,7 @@ def d_nuevo_vs_base():
                                f"Zonas conocidas: +{min(zc_b):.2f} a +{max(zc_b):.2f} de F1 en validación.",
                                "Con solo las variables del base, el test no lo confirma (−0.009).",
                                "Ojo: con el intervalo BCa del E3 el mismo +0.09 da [−0.024, +0.172]; con 7 bloques la "
-                               "confirmación depende del método. La prueba con 30 bloques sí es significativa (6.3)."],
+                               "confirmación depende del método. La prueba con 30 bloques sí es significativa."],
                        conclusion="Sí: con información del entorno, el modelo nuevo supera al base en los dos escenarios.",
                        metricas=[("f1_macro", knn["F1_test"], f"{knn['F1_test']:.3f} (modelo nuevo, test)"), "se_pareado", "ic95"],
                        fuente=f"{E2C} · cap. 8")
@@ -1433,7 +1439,7 @@ def d_e3_balanceo():
                                f"SMOTE y no balancear quedan casi empatados; ADASYN es el peor (Friedman p = "
                                f"{cientifico(a['friedman_balanceo']['p'], 0)}).",
                                "ADASYN crea viviendas sintéticas junto a las «difíciles», que aquí son las de frontera "
-                               "(EDA mejorado, 3.21): refuerza el ruido.",
+                               "(EDA: el entorno): refuerza el ruido.",
                                "Todas las técnicas empeoran algo la calibración (ECE)."],
                        conclusion="Basta con pesar las clases; generar viviendas sintéticas no ayuda.",
                        metricas=["class_weight", "ece"], fuente=f"{E3C} · cap. 5")
@@ -1477,7 +1483,7 @@ def d_e3_test():
                        puntos=["Finalistas: la mejor combinación de cada modelo, evaluada una sola vez en los 7 bloques "
                                "de test.",
                                "Todo baja: los ensambles pasan de ≈ 0.66 en validación a 0.52–0.57 en test (el test "
-                               "tiene 1.2 % de estrato 6, ver 3.22).",
+                               "tiene 1.2 % de estrato 6, ver «EDA: el test»).",
                                f"Con 5 semillas: logística con vecindad {lv:.3f}, XGBoost {s['XGBoost']['media']:.3f} y "
                                f"Random Forest {s['Random Forest']['media']:.3f}: empatan.",
                                f"Todos menos Naive Bayes superan al modelo base ({f['modelo_base']['test']['f1_macro']:.3f} "
@@ -1644,6 +1650,16 @@ def d_hallazgos():
                           "F1 de test: modelo base → XGBoost geográfico con vecindad",
                           "El modelo nuevo supera al base en zonas nuevas; con 30 bloques, la mejora es significativa "
                           "(Holm p < 0.01).", "#008300")]
+    if F4.disponible():
+        b4 = F4.leer("base_vs_epl.json")["epl_vs_base"]
+        x4 = F4.rival("CatBoost")
+        nuevo = [hallazgo(f"{b4['media_rival']:.2f} → {b4['media_rival'] + b4['dif_media']:.2f}",
+                          "F1 en la validación 5 × 5: modelo base → modelo original (EPL)",
+                          f"Gana en {b4['pliegues_a_favor']} de 25 pliegues y en el test (0.43 → 0.58); las cuatro "
+                          "pruebas lo confirman.", "#eb6834"),
+                 hallazgo("1 de 3", f"pruebas que rechazan frente a CatBoost (+{x4['dif_media']:.3f} de F1)",
+                          "El EPL tiene la mayor media, pero su superioridad sobre los mejores no queda demostrada (R3).",
+                          "#52514e")] + nuevo
     es, eda = FM.estadistica(), FM.eda()
     if es and eda:
         vl = es["comparaciones"]["vs logística con vecindad"]
@@ -1711,7 +1727,14 @@ def d_respuesta():
                          "test (+0.099, IC 95 % [+0.024, +0.170]). Pero ninguno supera de forma significativa a los "
                          "modelos convencionales que reciben la misma información: la mejora viene de describir el "
                          "entorno. La ventaja propia del XGBoost geográfico está en las zonas con datos cerca.")],
-                 className="caja-si mt-3")])
+                 className="caja-si mt-3"),
+        html.Div([html.H5("¿Y el modelo original del Entregable 4?"),
+                  html.P("El ensamble con pesos locales (EPL) es nuevo en la aplicación y propio en la implementación "
+                         "(R1 y R2). Tiene el mayor F1 medio en la validación repetida 5 × 5 (0.618) y supera con "
+                         "claridad al modelo base (+0.19, 25 de 25 pliegues), pero frente a CatBoost y Random Forest la "
+                         "ventaja es pequeña: solo Wilcoxon-Holm rechaza, y en el test empatan. R3 no se cumple. Lo que "
+                         "aporta es combinar expertos con predicciones fuera de muestra; el campo de pesos local no "
+                         "ayuda de forma medible en zonas nuevas.")], className="caja-no mt-3")])
     return diapositiva("6.2", "Respuesta a la pregunta del proyecto", visual,
                        conclusion="La parte pública del catastro revela sobre todo la zona; lo que distingue a la vivienda "
                                   "dentro de su zona no está publicado.")
@@ -1721,11 +1744,13 @@ def d_limitaciones():
     items = [("Cobertura", "Quedan 10 300 viviendas (3.1 %) sin ubicar, casi todas de estrato 1."),
              ("Pocos bloques de test", "7 bloques, con todo el estrato 6 en uno: intervalos anchos y p mínimo 0.016, así "
                                        "que ninguna diferencia resiste la corrección de Holm."),
-             ("Submuestra en el E3", "Las 156 combinaciones usaron 10 001 viviendas; sus hiperparámetros no se trasladan "
+             ("Submuestra en el E3 y el E4", "Las combinaciones y la validación 5 × 5 usaron 10 001 viviendas; sus hiperparámetros no se trasladan "
                                      "a los modelos que dependen del tamaño de la muestra."),
              ("Candidatos sin probar", "Bagged TAO Trees (sin implementación abierta) y los selectores EFSHB y NSGA-II."),
              ("Presupuesto de búsqueda", "12 evaluaciones: basta para llegar a la meseta, no para que el genético o la "
                                          "multi-fidelidad muestren todo su potencial."),
+             ("Modelo original sin superioridad", "El EPL no supera con significancia a CatBoost ni a Random "
+                                                  "Forest (1 de 3 pruebas) y el test no confirma la ventaja."),
              ("Etiqueta administrativa", "El estrato puede estar desactualizado o ajustado a mano."),
              ("Calidad del catastro", "Pisos del edificio registrados como de la vivienda; altura casi constante."),
              ("Uso ético", "Predecir el estrato puede discriminar (crédito, seguros): el uso aquí es analítico.")]
@@ -1737,9 +1762,11 @@ def d_limitaciones():
 def d_pasos():
     hechos = html.Div([html.Div("Ya hecho", className="hito-titulo"), html.Ul([
         html.Li("Validación anidada y búsqueda de hiperparámetros con kNNDM para todos los modelos (Entregable 3)."),
-        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test (6.5)."),
-        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia (6.2 y 6.3)."),
-        html.Li("EDA mejorado con los hallazgos de los modelos (3.20 a 3.22).")], className="mb-0")],
+        html.Li("Búsqueda del XGBoost geográfico con todos los datos: sube la validación, no el test."),
+        html.Li("Stacking, Rotation Forest y RF + SVM con vecindad, con pruebas de significancia."),
+        html.Li("EDA mejorado con los hallazgos de los modelos."),
+        html.Li("Modelo original (EPL), validación repetida 5 × 5, conjuntos externos y robustez (Entregable 4).")],
+        className="mb-0")],
         className="hito mb-3")
     pasos = [("1", "Más zonas de evaluación", "Otra ciudad u otra partición: con 7 bloques no se confirman diferencias "
                                               "pequeñas."),
@@ -1747,13 +1774,15 @@ def d_pasos():
              ("3", "Modelo en dos etapas", "Estrato de la zona y luego vivienda atípica, como el DANE."),
              ("4", "Recalibrar en el pipeline", "Calibración con validación cruzada como último paso: en el test mejoró "
                                                 "la calibración y varios F1."),
-             ("5", "Zonas conocidas", "Usar el XGBoost geográfico para completar el mapa donde hay datos cerca."),
+             ("5", "Zonas conocidas", "Probar el EPL y el XGBoost geográfico donde hay datos cerca: ahí la "
+                                      "información local sí ayudó."),
              ("6", "Bagged TAO Trees", "El único modelo de la revisión que falta probar.")]
     return diapositiva("8.4", "Próximos pasos", html.Div([hechos, flujo(pasos)]))
 
 
 def d_recursos():
-    enlaces = [("Libro del Entregable 1 (versión 3)", LIBRO_E1),
+    enlaces = [("Libro del Entregable 4 (proyecto final)", DE4.LIBRO_E4),
+               ("Libro del Entregable 1 (versión 3)", LIBRO_E1),
                ("E1 · cap. 15: EDA mejorado", LIBRO_E1 + "notebooks/15_eda_mejorado.html"),
                ("Libro del Entregable 2 (versión 3)", LIBRO_E2),
                ("E2 · cap. 9: todos los modelos originales de la revisión", LIBRO_E2 + "notebooks/09_modelos_revision.html"),
@@ -1763,7 +1792,8 @@ def d_recursos():
                ("Libro del Entregable 2 (versión 2)", LIBRO_E2_V2), ("Libro del Entregable 2 (versión 1, entregada)", LIBRO_E2_V1),
                ("Repositorio del Entregable 1", "https://github.com/mcarocantillo/entregable1-ml-barranquilla"),
                ("Repositorio del Entregable 2", "https://github.com/mcarocantillo/entregable2-ml-barranquilla"),
-               ("Repositorio del Entregable 3", "https://github.com/mcarocantillo/entregable3-ml-barranquilla")]
+               ("Repositorio del Entregable 3", "https://github.com/mcarocantillo/entregable3-ml-barranquilla"),
+               ("Repositorio del Entregable 4", "https://github.com/mcarocantillo/entregable4-ml-barranquilla")]
     visual = html.Div([html.A([html.Span(t), html.Span("↗", className="enlace-flecha")], href=u, target="_blank", className="enlace-recurso")
                        for t, u in enlaces], className="recursos")
     return diapositiva("6.5", "Para profundizar", visual,
@@ -1776,77 +1806,27 @@ def d_recursos():
 # Índice de pestañas
 # ===========================================================================
 PESTANAS = [
-    {"id": "contexto", "titulo": "Problema y revisión", "corto": "Problema", "diapositivas": [
+    {"id": "contexto", "titulo": "Contexto: problema, revisión y datos", "corto": "Contexto", "diapositivas": [
         ("La pregunta", d_pregunta), ("Cómo asigna el DANE", d_dane), ("Revisión bibliográfica", d_bibliografia),
         ("El vacío en la literatura", d_vacio), ("Objetivo e hipótesis", d_hipotesis), ("Cómo se trabajó", d_ruta),
-        ("Qué cambió en la versión 3", d_cambios)]},
-    {"id": "datos", "titulo": "Datos y calidad", "corto": "Datos", "diapositivas": [
-        ("Los datos", d_datos), ("Limpieza", d_embudo), ("Ubicación por manzana", d_manzana),
-        ("Cobertura por estrato", d_cobertura), ("Faltantes e imposibles", d_calidad),
-        ("Outliers univariados", d_outliers), ("Dependencia y tamaño efectivo", d_dependencia),
-        ("Partición espacial", d_particion)]},
+        ("Los datos", d_datos), ("Limpieza", d_embudo), ("Partición espacial", d_particion),
+        ("El proyecto final (E4)", DE4.d_e4_resumen)]},
     {"id": "eda", "titulo": "Análisis exploratorio", "corto": "EDA", "diapositivas": [
-        ("Variable objetivo", d_objetivo), ("Numéricas", d_numericas), ("Transformación", d_transformar),
-        ("Correlaciones", d_correlaciones), ("Pares (densidad)", d_hexbin), ("Numéricas vs estrato", d_violin),
-        ("Categóricas vs estrato", d_categoricas), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
-        ("PCA", d_pca), ("Biplot", d_biplot), ("Outliers multivariados", d_outliers_mv), ("Clustering", d_clustering),
-        ("t-SNE", d_tsne), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("LISA y Gi*", d_lisa),
-        ("Escala (MAUP)", d_maup), ("Fuga de datos", d_fuga), ("EDA mejorado: el entorno", d_eda_entorno),
-        ("EDA mejorado: fronteras", d_eda_fronteras), ("EDA mejorado: el test", d_eda_test)]},
-    {"id": "modelo", "titulo": "Modelo base", "diapositivas": [
-        ("Hiperparámetros", d_grid), ("Frente a líneas base", d_comparacion), ("¿Diferencias reales?", d_significancia),
-        ("Errores por estrato", d_confusion), ("Probabilidades", d_roc), ("Coeficientes", d_coeficientes),
-        ("Importancia", d_permutacion), ("Curva de aprendizaje", d_aprendizaje), ("Residuos espaciales", d_residuos),
-        ("Variantes: ordinal y umbrales", d_v3_mejoras), ("Simulador", d_simulador)]},
-    {"id": "propuesto", "titulo": "Modelos propuestos y protocolo", "corto": "Modelos propuestos", "diapositivas": [
-        ("Los modelos originales", d_candidatos), ("XGBoost geográfico", d_geoxgb_como),
-        ("Los demás originales", d_otros_originales), ("Por qué separar zonas", d_protocolo),
-        ("Validar a la distancia correcta", d_v3_validacion)]},
-    {"id": "mas", "titulo": "Resultados", "diapositivas": [
-        ("La vecindad física", d_vecindad_knn), ("Todos los modelos originales", d_originales),
-        ("¿Son significativas?", d_signif_originales), ("XGBoost geográfico: dos escenarios", d_nuevo_vs_base),
-        ("XGBoost geográfico afinado", d_busqueda_geo)]},
-    {"id": "e3", "titulo": "Entregable 3: optimización y evaluación", "corto": "Entregable 3", "diapositivas": [
-        ("Pipeline combinatorio", d_e3_diseno), ("Optimizadores", d_e3_optimizadores), ("Balanceo", d_e3_balanceo),
-        ("Costo computacional", d_e3_computo), ("Test de los finalistas", d_e3_test), ("Calibración", d_e3_calibracion),
-        ("Regresión", d_e3_regresion), ("Comparación estadística", d_e3_estadistica), ("SHAP", d_e3_shap),
-        ("El modelo nuevo en el E3", d_e3_nuevo)]},
+        ("Variable objetivo", d_objetivo), ("Faltantes e imposibles", d_calidad), ("Outliers", d_outliers),
+        ("Numéricas", d_numericas), ("Numéricas vs estrato", d_violin), ("Categóricas vs estrato", d_categoricas),
+        ("Correlaciones", d_correlaciones), ("Ranking de asociación", d_ranking), ("Multicolinealidad", d_vif),
+        ("PCA", d_pca), ("Mapa", d_mapa), ("Autocorrelación", d_moran), ("Dependencia y tamaño efectivo", d_dependencia),
+        ("Fuga de datos", d_fuga), ("El entorno", d_eda_entorno), ("El test", d_eda_test)]},
+    {"id": "modelos", "titulo": "Modelos: del modelo base al modelo original", "corto": "Modelos", "diapositivas": [
+        ("Base · Frente a líneas base", d_comparacion), ("Base · ¿Diferencias reales?", d_significancia),
+        ("Base · Errores por estrato", d_confusion), ("Base · Coeficientes", d_coeficientes),
+        ("E2 · Modelos de la revisión", d_candidatos), ("E2 · XGBoost geográfico", d_geoxgb_como),
+        ("E2 · Validar a la distancia correcta", d_v3_validacion), ("E2 · La vecindad física", d_vecindad_knn),
+        ("E2 · Todos los originales", d_originales), ("E2 · Dos escenarios", d_nuevo_vs_base),
+        ("E3 · Pipeline combinatorio", d_e3_diseno), ("E3 · Optimizadores", d_e3_optimizadores),
+        ("E3 · Balanceo", d_e3_balanceo), ("E3 · Test de los finalistas", d_e3_test), ("E3 · SHAP", d_e3_shap),
+    ] + [(f"E4 · {t}", f) for t, f in DE4.DIAPOSITIVAS_MODELOS]},
     {"id": "conclusiones", "titulo": "Conclusiones", "diapositivas": [
-        ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta), ("Limitaciones", d_limitaciones),
-        ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
+        ("Veredicto del E4", DE4.d_e4_veredicto), ("Hallazgos", d_hallazgos), ("Respuesta", d_respuesta),
+        ("Limitaciones", d_limitaciones), ("Próximos pasos", d_pasos), ("Para profundizar", d_recursos)]},
 ]
-
-
-# ===========================================================================
-# Presentación de 20 minutos: lo esencial, en orden de exposición
-# ===========================================================================
-# (pestaña, diapositiva tal como aparece en el menú, minutos sugeridos, puntos que se muestran). Las diapositivas son las
-# mismas del dashboard completo y conservan su número, así que las referencias cruzadas (p. ej. «3.22» o «pestaña 6»)
-# siguen valiendo; en la presentación se ven en modo compacto: dos puntos, la frase final y sin fichas de lectura.
-GUION_20_MIN = [
-    ("contexto", "La pregunta", 1, [0, 2]), ("contexto", "El vacío en la literatura", 1.5, [1, 2]),
-    ("contexto", "Objetivo e hipótesis", 1, [0, 1]), ("contexto", "Qué cambió en la versión 3", 1.5, [1, 3]),
-    ("datos", "Partición espacial", 1, [0, 1]),
-    ("eda", "Variable objetivo", 0.75, [0, 1]), ("eda", "Mapa", 0.75, [0, 1]), ("eda", "Ranking de asociación", 0.75, [0, 1]),
-    ("eda", "Autocorrelación", 0.75, [0, 1]), ("eda", "EDA mejorado: el entorno", 0.75, [1, 3]),
-    ("modelo", "Frente a líneas base", 1, [0, 2]), ("propuesto", "Los modelos originales", 1.5, [1, 2]),
-    ("propuesto", "XGBoost geográfico", 1, [0, 1]), ("mas", "La vecindad física", 1, [0, 1]),
-    ("mas", "Todos los modelos originales", 1.5, [1, 3]), ("mas", "¿Son significativas?", 1, [1, 2]),
-    ("mas", "XGBoost geográfico: dos escenarios", 1, [0, 2]), ("e3", "Pipeline combinatorio", 1, [0, 2]),
-    ("conclusiones", "Respuesta", 1.25, None),
-]
-
-
-def _guion():
-    por_id = {p["id"]: p for p in PESTANAS}
-    salida = []
-    for pid, titulo, minutos, puntos in GUION_20_MIN:
-        nombres = [t for t, _ in por_id[pid]["diapositivas"]]
-        i = nombres.index(titulo)
-        salida.append((titulo, por_id[pid]["diapositivas"][i][1],
-                       {"origen": (pid, i), "minutos": minutos, "puntos": puntos}))
-    return salida
-
-
-PESTANAS.insert(0, {"id": "presentacion", "titulo": "Presentación (20 min)", "sin_numero": True,
-                    "diapositivas": _guion()})

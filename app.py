@@ -4,20 +4,27 @@ Autores: María Carolina Cantillo Orozco (200179105) y
          Juan Camilo Oñoro Araujo (200177329)
 Machine Learning — Maestría en Ingeniería Mecánica, Universidad del Norte. Profesor Lihki Rubio.
 
-Reúne los Entregables 1, 2 y 3 y los desarrollos posteriores en ocho pestañas, ordenadas como la investigación
-(problema y revisión → datos → EDA → modelo base → modelo propuesto y protocolo → resultados → optimización del
-Entregable 3 → conclusiones). Cada pestaña es una secuencia de
+Reúne los Entregables 1 a 4 en cuatro pestañas: Contexto (problema, revisión y datos), EDA, Modelos (modelo base,
+modelos de la revisión del E2, optimización del E3 y el modelo original del E4 con su validación y la predicción en
+vivo) y Conclusiones. Cada pestaña es una secuencia de
 diapositivas (gráfica o tabla interactiva + lectura breve + fichas de cómo leer cada métrica); se navega con el menú
 lateral, con los botones o con las flechas del teclado. El contenido está en ``diapositivas.py``; las figuras, en
-``figuras.py``, ``figuras_proyecto.py`` y ``figuras_mejoras.py``; el glosario de métricas, en ``glosario.py``.
+``figuras.py``, ``figuras_proyecto.py``, ``figuras_mejoras.py`` y ``figuras_e4.py``; el glosario, en
+``glosario.py``. Las diapositivas del E4 están en ``diapositivas_e4.py``.
 Para Render: ``gunicorn app:server``.
 """
-import dash_bootstrap_components as dbc
+import os
+
+# Un hilo de BLAS: reproduce exactamente las probabilidades del modelo serializado y ahorra memoria en Render.
+for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+    os.environ.setdefault(_v, "1")
+
+import dash_bootstrap_components as dbc  # noqa: E402
 from dash import ALL, Dash, Input, Output, State, ctx, dcc, html
 from dash.exceptions import PreventUpdate
 
-import componentes as CMP
-import diapositivas as DP
+import componentes as CMP  # noqa: E402
+import diapositivas as DP  # noqa: E402
 from componentes import fmt, glosario_completo, radio
 
 app = Dash(__name__, title="Estrato socioeconómico en Barranquilla — Proyecto final de Machine Learning",
@@ -38,7 +45,11 @@ def cifra(valor, etiqueta):
 
 
 def cifra_modelo_nuevo():
-    """F1 de test en zonas nuevas: modelo base → modelo nuevo (XGBoost geográfico con vecindad), si ya está calculado."""
+    """F1 en zonas nuevas: modelo base → modelo original del E4 (validación repetida 5 × 5), si ya está calculado."""
+    if DP.F4.disponible():
+        b = DP.F4.leer("base_vs_epl.json")["epl_vs_base"]
+        return cifra(f"{b['media_rival']:.2f} → {b['media_rival'] + b['dif_media']:.2f}",
+                     "F1 en zonas nuevas: modelo base → modelo original")
     ar = DP.FP.arboles_knndm()
     if not ar:
         return cifra(f"{T['f1_macro'][B]:.2f}", "F1 macro en zonas nuevas")
@@ -53,7 +64,8 @@ portada = html.Header(html.Div([
     html.H1(["¿Se puede predecir el ", html.Span("estrato", className="resalte"), " de una vivienda con sus datos catastrales?"],
             className="hero-titulo"),
     html.P("Clasificación del estrato socioeconómico de las viviendas de Barranquilla con el catastro abierto, "
-           "validación espacial, modelos originales de la revisión bibliográfica y optimización de hiperparámetros.",
+           "validación espacial, modelos de la revisión bibliográfica, optimización de hiperparámetros y un modelo "
+           "original: el ensamble con pesos locales.",
            className="hero-sub"),
     html.Div([cifra(fmt(DP.E1["viviendas"]), "viviendas"), cifra("96.9 %", "ubicadas en el mapa"),
               cifra(f"{DP.D['moran_estrato']['I']:.2f}", "I de Moran del estrato"),
