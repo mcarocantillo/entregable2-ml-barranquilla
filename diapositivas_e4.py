@@ -526,7 +526,9 @@ def d_e4_campo():
                        puntos=["Versión 2: el bucle interno elige dónde se definen las regiones. En los 25 pliegues eligió "
                                + ", ".join(f"{F4.NOMBRE_ESPACIO[k]} {v}" for k, v in esp.items()) + " veces.",
                                "Espacio de las variables: 2 componentes principales de las variables de la vivienda; "
-                               "anclas cercanas = viviendas parecidas, no vecinas.",
+                               "anclas cercanas = viviendas parecidas en altura, tamaño y entorno "
+                               "(la ubicación entra como una variable más); las dos componentes explican el 37 % "
+                               "de la varianza.",
                                f"{exp_var} es el experto cuyo peso más varía entre anclas. En los pesos globales, "
                                "XGBoost (0.51) y Random Forest (0.20) suman el 70 %; SVM queda en 0.",
                                "El tamaño y el color del punto son el peso del experto en esa ancla."],
